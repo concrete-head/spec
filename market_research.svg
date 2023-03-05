@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with Vectornator (http://vectornator.io/) -->
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 300 300" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:vectornator="http://vectornator.io" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs/>
+<g id="Layer-2" vectornator:layerName="Layer 2"/>
+<g id="Layer-3" vectornator:layerName="Layer 3">
+<path d="M186.742 194.757L243.527 273.012C247.656 278.273 255.492 279.496 261.027 275.741L261.799 275.218C269.074 270.284 270.11 261.075 264.113 254.648L194.94 186.435" fill="#9eacfd" fill-rule="nonzero" opacity="1" stroke="none"/>
+</g>
+<g id="Layer-1" vectornator:layerName="Layer 1"/>
+<g id="Layer-5" vectornator:layerName="Layer 5">
+<path d="M83.2455 140.596L96.071 140.596C97.6798 140.596 98.984 141.9 98.984 143.509L98.984 200.104C98.984 201.713 97.6798 203.017 96.071 203.017L83.2455 203.017C81.6367 203.017 80.3325 201.713 80.3325 200.104L80.3325 143.509C80.3325 141.9 81.6367 140.596 83.2455 140.596Z" fill="#506efd" fill-rule="nonzero" opacity="1" stroke="none"/>
+<path d="M120.985 112.304L132.444 112.304C134.43 112.304 136.04 113.991 136.04 116.073L136.04 207.924C136.04 210.006 134.43 211.693 132.444 211.693L120.985 211.693C118.999 211.693 117.389 210.006 117.389 207.924L117.389 116.073C117.389 113.991 118.999 112.304 120.985 112.304Z" fill="#506efd" fill-rule="nonzero" opacity="1" stroke="none"/>
+<path d="M158.503 70.7017L170.195 70.7017C172.117 70.7017 173.674 72.403 173.674 74.5016L173.674 205.803C173.674 207.902 172.117 209.603 170.195 209.603L158.503 209.603C156.581 209.603 155.023 207.902 155.023 205.803L155.023 74.5016C155.023 72.403 156.581 70.7017 158.503 70.7017Z" fill="#506efd" fill-rule="nonzero" opacity="1" stroke="none"/>
+</g>
+<g id="Layer-4" vectornator:layerName="Layer 4">
+<path d="M40.1537 120.719C40.1537 69.6086 81.5867 28.1755 132.697 28.1755C183.807 28.1755 225.24 69.6086 225.24 120.719C225.24 171.829 183.807 213.262 132.697 213.262C81.5867 213.262 40.1537 171.829 40.1537 120.719Z" fill="none" opacity="1" stroke="#9eacfd" stroke-linecap="butt" stroke-linejoin="miter" stroke-width="11"/>
+</g>
+</svg>

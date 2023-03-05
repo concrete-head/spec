@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SPEC</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="font-awesome.min.css">
+<style>
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('Montserrat-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('Montserrat-Bold.woff') format('woff');
+  font-weight: bold;h
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('Montserrat-Italic.woff') format('woff');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('Montserrat-BoldItalic.woff') format('woff');
+  font-weight: bold;
+  font-style: italic;
+}
+
+body, html {
+  background-color: rgb(22, 27, 82);
+  line-height: 1.8;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  opacity: 0;
+  transition: opacity 2s;
+}
+
+
+@media all and (max-width: 1050px) {
+ #company_name { display: none }
+}
+
+@media all and (max-width: 700px) {
+  .hide_on_mobile { display: none !important }
+  .show_on_mobile { display: inline-block !important }
+  .service { padding: 0 !important }
+  .padded { padding: 0 !important }
+  .pad_left { padding-left: 0 !important}
+}
+
+
+.pad_left {
+  padding-left: 100px;
+}
+
+.left { float: left }
+.right { float: right }
+.bold { font-weight: bolder }
+
+
+.white_background {
+  background-color: white;
+}
+
+.white_text {
+  color: white;
+}
+
+.container {
+  position: relative;
+  padding: 30px 16px;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+}
+
+header {
+  min-height: 100%;
+}
+
+header img {
+  width: 90%;
+}
+
+.blue_text {
+  color: rgb(63, 101, 253);
+}
+
+.gray_text {
+  color: rgb(197,197,207);
+}
+
+.service{
+  max-width: 210px;
+  padding: 0 10px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.service_icon {
+  height:80px
+}
+
+.service h5 {
+  font-weight: bold;
+}
+
+
+.animate_zoom { animation: animatezoom 0.6s; }
+
+#modal {
+  z-index: 3;
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: black;
+}
+
+
+#modal img {
+  max-width: 75% ;
+  max-height: 75vh;
+}
+
+
+.large {
+  font-size: large;
+  font-weight: bold;
+}
+
+.team_card {
+  max-width: 210px;
+  display: inline-block;
+}
+
+.center {
+  text-align: center;
+}
+
+.large_font { font-size: 36px!important;
+}
+
+.black {
+  color:#ffffff !important;
+  background-color:#000000 !important
+}
+
+.sidenav_button {
+  display: inline-block;
+  padding: 16px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+  width: 100%;
+  color: white;
+}
+.sidenav_button:hover {
+  background-color: lightgray !important;
+  color: black;
+}
+
+.no_padding { padding: 0 }
+
+
+.team_card img {
+  border-radius: 50%;
+  padding:15px;
+}
+
+#home h1 {
+  font-family: worksans-semibold, Arial, Helvetica, sans-serif !important;
+  line-height: 1.2;
+}
+
+.container_heading {
+  font-weight: bolder;
+  text-align: center;
+}
+
+.column {
+  max-width: 600px;
+  text-align: center;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.padded {
+  padding: 30px 50px;
+}
+
+.project_tile {
+  text-align: center;
+  display: inline-block;
+}
+
+.project_tile img {
+  height:200px;
+}
+.project_tile:hover {
+  opacity: 0.6
+}
+
+a:hover {
+  opacity: 0.6
+}
+
+
+.sidebar {
+  height: 100%;
+  width: 200px;
+  background-color: #fff;
+  position: fixed!important;
+  z-index: 1;
+  overflow: auto;
+}
+
+
+.sidebar_animate {
+  position:relative;
+  animation:animate_left 0.4s
+}
+
+@keyframes animate_left {
+  from {left:-300px;opacity:0} to{left:0;opacity:1}}
+
+footer {
+  padding: 1.5em !important;
+}
+
+.hidden{ display:none }
+
+.button_rounded {
+  border-radius: 30px;
+  background-color: rgb(53,95,148);
+  padding: 12px 24px !important;
+  color: white;
+  border: 0;
+  text-decoration: none;
+}
+
+.spec_button {
+  cursor: pointer;
+  opacity: 0.7;
+  padding: 12px 24px!important;
+}
+
+.spec_button:hover{
+  color: #000000 !important;
+  background-color: #cccccc !important
+}
+
+#top_nav { padding: 10px }
+
+#top_nav a {
+  margin: 0 16px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background-color: inherit;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.collapsed {
+  max-height: 0;
+  transition: max-height 0.5s ease;
+  display: none;
+}
+
+
+.opacity:hover{opacity:0.60}
+
+#contact input, textarea {
+  font: inherit;
+  padding: 8px;
+  display: block;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  border: 1px solid #ccc!important;
+}
+
+.position_topright {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.position_centerright {
+  position: absolute;
+  top: 50%;
+  right: 0;
+}
+
+
+.position_centerleft {
+  position: absolute;
+  top: 50%;
+  left: 0;
+}
+
+
+#company_name { margin: 1em }
+#company_logo { height: 1em }
+
+</style>
+</head>
+<body onload="document.body.style.opacity='1'">
+
+<!-- Navbar -->
+<div id="top_nav" class="white_background">
+  <a href="http://spec.nz">
+    <img id="company_logo" src="spec_logo.svg"><span id="company_name">Smart Product Engineering Consultants</span>
+  </a>
+  <!-- Right-sided navbar links -->
+  <div class="right hide_on_mobile">
+    <a href="#services"><i class="fa fa-folder-open"></i> SERVICES</a>
+    <a href="#about"><i class="fa fa-user"></i> ABOUT</a>
+    <a href="#projects"><i class="fa fa-th"></i> PROJECTS</a>
+    <a href="#contact"><i class="fa fa-envelope"></i> CONTACT</a>
+  </div>
+
+  <a href="javascript:void(0)" class="right hidden show_on_mobile" onclick="nav_open()">
+    <i class="fa fa-bars"></i>
+  </a>
+</div>
+
+
+
+<!-- Sidebar on small screens when clicking the menu icon -->
+<nav class="sidebar sidebar_animate black hidden" id="mySidebar">
+  <a href="#services" onclick="nav_close()" class="sidenav_button">SERVICES</a>
+  <a href="#about" onclick="nav_close()" class="sidenav_button">ABOUT</a>
+  <a href="#projects" onclick="nav_close()" class="sidenav_button">PROJECTS</a>
+  <a href="#contact" onclick="nav_close()" class="sidenav_button">CONTACT</a>
+</nav>
+
+
+<!-- Header with image -->
+<header id="home" class="white_text container">
+  <div class="column pad_left" style="text-align: left">
+    <h1 class="bold" style="font-size: 500%">Design. Connect.<br>Develop. Automate</h1>
+    <h4 class="gray_text" style="max-width: 500px">We design & develop products. From programming, product design, engineering & manufacturing.</h4>
+    <p><a href="#about" class="button_rounded">Learn more</a></p>
+  </div>
+
+  <div class="column">
+    <img id="hero_image" src="images/main_img.png">
+  </div>
+
+
+</header>
+
+<!-- Services Section -->
+<div class="container white_background" id="services">
+  <h4 class="container_heading blue_text">SERVICES</h4>
+
+  <div class="center" style="">
+    <div class="service">
+      <p ><img class="service_icon" src="product_design.svg"></p>
+      <h5>Product Design & Engineering</h5>
+      <p class="description">CAD, product renders, concepts to prototyping and design for manufacturing. We deliver a full range of engineering design services.</p>
+    </div>
+    <div class="service">
+      <p ><img class="service_icon" src="programming.svg"></p>
+      <h5>Programming</h5>
+      <p class="description">Web-apps, IoT, controllers, IOS/Android, data analysis. We can build a wide range of programming solutions. We specialise in automation.</p>
+    </div>
+    <div class="service">
+      <p ><img class="service_icon" src="manufacturing.svg"></p>
+      <h5>Manufacturing</h5>
+      <p class="description">Manufacturing network/contacts, certification, We are able to connect a product to a manufacturing partner and go through this process. Technical details, we focus on design for manufacturing.</p>
+    </div>
+    <div class="service">
+      <p ><img class="service_icon" src="project_management.svg"></p>
+      <h5>Project Management</h5>
+      <p class="description">Delivering products on time while knowing all costs involved. We have developed systems to make sure we know the true process and cost of product development.</p>
+    </div>
+    <div class="service">
+      <p ><img class="service_icon" src="market_research.svg"></p>
+      <h5>Market Research & Graphic Design</h5>
+      <p class="description">In depth market research to make sure the product we design and deliver meet customer needs. 
+
+        Graphic and UI/UX design to make sure the customer has the best experience with your products. </p>
+      </div>
+    </div>
+  </div>
+
+<!-- About Section -->
+
+<div class="container" style="background: aliceblue" id="about">
+  <div class="column padded" style="text-align: left">
+    <h4 class="bold center blue_text">ABOUT</h4>
+
+    <p >We are a multi disciplinary team of designers, engineers and creators that have a passion for creating products for automation. We have a lot of experience working in programming, prototyping, designing and manufacturing in China. Our passion is in creating products that combine physical and digital technologies. Creating solutions for the modern connected world through advances in automation and Industry 4.0.</p>
+    <p >We are very resourceful and aim to help you reduce time and cost for your projects.</p>
+    <div class="collapsed" id="hidden_text">
+
+      <h2 id="design-engineering">Design &amp; Engineering</h2>
+      <p>From basic to complex, we offer a full product design &amp; engineering service. We not only look at the best design &amp; function, but also how the product will be manufactured and used keeping in mind the full lifecycle of the product. </p>
+      <ul>
+        <li>Product Design</li>
+        <li>CAD & 3D Rendering / Animations</li>
+        <li>Design validation </li>
+        <li>Technical drawings</li>
+        <li>Working prototypes &amp; mock- ups</li>
+        <li>Product testing</li>
+        <li>Design for manufacture</li>
+      </ul>
+      <h2 id="programming">Programming</h2>
+      <p>Our team of programmers understand digital as much as physical. We pride ourselves on delivering great software solutions for physical products.</p>
+      <ul>
+        <li>Web Apps</li>
+        <li>IOS/Android</li>
+        <li>Firmware</li>
+        <li>C/C++/Python</li>
+        <li>Data analysis</li>
+      </ul>
+      <h2 id="manufacturing">Manufacturing</h2>
+      <p>Local or off- shore and over 10 years experience in large scale manufacturing in China, we know how to make things. From small production to large scale and everything in between, we are able to connect you with high quality manufacturers.  </p>
+      <ul>
+        <li>Supplier connection</li>
+        <li>Factory quality control &amp; inspections</li>
+        <li>Local manufacturing</li>
+        <li>Factory audits</li>
+      </ul>
+      <h2 id="project-management">Project Management</h2>
+      <p>Delivering products on time while knowing all costs involved. We have developed systems to make sure we know the true process and cost of product development. </p>
+      <ul>
+        <li>Project / product costs</li>
+        <li>A great mix of waterfall and agile to deliver products fast. </li>
+      </ul>
+      <h2 id="market-research-design">Market research &amp; Design</h2>
+      <p>Expertise in designing consumer products and mechanical engineering.</p>
+      <ul>
+        <li>Product Design</li>
+        <li>CAD & 3D Rendering</li>
+        <li>Design validation </li>
+        <li>Technical drawings</li>
+        <li>Working prototypes &amp; mock- ups</li>
+        <li>Graphic Design / UI Design</li>
+      </ul>
+    </div>
+
+    <p onclick="read_more()"><a class="blue_text" id="read_more">+ Read more</a></p>
+
+  </div>
+
+
+  <div class="column padded">
+
+    <div class="team_card">
+        <img src="images/imker.jpg" alt="Imker" style="width:100%">
+        <div class="container no_padding">
+          <h3>Imker Swanepoel</h3>
+          <p class="opacity">Product Designer</p>
+          <p>Business operations and design</p>
+
+        </div>
+    </div>
+    <div class="team_card">
+        <img src="images/jono.jpg" alt="Jono" style="width:100%">
+        <div class="container no_padding">
+          <h3>Jonathan Paul</h3>
+          <p class="opacity">Mechanical Engineer</p>
+          <p>Technical lead and manufacturing</p>
+        </div>
+    </div>
+    <p><a href="#contact" class="button_rounded">Contact</a></p>
+
+  </div>
+
+
+</div>
+
+<!-- Projects Section -->
+<div class="container white_background" id="projects">
+  <h4 class="container_heading blue_text">Projects</h4>
+  <p class="center large">What we've done for people</p>
+
+  <!-- project tiles are automatically generated here -->
+  <div id="project_tiles">
+  </div>
+
+  <div class="section">
+
+  </div>
+
+
+</div>
+
+<!-- Modal for full size images on click-->
+<div id="modal" class="black">
+  <span class="spec_button large_font black position_topright" onclick="closeModal()" title="Close Modal Image">×</span>
+  <span class="spec_button large_font black position_centerleft gallery_button" onclick="imageIndex--; updateImage()" title="Previous Image"><</span>
+  <span class="spec_button large_font black position_centerright gallery_button" onclick="imageIndex++; updateImage()" title="Next Image">></span>
+  <p id="gallery_image_wrapper" class="center">
+    <img id="img01" class="animate_zoom">
+  </p>
+  <div id="gallery_text_wrapper" class="center">
+    <p id="image_caption" class="opacity"></p>
+    <p id="image_description"></p>
+  </div>
+</div>
+
+
+<!-- Contact Section -->
+<div class="container" style="background-color: aliceblue" id="contact">
+
+  <h4 class="container_heading blue_text">CONTACT</h4>
+  <p class="center ">Let's work together. Send us a message:</p>
+
+    <div >
+      <p><i class="fa fa-map-marker large_font"></i> New Zealand</p>
+      <p><i class="fa fa-phone large_font"></i> Phone: +64 210632297</p>
+      <p><i class="fa fa-envelope large_font"> </i> Email: enquiries@spec.nz</p>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="center container" style="color: white">
+  <!-- <p>This site does not use any cookies, we do not log your IP or perform browser fingerprinting. Enjoy a simpler web &#127759;</p> -->
+  <p>2023 spec.nz</p>
+</footer>
+
+
+<script>
+
+const projects = {
+  "drill": {
+      title: "Portable Directional Drilling Prototype",
+      thumbnail: "images/drill.jpg",
+      images: [
+        ["images/drill.jpg", "The brief was to build a device to test the feasibility of drilling horizontal bore holes using a portable, self propelled, rotary impact driven device. For if the design was promising, it could be developed into a low cost, portable trenchless drilling tool for installing optical fiber cables on residential properties."],
+        ["images/drill_04.jpg", "Most of the body was 3D printed from Titanium using a process called EBM (electron beam melting). The pricing was attractive for one off parts."],
+        ["images/drill_03.jpg", "The bottom face of the auger required a machining operation to face off the rough EBM surface. This PLA fixture was created to allow the machinist to easily hold onto the part"],
+        ["images/drill_02.jpg", "The internals are taken from a pneumatic impact driver."],
+        ["images/drill_01.jpg", "This is how it fits together."],
+        ["images/drillcad_01.jpg", "CAD model in Solidworks"],
+        ["images/drillcad_02.jpg", "CAD model in Solidworks"],
+        ["images/drillcad_03.jpg", "Exploded view"],
+        ["images/drilldwg_01.jpg", "Machining drawing of housing"]
+      ]
+    },
+    "still": {
+      title: "Air Still",
+      thumbnail: "images/still_white.jpg",
+      images: [
+        ["images/still_white.jpg", "This is a design for a new smart air distiller. Unlike a traditional small air still, this has an advanced controller and sensors to provide better heating and air cooling performance while also helping the user with making recipees. This still is able to make distilled water, hydrosol & essential oils and spirits like gin, rum etc. A very small and user friendly product for the crafter."],
+        ["images/still_black.jpg", "Product render in black"]
+      ]
+    },
+    "valve": {
+      title: "Brewers Valve",
+      thumbnail: "images/valve.jpg",
+      images: [
+        ["images/valve.jpg", "This is a first of its kind valve used on fermenting vessels. It separates the good liquid from the waste material in the fermenter through a dual functional valve system. Before this design a fermenter would need to have two valves, this designed simplified that design into one product."]
+      ]
+    }
+  };
+
+var currentProject = "";
+var imageIndex = 0;
+
+  // load project into modal
+function loadProject(projectName) {
+  currentProject = projectName;
+  imageIndex = 0;
+  document.getElementById("img01").src = projects[projectName].images[0][0];
+  document.getElementById("modal").style.display = "block";
+  var captionText = document.getElementById("image_caption");
+  captionText.innerHTML = projects[projectName].title;
+  var descriptionText = document.getElementById("image_description");
+  descriptionText.innerHTML = projects[projectName].images[imageIndex][1];
+}
+
+// update the model image and caption
+function updateImage() {
+  if (document.getElementById("modal").style.display !== "block") { return }
+  var totalImages = projects[currentProject].images.length;
+  if (imageIndex > (totalImages-1)) { imageIndex = 0 };
+  if (imageIndex < 0) { imageIndex = totalImages - 1 };
+  document.getElementById("img01").src = projects[currentProject].images[imageIndex][0];
+  document.getElementById("image_description").innerText = projects[currentProject].images[imageIndex][1];
+}
+
+
+// initialise project tiles
+function loadProjectTiles() {
+  Object.keys(projects).forEach(function(project) {
+    var container = document.createElement("div");
+    container.classList.add("project_tile");
+    container.onclick = function() { loadProject(project) }
+
+    var p = document.createElement("p");
+    container.appendChild(p);
+
+    var img = document.createElement("img");
+    p.appendChild(img);
+    img.src = projects[project].thumbnail;
+
+    var p2 = document.createElement("p");
+    container.appendChild(p2);
+    p2.innerText = projects[project].title;
+    p2.classList.add("center");
+
+    document.getElementById("project_tiles").appendChild(container);
+  })
+
+}
+
+
+
+// Toggle between showing and hiding the sidebar when clicking the menu icon
+var mySidebar = document.getElementById("mySidebar");
+
+function nav_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+  } else {
+    mySidebar.style.display = 'block';
+  }
+}
+
+// Close the sidebar with the close button
+function nav_close() {
+    mySidebar.style.display = "none";
+}
+
+// show and hide hidden text
+function read_more() {
+
+  var el = document.getElementById("hidden_text");
+  if (el.clientHeight == 0) {
+    el.style.maxHeight = "2000px";
+    el.style.display = "block";
+    document.getElementById("read_more").innerText = "- Read less";
+  } else {
+    el.style.maxHeight = "0px";
+    el.style.display = "none";
+    document.getElementById("read_more").innerText = "+ Read more"
+  }
+}
+
+// close modal view
+function closeModal() {
+  document.getElementById("modal").style.display="none";
+}
+
+// initialise projec tiles
+document.addEventListener("DOMContentLoaded", function() {
+  loadProjectTiles();
+});
+
+// modal controls (escape key, arrow keys)
+document.addEventListener("keydown", function(e) {
+  if (e.key == "Escape") { closeModal() }
+  if (e.key == "ArrowRight") { imageIndex++; updateImage() }
+  if (e.key == "ArrowLeft") { imageIndex--; updateImage() }
+})
+</script>
+
+</body>
+</html>
