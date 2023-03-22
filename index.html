@@ -301,7 +301,6 @@ footer {
   display: none;
 }
 
-.opacity:hover{opacity:0.60}
 
 #contact input, textarea {
   font: inherit;
@@ -343,7 +342,7 @@ footer {
 }
 
 .condensed_list li:hover {
-  background: rgba(200, 200, 200, 0.1);
+  background: rgba(200, 200, 200, 0.2);
 }
 
 #modal_container {
@@ -460,8 +459,8 @@ footer {
 
       <ul class="condensed_list">
         <li>Graphic UI/UX design, </li>
-        <li>Market research, </li>
-
+        <li>Market research & analysis, </li>
+        <li>Product costing - incl development, manufacturing and distribution</li>
       </ul>
 
     </div>
@@ -477,10 +476,13 @@ footer {
       We started SPEC to help other companies to create high value, smart products for the future.
     </p>
     <p>
-      Our passions is developing products that combine hardware and digital technologies; allowing seamless integration into a modern connected world.
+      Our passions is developing everyday products that combine hardware and digital technologies, allowing seamless integration into a modern connected world.
     </p>
     <p>
-      We are engineers and product designers. We have a network of manufacturers and industry experts to help accelerate your project.
+      We have experience designing and manufacturing in the food and beverage sector to create products that meet both functional and aesthetic requirements while ensuring optimal user experience and safety.
+    </p>
+    <p>
+      We are engineers and product designers with a broad skillset, we leverage these skills and knowledge to take a rough and ready approach to testing. We also have a network of manufacturers and industry experts working along side us to help accelerate your project.
     </p>
 
     <div class="collapsed" id="hidden_text">
@@ -488,52 +490,12 @@ footer {
       <p>
         <h3>Our values</h3>
         <ul>
-          <li>We strive to create better without adding unnecessary complexity.</li>
+          <li>We prioritize simplicity and efficiency in our pursuit of improvement.</li>
           <li>Keep exploring ideas</li>
           <li>Challenge traditions</li>
           <li>Keep moving forward</li>
         </ul>
       </p>
-
-      <div style="display: none">
-
-        <h2 id="design-engineering">Design &amp; Engineering</h2>
-        <p>We look beyond the progotype and merge the analytical engineering thinking with the human centered design process to create products that add value to our lives.</p>
-        <ul>
-          <li>Product Development</li>
-          <li>CAD & 3D Renders / Animations</li>
-          <li>Design validation</li>
-          <li>Technical drawings</li>
-          <li>Working prototypes &amp; mock- ups</li>
-          <li>Product testing</li>
-          <li>Design for manufacture</li>
-        </ul>
-        <h2 id="programming">Programming / IT</h2>
-        <p>We understand digital as much as physical.</p>
-        <ul>
-          <li>Software integrations</li>
-          <li>Web Apps</li>
-          <li>IOS/Android</li>
-          <li>Firmware</li>
-          <li>C/C++/Python</li>
-          <li>Data analysis</li>
-        </ul>
-        <h2 id="manufacturing">Manufacturing</h2>
-        <p>We are able to connect you with high quality manufacturers locally and off shore. We speak engineer.</p>
-        <ul>
-          <li>Supplier connection</li>
-          <li>Factory quality control &amp; inspections</li>
-          <li>Local manufacturing</li>
-          <li>Factory audits</li>
-        </ul>
-        <h2 id="market-research-design">Market Research</h2>
-        <p>We can give our customers confidence that their product ideas suitable for the market and able to manufactured to specification and price as agreed upon.</p>
-        <ul>
-          <li>Market analysis</li>
-          <li>Product costing - incl development, manufacturing and distribution</li>
-          <li>Prototyping and manufacturing assistance</li>
-        </ul>
-      </div>
     </div>
 
     <p onclick="read_more()"><a class="blue_text" id="read_more">+ Read more</a></p>
@@ -546,7 +508,7 @@ footer {
         <img src="images/imker.jpg" class="zoom" alt="Imker">
         <div class="container no_padding">
           <h3>Imker Swanepoel</h3>
-          <p class="opacity">Product Designer</p>
+          <p>Product Designer</p>
           <p>Business operations and design</p>
 
         </div>
@@ -555,7 +517,7 @@ footer {
         <img src="images/jono.jpg" class="zoom" alt="Jono">
         <div class="container no_padding">
           <h3>Jonathan Paul</h3>
-          <p class="opacity">Mechanical Engineer</p>
+          <p>Mechanical Engineer</p>
           <p>Technical lead and manufacturing</p>
         </div>
     </div>
@@ -592,7 +554,7 @@ footer {
       <div id="loader" class="hidden"></div>
     </div>
     <div class="center">
-      <p id="slide_caption" class="opacity"></p>
+      <p id="slide_caption"></p>
       <p id="slide_description"></p>
     </div>
   </div>
@@ -644,12 +606,12 @@ const projects = {
       {
         "type": "image",
         "url": "images/drill.jpg",
-        "description": "The brief was to build a device to test the feasibility of drilling horizontal bore holes using a portable, self propelled, rotary impact driven device. For if the design was promising, it could be developed into a low cost, portable trenchless drilling tool for installing optical fiber cables on residential properties."
+        "description": "An early prototype to test the feasibility of drilling horizontal bore holes using a portable, self propelled, rotary impact driven device. The target application was for installing optical fiber cables on residential properties."
       },
       {
         "type": "image",
         "url": "images/drill_04.jpg",
-        "description": "Most of the body was 3D printed from Titanium using a process called EBM (electron beam melting). The pricing was attractive for one off parts."
+        "description": "Most of the body was 3D printed from titanium using a process called EBM (electron beam melting)."
       },
       {
         "type": "image",
@@ -659,7 +621,7 @@ const projects = {
       {
         "type": "image",
         "url": "images/drill_02.jpg",
-        "description": "The internals are taken from a pneumatic impact driver."
+        "description": "The internals are taken from a pneumatic impact driver and modified."
       },
       {
         "type": "image",
@@ -684,7 +646,7 @@ const projects = {
       {
         "type": "image",
         "url": "images/drilldwg_01.jpg",
-        "description": "Machining drawing of housing"
+        "description": "Basic drawing of the housing. With 3D printing most of the features come out as desired, so only the machining operations are specified here"
       }
     ]
   },
@@ -748,12 +710,12 @@ const projects = {
       {
         "type": "image",
         "url": "images/converter.png",
-        "description": "A unit conversion web app. See the net slide."
+        "description": "A unit conversion web app created as part of an educational web platform. See the next slide."
       },
       {
         "type": "page",
         "url": "other/converter/converter.html",
-        "description": "This web app allows one to convert between a multitude of different units. It was created as part of an educational web platform."
+        "description": "This web app allows one to convert between a multitude of different units at the same time. "
       }
     ]
   }
