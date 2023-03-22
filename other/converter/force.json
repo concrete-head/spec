@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Dyne",
+    "namePlural": "Dynes",
+    "factor": 0.00001,
+    "symbol": "dyn",
+    "tags": ["CGS"]
+  },
+  {
+    "name": "Kilogram Force",
+    "namePlural": "Kilograms Force",
+    "factor": 9.80665,
+    "symbol": "kgf",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Kilonewton",
+    "namePlural": "Kilonewtons",
+    "factor": 1000,
+    "symbol": "kN",
+    "tags": ["Common"]
+  },
+  {
+    "name": "Kip",
+    "namePlural": "Kips",
+    "factor": 4448.222,
+    "symbol": "kip",
+    "tags": ["US"]
+  },
+  {
+    "name": "Meganewton",
+    "namePlural": "Meganewtons",
+    "factor": 1000000,
+    "symbol": "MN",
+    "tags": ["Common"]
+  },
+  {
+    "name": "Newton",
+    "namePlural": "Newtons",
+    "factor": 1,
+    "symbol": "N",
+    "tags": ["Common", "SI"]
+  },
+  {
+    "name": "Pound Force",
+    "namePlural": "Pounds Force",
+    "factor": 4.4482216152605,
+    "symbol": "lbf",
+    "tags": ["Imperial"]
+  },
+  {
+    "name": "Poundal",
+    "namePlural": "Poundals",
+    "factor": 0.138255,
+    "symbol": "pdl",
+    "tags": ["Imperial"]
+  },
+  {
+    "name": "Sthène",
+    "namePlural": "Sthène",
+    "factor": 1000,
+    "symbol": "sn",
+    "tags": ["Obsolete"]
+  },
+  {
+    "name": "Tonne Force",
+    "namePlural": "Tonnes Force",
+    "factor": 9806.65,
+    "symbol": "tf",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Tons Force (UK)",
+    "namePlural": "Tons Force (UK)",
+    "factor": 9964.01641818352,
+    "symbol": "tf",
+    "tags": ["UK"]
+  },
+  {
+    "name": "Tons Force (US)",
+    "namePlural": "tons force (US)",
+    "factor": 8896.443230521,
+    "symbol": "tf",
+    "tags": ["US"]
+  }
+]

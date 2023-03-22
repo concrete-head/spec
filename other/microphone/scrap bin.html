@@ -1,0 +1,161 @@
+<html>
+
+<body>
+
+
+
+//return an array of colours that is a linear mix between two colours 0 - 255
+function mixColours(r1, g1, b1, r2, g2, b2) {
+	
+	//calculate colour vector
+	v = [ (r2 - r1) / 255, (g2 - g1) / 255, (b2 - b1) / 255 ];
+	
+	var mix = [];
+
+  for (var i = 0; i < 256; i++) {
+	  //calculate 256 points along vector from colour 1 to colour 2
+  	r = Math.round(r + (v[0] * i)) * (i/255);
+  	g = Math.round(g + (v[1] * i)) * (i/255);
+  	b = Math.round(b + (v[2] * i)) * (i/255);
+  	
+  	mix.push("rgb(" + r + ", " + g + ", " + b + ")");
+  }
+  
+  return mix;
+  
+}
+
+//draw the colour scale on screen once for preview
+function drawColourScale() {
+  
+  for (var i = 0; i < colourScale.length; i++) {
+    
+    waterfall_ctx.fillStyle = colourScale[i];
+    waterfall_ctx.fillRect(i, 0, linearPixelWidth, waterfall_canvas.height);
+    
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+<canvas id="fplot_canvas"
+	width="600"
+	height="100"
+	style="border: 0px; padding: 0px">
+	Your browswer does not support canvas!
+</canvas>
+
+
+<canvas id="waterfall_canvas"
+	width="600"
+	height="600"
+	style="border: 0px; padding: 0px">
+	Your browswer does not support canvas!
+</canvas>
+
+
+
+<canvas id="scale_canvas"
+	width="600"
+	height="600"
+	style="border: 0px; padding: 0px; position: absolute; top:0px; left:0px">
+	Your browswer does not support canvas!
+</canvas>
+
+
+
+
+
+</body>
+
+
+</html>
+
+
+
+
+//draw frequency scale. called once after audio initialisation or on resize
+function drawGrid() {
+  
+  //clear canvas
+  grid_ctx.clearRect(0, 0, grid_canvas.width, grid_canvas.height)
+  
+  //draw horizontal axis
+  grid_ctx.beginPath()
+  grid_ctx.moveTo(0, fplot_canvas.height)
+  grid_ctx.strokeStyle = "white"
+  grid_ctx.fillStyle = "white"
+  grid_ctx.textAlign = "center"
+  grid_ctx.lineWidth = 1
+  grid_ctx.lineTo(grid_canvas.width, fplot_canvas.height)
+  grid_ctx.stroke()
+  
+  //draw scale divisions linear
+  if (mode == "linear") {
+    
+    for (var i = 0; i < maxFreq; i++) {
+      
+      //calculate frequency at each division
+      var freq = (i / scaleDivisions) * maxFreq
+      freq = Math.round(freq)
+      
+      grid_ctx.beginPath()
+      grid_ctx.moveTo(i * (grid_canvas.width/scaleDivisions), fplot_canvas.height-10)
+      grid_ctx.lineTo(i * (grid_canvas.width/scaleDivisions), fplot_canvas.height+5)
+      grid_ctx.stroke()
+      grid_ctx.fillText(freq, i * (grid_canvas.width/scaleDivisions), fplot_canvas.height + 15)
+    
+    
+    
+      //draw mark and write frequency below it
+      //grid_ctx.beginPath()
+      //grid_ctx.moveTo(i * (grid_canvas.width/scaleDivisions), fplot_canvas.height-10)
+      //grid_ctx.lineTo(i * (grid_canvas.width/scaleDivisions), fplot_canvas.height)
+      //grid_ctx.stroke()
+      //grid_ctx.fillText(freq, i * (grid_canvas.width/scaleDivisions), fplot_canvas.height + 10)
+    
+    }
+  
+  }
+    
+  //draw scale divisions log
+  //draw grid lines at 0, 10, 100, 1000, 10000 etc
+  if (mode == "log") {
+    
+    //magnitude is how many zeros after a 1 digit, e.g. mag 3 = 3000
+    var magnitude = 0
+    
+    //calculate hertz per bin
+    var hertzPerBin = maxFreq / binCount
+    
+    //increment in orders of magnitude plotting indicators
+    //find magnitude of fft output (when remainder after division equals itself)
+    //this tells us how big the scale should be
+    while (maxFreq % Math.pow(10, magnitude) != maxFreq) {
+
+      //find virtual bin number
+      magnitude = magnitude + 1
+      var freq = Math.pow(10, magnitude)
+      var binNumber = freq / hertzPerBin
+      
+      //draw mark and write frequency below it
+      grid_ctx.beginPath()
+      grid_ctx.moveTo(Math.log10(logFactor * (binNumber)) * logScale, fplot_canvas.height-10)
+      grid_ctx.lineTo(Math.log10(logFactor * (binNumber)) * logScale, fplot_canvas.height+5)
+      grid_ctx.stroke()
+      grid_ctx.fillText(shorthand(freq), Math.log10(logFactor * (binNumber)) * logScale, fplot_canvas.height + 15)
+
+    }
+    
+  }
+  
+}

@@ -1,0 +1,100 @@
+[
+  {
+    "name": "Arcminute",
+    "namePlural": "Arcminutes",
+    "factor": 0.000046296296296296294,
+    "symbol": "'",
+    "tags": ["Common", "Astronomy", "Cartograph", "Firearms"]
+  },
+  {
+    "name": "Arcsecond",
+    "namePlural": "Arcseconds",
+    "factor": 7.716049382716049e-7,
+    "symbol": "\"",
+    "tags": ["Common", "Astronomy", "Cartograph", "Firearms"]
+  },
+  {
+    "name": "Degree",
+    "namePlural": "Degrees",
+    "factor": 0.002777777777777778,
+    "symbol": "°",
+    "tags": ["Common", "Astronomy", "Cartograph", "Firearms"]
+  },
+  {
+    "name": "binary degree",
+    "namePlural": "binary degrees",
+    "factor": 0.00390625,
+    "symbol": "brad",
+    "tags": ["Mathematics"]
+  },
+  {
+    "name": "Gradian",
+    "namePlural": "Gradians",
+    "factor": 0.0025,
+    "symbol": "<sup>g</sup>",
+    "tags": ["Surveying"]
+  },
+  {
+    "name": "Mil (Nato)",
+    "namePlural": "Mils (Nato)",
+    "factor": 0.00015625,
+    "symbol": "mrad",
+    "tags": ["Firearms"]
+  },
+  {
+    "name": "Mil (Soviet Union)",
+    "namePlural": "Mils (Soviet Union)",
+    "factor": 0.00016666666666666666,
+    "symbol": "mrad",
+    "tags": ["Firearms"]
+  },
+  {
+    "name": "Mil (Sweden)",
+    "namePlural": "Mils (Sweden)",
+    "factor": 0.00015873015873015873,
+    "symbol": "mrad",
+    "tags": ["Firearms"]
+  },
+  {
+    "name": "Octant",
+    "namePlural": "Octants",
+    "factor": 0.125,
+    "symbol": "oct",
+    "tags": ["Geometry"]
+  },
+  {
+    "name": "Quadrant",
+    "namePlural": "Quadrants",
+    "factor": 0.25,
+    "symbol": "quad",
+    "tags": ["Geometry"]
+  },
+  {
+    "name": "Radian",
+    "namePlural": "Radians",
+    "factor": 6.283185307179586,
+    "symbol": "rad",
+    "tags": ["Common", "Geometry"]
+  },
+  {
+    "name": "Revolution",
+    "namePlural": "Revolutions",
+    "factor": 1,
+    "symbol": "rev",
+    "tags": ["Common", "Geometry"]
+  },
+  {
+    "name": "Sextants",
+    "namePlural": "Sextant",
+    "factor": 0.16666666666666666,
+    "symbol": "sex",
+    "tags": ["Astronomy", "Cartograph", "Firearms"]
+  },
+  {
+    "name": "Milliradian",
+    "namePlural": "Milliradians",
+    "factor": 0.006283185307179586,
+    "symbol": "mrad",
+    "tags": ["Common", "Astronomy", "Cartograph", "Firearms"]
+  }
+]

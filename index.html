@@ -225,6 +225,8 @@ header img {
   display: inline-block;
   width: 250px;
   padding: 0 10px;
+  height:325px;
+  overflow: hidden;
 }
 
 .project_tile img {
@@ -636,7 +638,7 @@ const projects = {
     ]
   },
   "drill": {
-    "title": "Portable Directional Drilling Prototype",
+    "title": "Prototype Directional Drilling Mole",
     "thumbnail": "images/drill.jpg",
     "slides": [
       {
@@ -687,7 +689,7 @@ const projects = {
     ]
   },
   "valve": {
-    "title": "Fermenter Valve",
+    "title": "Fermenter Dual Valve Tap",
     "thumbnail": "images/valve.jpg",
     "slides": [
       {
@@ -698,11 +700,65 @@ const projects = {
       {
         "type": "video",
         "url": "https://www.youtube.com/embed//F0fKZXP94uk",
-        "description": "Product video of the dual fermenter valve"
+        "description": "Product video of the dual valve tap"
+      }
+    ]
+  },
+  "cycloidal_gear": {
+    "title": "Cycloidal Gear Profile Calculator",
+    "thumbnail": "images/cycloidal_gear.png",
+    "slides": [
+      {
+        "type": "page",
+        "url": "other/cycloidal_gearbox/cycloidal_gear_profile_calculator.html",
+        "description": "This is an interactive cycloidal gear profile calculator created for an educational web platform. This form of gearbox is common in robotic and hobby applications for its compact size, minimal backlash, high reduction ratio and ease of manufacture using 3D printing."
+      },
+      {
+        "type": "image",
+        "url": "images/cycloid.svg",
+        "description": "Example output as an SVG."
+      },
+      {
+        "type": "image",
+        "url": "images/cycloidal_animation.gif",
+        "description": "Animated GIF"
+      },
+    ]
+  },
+  "fft": {
+    "title": "FFT Web App",
+    "thumbnail": "images/fft_waterfall_thumb.jpg",
+    "slides": [
+      {
+        "type": "image",
+        "url": "images/fft_waterfall.jpg",
+        "description": "View the next slide to view a live demo. Microphone permission required."
+      },
+      {
+        "type": "page",
+        "url": "other/microphone/microphone2.html",
+        "description": "This is an interactive Fast Fourier Transform (FFT) waterfall using your microphone as a source. This web app was created as part of an educational platform to teach the fundamentals of signal procesing."
+      }
+    ]
+  },
+  "unit_converter": {
+    "title": "Unit Converter",
+    "thumbnail": "images/converter.png",
+    "slides": [
+      {
+        "type": "image",
+        "url": "images/converter.png",
+        "description": "A unit conversion web app. See the net slide."
+      },
+      {
+        "type": "page",
+        "url": "other/converter/converter.html",
+        "description": "This web app allows one to convert between a multitude of different units. It was created as part of an educational web platform."
       }
     ]
   }
 };
+
 
 
 var currentProject = "";
@@ -765,7 +821,7 @@ function updateSlide() {
   };
 
   // video or other
-  if (projects[currentProject].slides[slideIndex].type == "video") {
+  if (projects[currentProject].slides[slideIndex].type !== "image") {
 
     var frame = document.getElementById("frame01");
     document.getElementById("img01").classList.add("hidden");
@@ -859,6 +915,7 @@ document.addEventListener("keydown", function(e) {
 // swipe functionality on modal
 var startx = 0;
 var dist = 0;
+const swipeThreshold = 20;
 
 document.getElementById("modal").addEventListener("touchstart", function(e) {
   //e.preventDefault();
@@ -874,11 +931,11 @@ document.getElementById("modal").addEventListener("touchmove", function(e){
 
 document.getElementById("modal").addEventListener("touchend", function(e){
   //e.preventDefault();
-	if (dist > 20) {
+	if (dist > swipeThreshold) {
 		slideIndex--;
     updateSlide();
 	}
-	else if (dist < -20) {
+	else if (dist < -swipeThreshold) {
 		slideIndex++;
     updateSlide();
 	}

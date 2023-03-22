@@ -1,0 +1,107 @@
+[
+  {
+    "name": "Dyne Centimeter",
+    "factor": 1e-7,
+    "namePlural": "Dyne Centimeters",
+    "symbol": "dyn.cm",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Dyne Meter",
+    "factor": 1e-5,
+    "namePlural": "Dyne Meters",
+    "symbol": "dyn.m",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Gram Force Centimeter",
+    "factor": 0.00009806649999787735,
+    "namePlural": "Gram Force Centimeters",
+    "symbol": "gf.cm",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Gram Force Meter",
+    "factor": 0.009806649999787736,
+    "namePlural": "Gram Force Meters",
+    "symbol": "gf.m",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Kilogram Force Centimeter",
+    "factor": 0.09806649999787735,
+    "namePlural": "Kilogram Force Centimeters",
+    "symbol": "kg.cm",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Kilogram Force Meter",
+    "factor": 9.806649999787735,
+    "namePlural": "Kilogram Force Meters",
+    "symbol": "kg.m",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Foot Pound",
+    "factor": 1.3558179483,
+    "namePlural": "Foot Pounds",
+    "symbol": "ft.lbf",
+    "tags": ["Common"]
+  },
+  {
+    "name": "Newton Centimeter",
+    "factor": 0.001,
+    "namePlural": "Newton Centimeters",
+    "symbol": "N.cm",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Newton Meter",
+    "factor": 1,
+    "namePlural": "Newton Meters",
+    "symbol": "Nm",
+    "tags": ["Common","SI"]
+  },
+  {
+    "name": "Ounce Force Inch",
+    "factor": 0.007061551999787342,
+    "namePlural": "Ounce Force Inch",
+    "symbol": "Ozf.in",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Ounce Force Foot",
+    "factor": 0.08473862399984165,
+    "namePlural": "Ounce Force Feet",
+    "symbol": "Ozf.ft",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Inch Pound",
+    "factor": 0.11298483333379118,
+    "namePlural": "Inch Pounds",
+    "symbol": "lbf.in",
+    "tags": ["Common","Imperial"]
+  },
+  {
+    "name": "Kilonewton Meter",
+    "factor": 1000,
+    "namePlural": "Kilonewton Meters",
+    "symbol": "KNm",
+    "tags": ["Engineering"]
+  },
+  {
+    "name": "Meganewton Meter",
+    "factor": 1000000,
+    "namePlural": "Meganewton Meters",
+    "symbol": "MNm",
+    "tags": ["Engineering"]
+  },
+  {
+    "name": "Millinewton Meter",
+    "factor": 0.001,
+    "namePlural": "Millinewton Meters",
+    "symbol": "mNm",
+    "tags": ["Other"]
+  }
+]

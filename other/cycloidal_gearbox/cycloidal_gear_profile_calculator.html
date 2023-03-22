@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+<h1>Cycloidal Gear Profile Generator</h1>
+<table id="table">
+	<tr>
+		<td>
+      <div style="position: relative; height: 500px">
+			<canvas width="500" height="500" id="ctx_static" style="position: absolute; top: 0px; left: 0px">Your browswer does not support canvas!</canvas><br>
+			<canvas width="500" height="500" id="ctx" style="position: absolute; top: 0px; left: 0px">Your browswer does not support canvas!</canvas>
+	    </div>
+			<button onclick="playPause()">Play/Pause</button>
+			<br>Speed<input type="range" id="speed_slider" max=1 min=-1 step=0.02 value=0.05>
+
+		</td>
+
+		<td>
+		  <strong>Parameters</strong>
+
+			<table id="parameter_table">
+			  <tr>
+			    <td>Roller PCD:</td>
+			    <td><input type="number" id="roller_pcd" step=0.1 onchange="getParameters()"></td>
+
+			 </tr>
+
+			 <tr>
+			   <td># of Rollers:</td>
+			   <td><input type="number" id="i" onchange="getParameters()"></td>
+			 </tr>
+
+			 <tr>
+			    <td>Roller diameters:</td>
+			    <td><input type="number" id="d_roller" step=0.1 onchange="getParameters()"></td>
+			</tr>
+
+			<tr>
+			  <td>Eccentricity:</td>
+			  <td><input type="number" id="ecc" step=0.1 onchange="getParameters()"></td>
+			</tr>
+
+			<tr>
+			  <td>Clearance:</td>
+			  <td><input type="number" id="clearance"	step=0.05 onchange="getParameters()"></td>
+			</tr>
+
+			<tr>
+			  <td>N Holes:</td>
+			  <td><input type="number" id="n_holes"	step=1 onchange="getParameters()"></td>
+			</tr>
+
+			<tr>
+			  <td>Hole Diameter:</td>
+			  <td><input type="number" id="hole_diameter"	step=0.05 onchange="getParameters()"></td>
+			</tr>
+
+			<tr>
+			  <td>Hole PCD:</td>
+			  <td><input type="number" id="hole_PCD"	step=0.05 onchange="getParameters()"></td>
+			</tr>
+
+			<tr>
+			  <td>Input Shaft Diameter:</td>
+			  <td><input type="number" id="input_shaft_diameter"	step=0.05 onchange="getParameters()"></td>
+			</tr>
+
+			<tr>
+			  <td>Resolution:</td>
+			  <td><input type="number" id="res" onchange="getParameters()"></td>
+			</tr>
+
+			<tr>
+			  <td>Scale:</td>
+			  <td><input type="number" id="scale" step=0.1 onchange="getParameters()"></td>
+			</tr>
+
+			<tr>
+			  <td>Gear Ratio:</td>
+			  <td><input type="number" id="ratio" disabled="true"></td>
+			</tr>
+
+
+			</table>
+			<a href id="save_json">Download Parameters as JSON</a><br>
+			Load Parameters JSON:<br><input type="file" id="input_file" accept=".json"/><br><br>
+			<a href id="save_obj">Download .obj</a> |
+			<a href id="save_dxf">Download .dxf</a><br>
+
+
+		</td>
+	</tr>
+
+</table>
+
+<script src="functions.js"></script>
+<script src="draw.js"></script>
+<script src="objects.js"></script>
+<script src="initialise.js"></script>
+<script src="events.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+	loadParameters(p)
+	getParameters()
+	playPause()
+});
+</script>
+</body>
+
+</html>

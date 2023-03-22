@@ -1,0 +1,456 @@
+[
+ {
+	"name": "Acre Foot",
+	"namePlural": "Acre Foot",
+	"factor": 1233.48183754752,
+	"symbol": "",
+	"tags": [
+	 "Other"
+	]
+ },
+ {
+	"name": "Barrel (oil)",
+	"namePlural": "Barrels (oil)",
+	"factor": 0.158987294928,
+	"symbol": "bbl",
+	"tags": [
+	 "Oil"
+	]
+ },
+ {
+	"name": "Bushel (UK)",
+	"namePlural": "Bushels (UK)",
+	"factor": 0.03636872,
+	"symbol": "",
+	"tags": [
+	 "UK",
+	 "Other"
+	]
+ },
+ {
+	"name": "Bushel (US)",
+	"namePlural": "Bushels (US)",
+	"factor": 0.03523907016688,
+	"symbol": "",
+	"tags": [
+	 "US",
+	 "Other"
+	]
+ },
+ {
+	"name": "Centiliter",
+	"namePlural": "Centiliters",
+	"factor": 1e-5,
+	"symbol": "cl",
+	"tags": [
+	 "Common"
+	]
+	
+	
+ },
+ {
+	"name": "Cubic Centimeter",
+	"namePlural": "Cubic Centimeters",
+	"factor": 1e-6,
+	"symbol": "cm<sup>3</sup>",
+	"tags": [
+	 "Common"
+	]
+ },
+ {
+	"name": "Cubic Decameter",
+	"namePlural": "Cubic Cecameters",
+	"factor": 1e3,
+	"symbol": "",
+	"tags": [
+	 ""
+	]
+	
+	
+ },
+ {
+	"name": "Cubic Decimeter",
+	"namePlural": "Cubic Decimeters",
+	"factor": 1e-3,
+	"symbol": "dm<sup>3</sup>",
+	"tags": [
+	 ""
+	]
+	
+	
+ },
+ {
+	"name": "Cubic Foot",
+	"namePlural": "Cubic Feet",
+	"factor": 0.028316846592,
+	"symbol": "ft<sup>3</sup>",
+	"tags": [
+	 "Common",
+	 "Imperial"
+	]
+	
+	
+ },
+ {
+	"name": "Cubic Inche",
+	"namePlural": "Cubic Inches",
+	"factor": 0.000016387064,
+	"symbol": "cu.in",
+	"tags": [
+	 "Common",
+	 "Imperial"
+	]
+	
+	
+ },
+ {
+	"name": "Cubic Kilometers",
+	"namePlural": "Cubic Kilometers",
+	"factor": 1e9,
+	"symbol": "km<sup>3</sup>",
+	"tags": [
+	 "Massive"
+	]
+	
+	
+ },
+ {
+	"name": "Cubic Meter",
+	"namePlural": "Cubic Meters",
+	"factor": 1,
+	"symbol": "m<sup>3</sup>",
+	"tags": [
+	 "Common",
+	 "SI"
+	]
+	
+	
+ },
+ {
+	"name": "Cubic Mile",
+	"namePlural": "Cubic miles",
+	"factor": 4168181825,
+	"symbol": "cu.mi",
+	"tags": [
+	 "Massive"
+	]
+	
+	
+ },
+ {
+	"name": "Cubic Millimeter",
+	"namePlural": "Cubic Millimeters",
+	"factor": 1e-9,
+	"symbol": "",
+	"tags": [
+	 ""
+	]
+	
+	
+ },
+ {
+	"name": "Cubic Yards",
+	"namePlural": "Cubic Yards",
+	"factor": 0.764554857984,
+	"symbol": "",
+	"tags": [
+	 "Other"
+	]
+	
+	
+ },
+ {
+	"name": "Cup",
+	"namePlural": "Cups",
+	"factor": 0.00023658823649999998,
+	"symbol": "cup",
+	"tags": [
+	 "Baking",
+	 "Common"
+	]
+	
+	
+ },
+ {
+	"name": "Deciliter",
+	"namePlural": "Deciliters",
+	"factor": 1e-4,
+	"symbol": "",
+	"tags": [
+	 "Common"
+	]
+	
+	
+ },
+ {
+	"name": "Dram (imperial)",
+	"namePlural": "Dram (imperial)",
+	"factor": 0.0000035516328124999998,
+	"symbol": "",
+	"tags": [
+	 "Imperial",
+	 "Other"
+	]
+	
+	
+ },
+ {
+	"name": "Dram (US)",
+	"namePlural": "dram (US)",
+	"factor": 0.0000036966911953124997,
+	"symbol": "",
+	"tags": [
+	 "US",
+	 "Other"
+	]
+	
+	
+ },
+ {
+	"name": "Fluid Ounce (imperial)",
+	"namePlural": "Fluid Ounces (imperial)",
+	"factor": 0.000028413062499999998,
+	"symbol": "fl oz",
+	"tags": [
+	 "Imperial"
+	]
+	
+	
+ },
+ {
+	"name": "Fluid Ounce (US)",
+	"namePlural": "Fluid Ounces (US)",
+	"factor": 0.000029573529562499998,
+	"symbol": "fl oz",
+	"tags": [
+	 "US"
+	]
+	
+	
+ },
+ {
+	"name": "Gallon (imperial)",
+	"namePlural": "Gallons (imperial)",
+	"factor": 0.00454609,
+	"symbol": "gal",
+	"tags": [
+	 "Common",
+	 "Imperial"
+	]
+	
+	
+ },
+ {
+	"name": "Gallon, liquid (US)",
+	"namePlural": "Gallons, liquid (US)",
+	"factor": 0.0037854117839999997,
+	"symbol": "gal",
+	"tags": [
+	 "US"
+	]
+	
+	
+ },
+ {
+	"name": "Gallons, dry (US)",
+	"namePlural": "Gallons, dry (US)",
+	"factor": 0.00440488377086,
+	"symbol": "",
+	"tags": [
+	 "US"
+	]
+	
+	
+ },
+ {
+	"name": "Gill (imperial)",
+	"namePlural": "Gill (imperial)",
+	"factor": 0.0001420653125,
+	"symbol": "gi",
+	"tags": [
+	 "Imperial"
+	]
+	
+	
+ },
+ {
+	"name": "Gill (US)",
+	"namePlural": "Gill (US)",
+	"factor": 0.00011829411824999999,
+	"symbol": "gi",
+	"tags": [
+	 "US"
+	]
+	
+	
+ },
+ {
+	"name": "Kiloliter",
+	"namePlural": "Kiloliters",
+	"factor": 1,
+	"symbol": "kl",
+	"tags": [
+	 ""
+	]
+	
+	
+ },
+ {
+	"name": "Liter",
+	"namePlural": "Liters",
+	"factor": 0.001,
+	"symbol": "L",
+	"tags": [
+	 "Common",
+	 "Baking"
+	]
+	
+	
+ },
+ {
+	"name": "Microliter",
+	"namePlural": "Microliters",
+	"factor": 1e-9,
+	"symbol": "µl",
+	"tags": [
+	 "Medicine"
+	]
+	
+	
+ },
+ {
+	"name": "Milliliter",
+	"namePlural": "Milliliters",
+	"factor": 1e-6,
+	"symbol": "ml",
+	"tags": [
+	 "Common",
+	 "Baking"
+	]
+	
+	
+ },
+ {
+	"name": "Nanoliter",
+	"namePlural": "Nanoliters",
+	"factor": 1e-12,
+	"symbol": "nl",
+	"tags": [
+	 "Medicine"
+	]
+	
+	
+ },
+ {
+	"name": "Picoliter",
+	"namePlural": "Picoliters",
+	"factor": 1e-15,
+	"symbol": "pl",
+	"tags": [
+	 "Other"
+	]
+	
+	
+ },
+ {
+	"name": "Pint (imperial)",
+	"namePlural": "Pints (imperial)",
+	"factor": 0.00056826125,
+	"symbol": "pt",
+	"tags": [
+	 "Common",
+	 "Beer",
+	 "Imperial"
+	]
+	
+	
+ },
+ {
+	"name": "Pint, dry (US)",
+	"namePlural": "Pints, dry (US)",
+	"factor": 0.0005506104713575,
+	"symbol": "",
+	"tags": [
+	 "US",
+	 "Dry"
+	]
+	
+	
+ },
+ {
+	"name": "Pint, liquid (US)",
+	"namePlural": "Pints, liquid (US)",
+	"factor": 0.00047317647299999996,
+	"symbol": "pt",
+	"tags": [
+	 "Beer",
+	 "Common",
+	 "US",
+	 "Liquid"
+	]
+	
+	
+ },
+ {
+	"name": "Quart (imperial)",
+	"namePlural": "Quarts (imperial)",
+	"factor": 0.0011365225,
+	"symbol": "qt",
+	"tags": [
+	 "Imperial",
+	 "Other"
+	]
+	
+	
+ },
+ {
+	"name": "Quart, dry (US)",
+	"namePlural": "Quarts, dry (US)",
+	"factor": 0.001101220942715,
+	"symbol": "",
+	"tags": [
+	 "US",
+	 "Other",
+	 "Dry"
+	]
+	
+	
+ },
+ {
+	"name": "Quart, liquid (US)",
+	"namePlural": "Quarts, liquid (US)",
+	"factor": 0.0009463529459999999,
+	"symbol": "qt",
+	"tags": [
+	 "US",
+	 "Other",
+	 "Liquid"
+	]
+	
+	
+ },
+ {
+	"name": "Table Spoon",
+	"namePlural": "Table Spoons",
+	"factor": 0.000014786764781249999,
+	"symbol": "tbs",
+	"tags": [
+	 "Baking",
+	 "Common"
+	]
+	
+	
+ },
+ {
+	"name": "Tea Spoon",
+	"namePlural": "Tea Spoons",
+	"factor": 0.00000492892159375,
+	"symbol": "tsp",
+	"tags": [
+	 "Baking",
+	 "Common"
+	]
+	
+	
+ }
+]

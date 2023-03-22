@@ -1,0 +1,13 @@
+{
+    "roller_pcd": 15,
+    "i": 6,
+    "roller_diameter": 4.5,
+    "ecc": 0.5,
+    "nHoles": 3,
+    "holeDiameter": 2,
+    "holePCD": 6,
+    "inputShaftDiameter": 2.5,
+    "scale": 20,
+    "clearance": 0,
+    "res": 1000
+}

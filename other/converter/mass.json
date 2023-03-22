@@ -1,0 +1,202 @@
+[
+  {
+    "name": "Carat (metric)",
+    "namePlural": "Carats (metric)",
+    "factor": 0.0002,
+    "symbol": "ct",
+    "tags": ["Gemstones & Pearls"]
+  },
+  {
+    "name": "Decagram",
+    "namePlural": "Decagrams",
+    "factor": 0.01,
+    "symbol": "dag",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Earth Mass",
+    "namePlural": "Earth Masses",
+    "factor": 5.972e+24,
+    "symbol": "M<sub>E</sub>",
+    "tags": ["Astronomy"]
+  },
+  {
+
+    "name": "Femtogram",
+    "namePlural": "Femtograms",
+    "factor": 1e-18,
+    "symbol": "fg",
+    "tags": ["Metric"]
+  },
+  {
+
+    "name": "Grain",
+    "namePlural": "Grains",
+    "factor": 0.00006479891,
+    "symbol": "gr",
+    "tags": ["Firearms"]
+  },
+  {
+
+    "name": "Grams",
+    "namePlural": "Grams",
+    "factor": 0.001,
+    "symbol": "g",
+    "tags": ["Common","Metric"]
+  },
+  {
+
+    "name": "Hectogram",
+    "namePlural": "Hectograms",
+    "factor": 0.1,
+    "symbol": "hg",
+    "tags": ["Metric"]
+  },
+  {
+
+    "name": "Hundredweight (long)",
+    "namePlural": "Hundredweights (long)",
+    "factor": 50.80234544,
+    "symbol": "cwt<sub>long</sub>",
+    "tags": ["Imperial"]
+  },
+  {
+
+    "name": "Hundredweight (short)",
+    "namePlural": "Hundredweights (short)",
+    "factor": 45.359237,
+    "symbol": "cwt<sub>short</sub>",
+    "tags": ["Imperial"]
+  },
+  {
+
+    "name": "Kilogram",
+    "namePlural": "Kilograms",
+    "factor": 1,
+    "symbol": "kg",
+    "tags": ["Metric", "SI", "Common"]
+  },
+  {
+
+    "name": "Kilotonne",
+    "namePlural": "Kilotonnes",
+    "factor": 1e6,
+    "symbol": "kt",
+    "tags": ["Metric", "Common"]
+  },
+  {
+
+    "name": "Megatonne",
+    "namePlural": "Megatonnes",
+    "factor": 1e9,
+    "symbol": "Mt",
+    "tags": ["Metric"]
+  },
+  {
+
+    "name": "Microgram",
+    "namePlural": "Micrograms",
+    "factor": 1e-9,
+    "symbol": "µg",
+    "tags": ["Metric","Medicing"]
+  },
+  {
+
+    "name": "Milligram",
+    "namePlural": "Milligrams",
+    "factor": 1e-6,
+    "symbol": "mg",
+    "tags": ["Medicine","Common","Metric"]
+  },
+  {
+
+    "name": "Nanogram",
+    "namePlural": "Nanograms",
+    "factor": 1e-12,
+    "symbol": "ng",
+    "tags": ["Metric"]
+  },
+  {
+
+    "name": "Ounce (US & UK)",
+    "namePlural": "Ounces (US & UK)",
+    "factor": 0.028349523125,
+    "symbol": "oz",
+    "tags": ["Imperial","Common"]
+  },
+  {
+
+    "name": "Ounce (troy)",
+    "namePlural": "Ounces (troy)",
+    "factor": 0.0311034768,
+    "symbol": "oz t",
+    "tags": ["Troy","Imperial"]
+  },
+  {
+
+    "name": "Picogram",
+    "namePlural": "Picograms",
+    "factor": 1e-15,
+    "symbol": "pg",
+    "tags": ["Metric"]
+  },
+  {
+
+    "name": "Pound (US & UK)",
+    "namePlural": "Pounds (US & UK)",
+    "factor": 0.45359237,
+    "symbol": "lbs",
+    "tags": ["Common","Imperial"]
+  },
+  {
+
+    "name": "Pound (troy)",
+    "namePlural": "Pounds (troy)",
+    "factor": 0.3732417216,
+    "symbol": "lb t",
+    "tags": ["Troy","Imperial"]
+  },
+  {
+    "name": "Solar Mass",
+    "namePlural": "Solar Masses",
+    "factor": 1.98847e+30,
+    "symbol": "M☉",
+    "tags": ["Astronomy"]
+  },
+  {
+    "name": "Slug (g-pounds)",
+    "namePlural": "Slugs (g-pounds)",
+    "factor": 14.593903,
+    "symbol": "slug",
+    "tags": ["Imperial"]
+  },
+  {
+    "name": "Stone",
+    "namePlural": "Stones",
+    "factor": 6.35029318,
+    "symbol": "st",
+    "tags": ["Common","Imperial"]
+  },
+  {
+    "name": "Ton (UK or long)",
+    "namePlural": "Tons (UK or long)",
+    "factor": 1016.0469088,
+    "symbol": "LT",
+    "tags": ["Common", "UK"]
+  },
+  {
+    "name": "Ton (US or short)",
+    "namePlural": "Ton (US or short)",
+    "factor": 907.18474,
+    "symbol": "ST",
+    "tags": ["US","Common"]
+  },
+  {
+    "name": "Tonne",
+    "namePlural": "Tonnes",
+    "factor": 1000,
+    "symbol": "t",
+    "tags": ["Metric","Common"]
+  }
+]
