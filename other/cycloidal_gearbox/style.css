@@ -1,27 +1,10 @@
 body {
   background-color: black;
-  color: black;
-  font-family: "Arial";
+  font-family: "sans-serif";
   text-align: center;
   margin:0;
   padding:0;
   opacity: 0.9;
-}
-
-
-h1 {
-  color: black;
-  background-color: white;
-  text-align: center;
-  font-size: 3em;
-}
-
-.textbox {
-  background-color: white;
-  padding: 5px;
-  margin: auto;
-  text-align: center;
-  border-radius: 5px;
 }
 
 input {
@@ -29,39 +12,13 @@ input {
   width: 50%;
 }
 
-
 canvas {
-  margin: 0;
-  border: 0;
   cursor: crosshair;
 }
-  
-table {
-  background-color: white;
+
+
+.container {
+  width: fit-content;
   margin: auto;
-  width: 95%;
-  text-align: center;
-}
-
-#parameter_table {
-  background: none;
-}
-
-footer {
-  font-size: 0.75em;
   background-color: white;
 }
-
-
-
-#logo {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 136px;
-  height: auto;
-}
-
-
-
-

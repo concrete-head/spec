@@ -1,36 +1,28 @@
-//draw on the static canvas, only called after calculate() to reduce drawing operations
-function drawStatic() {
-
-  //clear canvas
-  ctxStatic.clearRect(canvas.clientLeft-1, canvas.clientTop-1, canvas.clientWidth, canvas.clientHeight);
-
-	//draw rollers
-	if (drawRollers) {
-
-  	ctxStatic.fillStyle = rollerColour;
-  	for (var t = 0; t < (p.i); t++) {
-
-  		//calculate center of roller
-  		var centerRollerX = 0.5*p.roller_pcd * Math.cos(2*t*Math.PI/p.i);
-  		var centerRollerY = 0.5*p.roller_pcd * Math.sin(2*t*Math.PI/p.i);
-
-  		//draw circle at center
-  		ctxStatic.beginPath();
-  		ctxStatic.arc(width/2 + (centerRollerX*scale) , height/2 + (centerRollerY*scale), scale*p.roller_diameter*0.5, 0, 2*Math.PI);
-  		ctxStatic.fill();
-  		//ctxStatic.stroke();
-
-  	}
-
-	}
-
-}
-
-//draw on dynamic canvas
+//draw
 function draw() {
 
   //clear canvas
   ctx.clearRect(canvas.clientLeft-1, canvas.clientTop-1, canvas.clientWidth, canvas.clientHeight);
+
+  //draw rollers
+  if (drawRollers) {
+
+    ctx.fillStyle = rollerColour;
+    for (var t = 0; t < (p.i); t++) {
+
+      //calculate center of roller
+      var centerRollerX = 0.5*p.roller_pcd * Math.cos(2*t*Math.PI/p.i);
+      var centerRollerY = 0.5*p.roller_pcd * Math.sin(2*t*Math.PI/p.i);
+
+      //draw circle at center
+      ctx.beginPath();
+      ctx.arc(width/2 + (centerRollerX*scale) , height/2 + (centerRollerY*scale), scale*p.roller_diameter*0.5, 0, 2*Math.PI);
+      ctx.fill();
+      //ctx.stroke();
+
+    }
+
+  }
 
   //calculate center of cycloidal disk
   var centerDiskX = (width/2) - scale*p.ecc*Math.cos(phi);
@@ -69,7 +61,6 @@ function draw() {
 
   	}
   }
-
 
 	//draw output shaft
 	if (drawOutputShaft) {

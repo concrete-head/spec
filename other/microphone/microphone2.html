@@ -86,10 +86,10 @@ if (!navigator.mediaDevices.getUserMedia) {
 
 //get audio stream
 navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
-  
+
   //create audio source
   microphoneStream = audioContext.createMediaStreamSource(stream);
-  
+
   //setup analyser
   analyserNode = audioContext.createAnalyser();
   analyserNode.smoothingTimeConstant = 0;
@@ -99,15 +99,15 @@ navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
   hertzPerBin = maxFreq / binCount
   microphoneStream.connect(analyserNode);
   logFactor = 4096 / fftSize                      //correction factor for using different fft sizes
-  
+
   updateStats()
   resize()
-  
+
   audioContext.onstatechange = updateStats
-  
+
   //begin processing
   processAudio()
-  
+
 });
 
 
@@ -116,7 +116,7 @@ function processAudio() {
 
   //request new frame
   requestAnimationFrame(processAudio)
-  
+
   fftArray = new Uint8Array(binCount);
   analyserNode.getByteFrequencyData(fftArray);
 
@@ -124,42 +124,42 @@ function processAudio() {
   var peak = Math.max.apply(null, fftArray)
   peakIndex = fftArray.indexOf(peak)
   peakFrequency = binToFrequency(peakIndex)
-  
+
   // draw the spectrogram
   if (audioContext.state == "running") { draw(fftArray) }
-  
+
 
 }
 
 //suspend or resume audio stream
 function pause() {
-  
+
   if (audioContext.state == "suspended") { audioContext.resume() }
   else if (audioContext.state == "running") { audioContext.suspend() }
-  
+
 }
 
 
 //switch between linear and log mode
 function changeMode() {
-  
+
   if (mode == "linear") { mode = "log" }
   else if (mode == "log") { mode = "linear" }
   console.log("Mode changed: " + mode)
   drawGrid()
   updateStats()
-  
+
 }
 
 //change the fft size
 function changeFFT(size) {
-  
+
   fftSize = size
   analyserNode.fftSize = fftSize
   binCount = analyserNode.frequencyBinCount
   hertzPerBin = maxFreq / binCount
   logFactor = 4096 / fftSize
-  
+
   resize()
   drawGrid()
   updateStats()
@@ -169,9 +169,9 @@ function changeFFT(size) {
 
 //update stats window in corner
 function updateStats() {
-  
+
   statsElement.innerText = "Sample rate: " + sampleRate + " Hz" + "\n FFT Size: " + fftSize + "\n Mode: " + mode + "\n State: " + audioContext.state + "\nAccuracy: " + hertzPerBin + " Hz";
-  
+
 }
 
 //convert a frequency to a virtual bin number
@@ -183,39 +183,39 @@ function frequencyToBin(freq) {
 
 //convert a virtual bin number to a frequency
 function binToFrequency(bin) {
-  
+
   return hertzPerBin * bin
-  
+
 }
 
 //convert bin number to a pixel X coordinate on the plot
 function binToPixel(bin) {
-  
+
   //linear
   if (mode == "linear") { return bin * linearPixelWidth }
-  
+
   //log
   if (mode == "log") { return logFunction(bin) * logScale }
-  
+
 }
 
 //convert a pixel x coordinate to a frequency
 function pixelToFrequency(x) {
-  
+
   //linear
   if (mode == "linear") {
-    
+
     return binToFrequency(x / linearPixelWidth)
-    
+
   }
-  
+
   //log
   if (mode == "log") {
-    
+
     return binToFrequency(Math.pow(10, x / logScale) - 1) / logFactor
-    
+
   }
-  
+
 }
 
 
@@ -224,31 +224,31 @@ function abbreviate(n) {
 
   if (n >= 1000) { return (Math.round(n/1000) + "k") }
   if (n < 1000) { return n.toString() }
-  
+
 }
 
 
 //resize canvases and update scales
 function resize() {
-  
+
   //resize canvases
-  waterfall_canvas.height = window.innerHeight - fplot_canvas.height;
-  waterfall_canvas.width = window.innerWidth;
-  
-  fplot_canvas.width = window.innerWidth
-  
-  grid_canvas.width = window.innerWidth
-  grid_canvas.height = window.innerHeight
-  
-  cursor_canvas.width = window.innerWidth
-  cursor_canvas.height = window.innerHeight
-  
+  waterfall_canvas.height = document.body.clientHeight - fplot_canvas.height;
+  waterfall_canvas.width = document.body.clientWidth;
+
+  fplot_canvas.width = document.body.clientWidth
+
+  grid_canvas.width = document.body.clientWidth
+  grid_canvas.height = document.body.clientHeight
+
+  cursor_canvas.width = document.body.clientWidth
+  cursor_canvas.height = document.body.clientHeight
+
   //recalculate scales
   scaleY = fplot_canvas.height/255
   logScale = waterfall_canvas.width / logFunction(binCount)
   linearPixelWidth = waterfall_canvas.width / binCount
   calculateBands()
-  
+
   //redraw scale bars
   drawGrid()
 
@@ -256,53 +256,53 @@ function resize() {
 
 //log function with compensation to give same output for all fft sizes
 function logFunction(bin) {
-  
+
   return(Math.log10( (logFactor * bin) + 1) )
-  
+
 }
 
 
 //setup arrays logPixelWidth and logPixelPositions
 function calculateBands() {
-  
+
   logPixelWidth = []
   logPixelPositions = []
   logCenterFreqs = []
-  
+
   //set 1st position to half of hertzPerBin
   logPixelPositions[0] = -logFunction(0.5)
-  
+
   //calculate pixel positions
   for (var i = 1; i < binCount ; i++) {
-    
+
     logPixelPositions.push(logScale * logFunction(i) )
-    
+
   }
-  
+
   //calculate pixel sizes
   for (var i = 0; i < logPixelPositions.length; i++) {
-  
+
     logPixelWidth.push( logPixelPositions[i+1] - logPixelPositions[i] )
     logCenterFreqs.push(binToFrequency(i))
-  
+
   }
-  
+
 }
 
 
 //called onkeypress
 function keyPress(e) {
-  
+
   keyMap[e.keyCode] = e.type == 'keydown';
   if (keyMap[80] || keyMap [32]) { pause() }
-  
+
 }
 
 //called on mouse move
 function mouse(e) {
-  
+
   drawCursor(e.clientX, e.clientY, pixelToFrequency(e.clientX))
-  
+
 }
 
 

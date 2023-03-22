@@ -1,7 +1,6 @@
 // get canvas context
 var canvas = document.getElementById("ctx");
 var ctx = canvas.getContext("2d");
-var ctxStatic = document.getElementById("ctx_static").getContext("2d");
 
 //constants
 var width = canvas.width;
@@ -56,6 +55,13 @@ var crosshairColour = "rgba(255, 255, 255, 1)";
 var markerColour = "rgba(0, 0, 0, 1)";
 var holeColour = "rgba(255, 255, 255, 1)";
 
-var xmlhttp = new XMLHttpRequest();
-xmlhttp.open("GET", "dxf_format.txt");
-xmlhttp.send();
+
+
+
+
+const dxf = "999\r\nCreated by Cycloidal Gear Calculator\r\n0\r\nSECTION\r\n2\r\nHEADER\r\n9\r\n$ACADVER\r\n1\r\nAC1009\r\n9\r\n$INSBASE\r\n10\r\n0.0\r\n20\r\n0.0\r\n30\r\n0.0\r\n9\r\n$EXTMIN\r\n10\r\n0.0\r\n20\r\n0.0\r\n9\r\n$EXTMAX\r\n10\r\n1000.0\r\n20\r\n1000.0\r\n9\r\n$LINMIN\r\n10\r\n0.0\r\n20\r\n0.0\r\n9\r\n$LINMAX\r\n10\r\n1000.0\r\n20\r\n1000.0\r\n0\r\nENDSEC\r\n0\r\nSECTION\r\n2\r\nTABLES\r\n0\r\nTABLE\r\n2\r\nLTYPE\r\n70\r\n1\r\n0\r\nLTYPE\r\n2\r\nCONTINUOUS\r\n70\r\n64\r\n3\r\nSolid line\r\n72\r\n65\r\n73\r\n0\r\n40\r\n0.000000\r\n0\r\nENDTAB\r\n0\r\nTABLE\r\n2\r\nLAYER\r\n70\r\n6\r\n0\r\nLAYER\r\n2\r\n1\r\n70\r\n64\r\n62\r\n7\r\n6\r\nCONTINUOUS\r\n0\r\nENDTAB\r\n0\r\nTABLE\r\n2\r\nSTYLE\r\n70\r\n0\r\n0\r\nENDTAB\r\n0\r\nENDSEC\r\n0\r\nSECTION\r\n2\r\nBLOCKS\r\n0\r\nENDSEC\r\n0\r\nSECTION\r\n2\r\nENTITIES\r\n0\r\nLWPOLYLINE\r\n70\r\n1\r\n90<---SPLIT HERE--->0\r\nENDSEC\r\n0\r\nEOF"
+
+
+var temp = dxf.split("<---SPLIT HERE--->");
+dxfHeader = temp[0];
+dxfFooter = temp[1];
