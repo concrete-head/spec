@@ -127,7 +127,7 @@ header img {
   height:80px
 }
 
-.fade_in_animation { animation: fade_in 1.6s; }
+.fade_in_animation { animation: fade_in 0.6s; }
 
 .zoom { transition: transform .2s }
 
@@ -271,6 +271,7 @@ footer {
   cursor: pointer;
   opacity: 0.7;
   padding: 12px 24px!important;
+  z-index: 2;
 }
 
 .spec_button:hover{
@@ -580,8 +581,8 @@ footer {
 <!-- Modal for full size images on click-->
 <div id="modal" class="black">
   <span class="spec_button large_font black position_topright" onclick="closeModal()" title="Close Modal Image">×</span>
-  <span class="spec_button large_font black position_centerleft gallery_button" onclick="slideIndex--; updateSlide()" title="Previous Image"><</span>
-  <span class="spec_button large_font black position_centerright gallery_button" onclick="slideIndex++; updateSlide()" title="Next Image">></span>
+  <span class="spec_button large_font black position_centerleft" onclick="slideIndex--; updateSlide()" title="Previous Image"><</span>
+  <span class="spec_button large_font black position_centerright" onclick="slideIndex++; updateSlide()" title="Next Image">></span>
   <div id="modal_container" class="center">
     <div id="slide_container">
       <iframe id="frame01" class="fade_in_animation feature"></iframe>
@@ -611,8 +612,8 @@ footer {
 
 <!-- Footer -->
 <footer class="center container" style="color: white">
-  <p>This site does not use any cookies, we do not log your IP, perform browser fingerprinting or send your data to any 3rd parties. Enjoy a simpler web &#127759;</p>
-  <p>2023 spec.nz</p>
+  <p>This site does not use any cookies, log your IP, perform browser fingerprinting or send your data to any 3rd parties. Enjoy a simpler web &#127759;</p>
+  <p><span id="currentYear"></span></p>
 </footer>
 
 <script>
@@ -841,7 +842,10 @@ function closeModal() {
 }
 
 // initialise project tiles
-document.addEventListener("DOMContentLoaded", function() { initProjectTiles() });
+document.addEventListener("DOMContentLoaded", function() {
+  initProjectTiles();
+  document.getElementById("currentYear").innerText = new Date().getFullYear() + " spec.nz";
+});
 
 
 // modal controls (escape key, arrow keys)
@@ -850,6 +854,39 @@ document.addEventListener("keydown", function(e) {
   if (e.key == "ArrowRight") { slideIndex++; updateSlide() }
   if (e.key == "ArrowLeft") { slideIndex--; updateSlide() }
 })
+
+
+// swipe functionality on modal
+var startx = 0;
+var dist = 0;
+
+document.getElementById("modal").addEventListener("touchstart", function(e) {
+  //e.preventDefault();
+	var touchobj = e.changedTouches[0]; // reference first touch point (ie: first finger)
+	startx = parseInt(touchobj.clientX); // get x position of touch point relative to left edge of browser
+}, false);
+
+document.getElementById("modal").addEventListener("touchmove", function(e){
+  //e.preventDefault();
+	var touchobj = e.changedTouches[0]; // reference first touch point for this event
+	dist = parseInt(touchobj.clientX) - startx;
+}, false);
+
+document.getElementById("modal").addEventListener("touchend", function(e){
+  //e.preventDefault();
+	if (dist > 20) {
+		slideIndex--;
+    updateSlide();
+	}
+	else if (dist < -20) {
+		slideIndex++;
+    updateSlide();
+	}
+  dist = 0;
+}, false);
+
+
+
 </script>
 
 </body>
