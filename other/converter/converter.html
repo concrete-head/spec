@@ -312,7 +312,7 @@ function drawFilterButtons() {
   //create button and add it to the wrapper
   for (var i = 0; i < allTags.length; i++) {
 
-    var button = document.createElement("button")
+    var button = document.createElement("span")
     button.innerText = allTags[i]
     button.classList.add("filters")
     button.id = "tag_" + allTags[i]
