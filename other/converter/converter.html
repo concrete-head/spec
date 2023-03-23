@@ -8,110 +8,186 @@
 
 <h1>Unit Converter</h1>
 
-<p>
-<button class="profiles" id="angle" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/angle.svg"><br>
-  Angle
-</button>
+<div id="icon_container">
 
-<button class="profiles" id="area" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/area.svg"><br>
-  Area
-</button>
-
-<button class="profiles" id="computing" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/computing.svg"><br>
-  Computing
-</button>
-
-<button class="profiles" id="density" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/density.svg"><br>
-  Density
-</button>
-
-<button class="profiles" id="electric_current" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/electric_current.svg"><br>
-  Electric Current
-</button>
-
-<button class="profiles" id="energy" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/energy.svg"><br>
-  Energy
-</button>
-
-<button class="profiles" id="force" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/force.svg"><br>
-  Force
-</button>
-
-<button class="profiles" id="fuel_economy" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/fuel_economy.svg"><br>
-  Fuel Economy
-</button>
-
-<button class="profiles" id="fuel_economy_electric" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/fuel_economy_electric.svg"><br>
-  Fuel Economy (Electric)
-</button>
-
-<button class="profiles" id="length" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/length.svg"><br>
-  Length
-</button>
-
-<button class="profiles" id="mass" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/mass.svg"><br>
-  Mass
-</button>
-
-<button class="profiles" id="other" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/other.svg"><br>
-  Other
-</button>
-
-<button class="profiles" id="power" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/power.svg"><br>
-  Power
-</button>
-
-<button class="profiles" id="pressure" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/pressure.svg"><br>
-  Pressure
-</button>
-
-<button class="profiles" id="speed" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/speed.svg"><br>
-  Speed
-</button>
-
-<button class="profiles" id="temperature" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/temperature.svg"><br>
-  Temperature
-</button>
-
-<button class="profiles" id="time" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/time.svg"><br>
-  Time
-</button>
-
-<button class="profiles" id="torque" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/torque.svg"><br>
-  Torque
-</button>
+  <div class="profiles" id="angle" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/angle.svg">
+      <p>
+        Angle
+      </p>
+    </div>
+  </div>
 
 
-<button class="profiles" id="volume" onclick="loadProfile(this.id)">
-  <img class="profiles_icon" src="icons/volume.svg"><br>
-  Volume
-</button>
+  <div class="profiles" id="area" onclick="loadProfile(this.id)">
+    <div class="button_content">
+    <img class="profiles_icon" src="icons/area.svg">
+    <p>
+      Area
+    </p>
+    </div>
+  </div>
 
-</p>
+  <div class="profiles" id="computing" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/computing.svg">
+      <p>
+        Computing
+      </p>
+    </div>
+  </div>
 
-<p>
-<span class="textbox"><strong>Filters:</strong></span>
-</p>
+  <div class="profiles" id="density" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/density.svg">
+      <p>
+      Density
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="electric_current" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/electric_current.svg">
+      <p>
+        Electric Current
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="energy" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/energy.svg">
+      <p>
+        Energy
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="force" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/force.svg">
+      <p>
+        Force
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="fuel_economy" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/fuel_economy.svg">
+      <p>
+      Fuel Economy
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="fuel_economy_electric" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/fuel_economy_electric.svg">
+      <p>
+      E-Fuel Economy
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="length" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/length.svg">
+      <p>
+        Length
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="mass" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/mass.svg">
+      <p>
+        Mass
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="other" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/other.svg">
+      <p>
+      Other
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="power" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/power.svg">
+      <p>
+      Power
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="pressure" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/pressure.svg">
+      <p>
+      Pressure
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="speed" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/speed.svg">
+      <p>
+      Speed
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="temperature" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/temperature.svg">
+      <p>
+      Temperature
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="time" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/time.svg">
+      <p>
+      Time
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="torque" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/torque.svg">
+      <p>
+      Torque
+      </p>
+    </div>
+  </div>
+
+
+  <div class="profiles" id="volume" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/volume.svg">
+      <p>
+        Volume
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="textbox"><strong>Filters:</strong>
 <span id="filter_wrapper">
-</span>
+</div>
 
 <table id="table">
   <tr>

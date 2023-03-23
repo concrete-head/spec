@@ -9,13 +9,10 @@ body {
   background-repeat: repeat;
 }
 
-
-.icons {
-	font-family: 'icons';
-	font-weight:normal;
-	font-style:normal;
-	font-size: 2em
+#icon_container {
+  margin: 20px;
 }
+
 
 .clipboard {
 	height: 1em;
@@ -26,16 +23,13 @@ h1 {
   color: black;
   background-color: white;
   text-align: center;
-  font-size: 3em;
-  margin: 0px;
 }
 
 .textbox {
   background-color: white;
   padding: 5px;
-  margin: auto;
+  margin: 20px;
   text-align: center;
-  border-radius: 5px;
 }
 
 input {
@@ -45,9 +39,8 @@ input {
 
 table {
   background-color: white;
-
+  border-collapse: collapse;
   margin: auto;
-  width: 90%;
   text-align: center;
 }
 
@@ -63,21 +56,13 @@ th {
 tr:hover {background-color:#f5f5f5;}
 
 .filters {
-  background: #FFFFFF;
-  color: black;
+  background: black;
+  color: white;
   border-color: black;
   border-radius: 5px;
   margin: 2px;
-  padding: 5px;
+  padding: 10px;
   border: 1px;
-}
-
-#logo {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 50px;
-  height: auto;
 }
 
 .filters_selected {
@@ -88,16 +73,25 @@ tr:hover {background-color:#f5f5f5;}
   background: #CCCCCC;
 }
 
+.button_content {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .profiles {
   background: #FFFFFF;
   color: black;
-  font-size: 1em;
   border-color: black;
   border: 1px;
   border-radius: 5px;
-  margin: 2px;
+  margin: 4px;
   padding: 5px;
+  width: 90px;
+  height:100px;
+  overflow: hidden;
+  display: inline-block;
 }
 
 .profiles_selected {
@@ -109,8 +103,7 @@ tr:hover {background-color:#f5f5f5;}
 }
 
 .profiles_icon {
-  height: 2em;
-  width: auto;
+  height: 50px;
 }
 
 .button_wrapper {
@@ -122,4 +115,3 @@ tr:hover {background-color:#f5f5f5;}
 button {
   outline: none;
 }
-
