@@ -72,10 +72,11 @@ var analyserNode = null
 
 
 //setup window events
-window.addEventListener("resize", resize, false)
-window.addEventListener('keydown', keyPress, true)
-window.addEventListener('keyup', keyPress, true)
-window.addEventListener('mousemove', mouse, true)
+window.addEventListener("resize", resize, false);
+window.addEventListener('keydown', keyPress, true);
+window.addEventListener('keyup', keyPress, true);
+window.addEventListener('mousemove', mouse, true);
+document.addEventListener("DOMContentLoaded", resize);
 
 calculateBands()
 
@@ -232,16 +233,19 @@ function abbreviate(n) {
 function resize() {
 
   //resize canvases
-  waterfall_canvas.height = document.body.clientHeight - fplot_canvas.height;
-  waterfall_canvas.width = document.body.clientWidth;
+  let width = document.body.clientWidth;
+  let height = window.innerHeight;
 
-  fplot_canvas.width = document.body.clientWidth
+  waterfall_canvas.height = height - fplot_canvas.height;
+  waterfall_canvas.width = width;
 
-  grid_canvas.width = document.body.clientWidth
-  grid_canvas.height = document.body.clientHeight
+  fplot_canvas.width = width
 
-  cursor_canvas.width = document.body.clientWidth
-  cursor_canvas.height = document.body.clientHeight
+  grid_canvas.width = width
+  grid_canvas.height = height
+
+  cursor_canvas.width = width
+  cursor_canvas.height = height
 
   //recalculate scales
   scaleY = fplot_canvas.height/255

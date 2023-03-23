@@ -355,6 +355,16 @@ footer {
 #company_name { margin: 1em }
 #company_logo { height: 1em }
 
+#frame_container {
+  max-width: 90vw;
+  max-height: 75vh;
+  border: 0;
+}
+
+#frame01 {
+  border: 0px;
+}
+
 </style>
 </head>
 <body onload="document.body.style.opacity='1'">
@@ -549,7 +559,10 @@ footer {
   <span class="spec_button large_font black position_centerright" onclick="slideIndex++; updateSlide()" title="Next Image">></span>
   <div id="modal_container" class="center">
     <div id="slide_container">
-      <iframe id="frame01" class="fade_in_animation feature"></iframe>
+      <div id="frame_container" class="">
+        <a href="">Open in new window</a><br>
+        <iframe id="frame01"></iframe>
+      </div>
       <img id="img01" src="" class="fade_in_animation feature">
       <div id="loader" class="hidden"></div>
     </div>
@@ -733,7 +746,7 @@ function preloadImage(src, callback) {
   // hide img01 while loading, display loader
   document.getElementById("img01").classList.add("hidden");
   document.getElementById("loader").classList.remove("hidden");
-  document.getElementById("frame01").classList.add("hidden");
+  document.getElementById("frame_container").classList.add("hidden");
   document.getElementById("frame01").src = "";
 
   var preloader = new Image();
@@ -785,12 +798,14 @@ function updateSlide() {
   // video or other
   if (projects[currentProject].slides[slideIndex].type !== "image") {
 
+    document.getElementById("frame_container").classList.remove("hidden");
+
     var frame = document.getElementById("frame01");
     document.getElementById("img01").classList.add("hidden");
-    frame.classList.remove("hidden");
     frame.width = window.innerWidth * 0.9;
     frame.height = frame.width * 0.56;
     frame.src = projects[currentProject].slides[slideIndex].url;
+    document.querySelector("#frame_container a").href = projects[currentProject].slides[slideIndex].url;
     document.getElementById("slide_description").innerText = projects[currentProject].slides[slideIndex].description;
   }
 
