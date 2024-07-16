@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SPEC</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="font-awesome.min.css">
+<style>
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+body, html {
+  background-color: rgb(22, 27, 82);
+  line-height: 1.8;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  opacity: 0;
+  transition: opacity 2s;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("Montserrat-Regular.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("Montserrat-Bold.woff") format("woff");
+  font-weight: bold;h
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("Montserrat-Italic.woff") format("woff");
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("Montserrat-BoldItalic.woff") format("woff");
+  font-weight: bold;
+  font-style: italic;
+}
+
+@media all and (max-width: 1050px) {
+  #company_name { display: none }
+}
+
+@media all and (max-width: 700px) {
+  .hide_on_mobile { display: none !important }
+  .show_on_mobile { display: inline-block !important }
+  .service_tile { padding: 0 !important }
+  .padded { padding: 0 !important }
+  .pad_left { padding-left: 0 !important }
+  #home h1 { font-size: 300% !important }
+}
+
+@keyframes animate_left {
+  from {left:-300px;opacity:0} to{left:0;opacity:1}
+}
+
+@keyframes fade_in {
+  from {opacity: 0} to {opacity:1}
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg) }
+  100% { transform: rotate(360deg) }
+}
+
+#loader {
+  border: 10px solid #f3f3f3;
+  border-top: 10px solid #3498db;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 1s linear infinite;
+}
+
+.pad_left {
+  padding-left: 100px;
+}
+
+.left { float: left }
+.right { float: right }
+.bold { font-weight: bolder }
+
+.white_background { background-color: white }
+.white_text { color: white }
+
+.container {
+  position: relative;
+  padding: 30px 16px;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+}
+
+header img {
+  width: 90%;
+}
+
+.blue_text {
+  color: rgb(63, 101, 253);
+}
+
+.gray_text {
+  color: rgb(197,197,207);
+}
+
+.service_tile {
+  max-width: 290px;
+  padding: 0 10px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.service_icon {
+  height:80px
+}
+
+.fade_in_animation { animation: fade_in 0.6s; }
+
+.zoom { transition: transform .2s }
+
+.zoom:hover {
+  transform: scale(1.1);
+}
+
+#modal {
+  z-index: 3;
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: black;
+}
+
+#modal .feature {
+  max-width: 90vw ;
+  max-height: 75vh;
+  border: 0;
+}
+
+
+.team_card {
+  max-width: 210px;
+  display: inline-block;
+}
+
+.team_card img { width:100% }
+
+.center {
+  text-align: center;
+}
+
+.large_font { font-size: 36px!important;
+}
+
+.black {
+  color:#ffffff !important;
+  background-color:#000000 !important
+}
+
+.sidenav_button {
+  display: inline-block;
+  padding: 16px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+  width: 100%;
+  color: white;
+}
+
+.sidenav_button:hover {
+  background-color: lightgray !important;
+  color: black;
+}
+
+.no_padding { padding: 0 }
+
+.team_card img {
+  border-radius: 50%;
+  padding:15px;
+}
+
+#home h1 {
+  font-family: worksans-semibold, Arial, Helvetica, sans-serif !important;
+  line-height: 1.2;
+  font-size: 350%;
+  margin-bottom: 0;
+}
+
+#home h2 {
+  text-decoration: underline 5px rgb(53,95,148);
+}
+
+.column {
+  max-width: 600px;
+  text-align: center;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.padded {
+  padding: 30px 50px;
+}
+
+.project_tile {
+  text-align: center;
+  display: inline-block;
+  width: 250px;
+  padding: 0 10px;
+  height:325px;
+  overflow: hidden;
+}
+
+.project_tile img {
+  width: 100%;
+}
+.project_tile:hover {
+  opacity: 0.6
+}
+
+a:hover {
+  opacity: 0.6
+}
+
+.sidebar {
+  height: 100%;
+  width: 200px;
+  background-color: #fff;
+  position: fixed!important;
+  z-index: 1;
+  overflow: auto;
+}
+
+.sidebar_animate {
+  position:relative;
+  animation:animate_left 0.4s
+}
+
+footer {
+  padding: 1.5em !important;
+}
+
+.hidden{ display:none }
+
+.button_rounded {
+  border-radius: 30px;
+  background-color: rgb(53,95,148);
+  padding: 12px 24px !important;
+  color: white;
+  border: 0;
+  text-decoration: none;
+}
+
+.spec_button {
+  cursor: pointer;
+  opacity: 0.7;
+  padding: 12px 24px!important;
+  z-index: 2;
+}
+
+.spec_button:hover{
+  color: #000000 !important;
+  background-color: #cccccc !important
+}
+
+#top_nav { padding: 10px }
+
+#top_nav a {
+  margin: 0 16px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background-color: inherit;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.collapsed {
+  max-height: 0;
+  transition: max-height 0.5s ease;
+  display: none;
+}
+
+
+#contact input, textarea {
+  font: inherit;
+  padding: 8px;
+  display: block;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  border: 1px solid #ccc!important;
+}
+
+.position_topright {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.position_centerright {
+  position: absolute;
+  top: 50%;
+  right: 0;
+}
+
+
+.position_centerleft {
+  position: absolute;
+  top: 50%;
+  left: 0;
+}
+
+.condensed_list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.condensed_list li {
+  display: inline-block;
+  border-radius: 7px;
+}
+
+.condensed_list li:hover {
+  background: rgba(200, 200, 200, 0.2);
+}
+
+#modal_container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#company_name { margin: 1em }
+#company_logo { height: 1em }
+
+#frame01 {
+  max-width: 90vw;
+  max-height: 75vh;
+  border: 0;
+  overflow-y: scroll;
+}
+
+
+</style>
+</head>
+<body onload="document.body.style.opacity='1'">
+
+<!-- Navbar -->
+<div id="top_nav" class="white_background">
+  <a href="http://spec.nz">
+    <img id="company_logo" src="spec_logo.svg"><span id="company_name">Smart Product Engineering Consultants</span>
+  </a>
+  <!-- Right-sided navbar links -->
+  <div class="right hide_on_mobile">
+    <a href="#services"><i class="fa fa-folder-open"></i> SERVICES</a>
+    <a href="#about"><i class="fa fa-user"></i> ABOUT</a>
+    <a href="#contact"><i class="fa fa-envelope"></i> CONTACT</a>
+  </div>
+
+  <a href="javascript:void(0)" class="right hidden show_on_mobile" onclick="nav_open()">
+    <i class="fa fa-bars"></i>
+  </a>
+</div>
+
+<!-- Sidebar on small screens when clicking the menu icon -->
+<nav class="sidebar sidebar_animate black hidden" id="mySidebar">
+  <a href="#services" onclick="nav_close()" class="sidenav_button">SERVICES</a>
+  <a href="#about" onclick="nav_close()" class="sidenav_button">ABOUT</a>
+  <a href="#projects" onclick="nav_close()" class="sidenav_button">PROJECTS</a>
+  <a href="#contact" onclick="nav_close()" class="sidenav_button">CONTACT</a>
+</nav>
+
+<!-- Header with image -->
+<header id="home" class="white_text container">
+  <div class="column pad_left" style="text-align: left">
+    <h1>Automating Data Insights</h1>
+    <h2 class="" style="">We providing smart automation solutions for your data.</h4>
+    <p><a href="#about" class="button_rounded">Learn more</a></p>
+  </div>
+
+  <div class="column">
+    <img id="hero_image" src="images/main_img.svg">
+  </div>
+
+</header>
+
+<!-- Services Section -->
+<div class="container white_background" id="services">
+  <h4 class="blue_text">SERVICES</h4>
+
+  <div class="center">
+    <div class="service_tile">
+      <p><img class="service_icon zoom" src="circle.svg"></p>
+      <h5>Real-Time Data Monitoring</h5>
+
+      <ul class="condensed_list">
+
+        <li>Provide continuous real-time monitoring of environmental sensor data, ensuring instant access to current conditions and trends. </li>
+      </ul>
+
+    </div>
+    <div class="service_tile">
+      <p><img class="service_icon zoom" src="circle.svg"></p>
+      <h5>Anomaly Detection and Alerts</h5>
+      <ul class="condensed_list">
+        <li>Implement advanced algorithms to detect anomalies in sensor data, automatically sending alerts to prevent potential issues.</li>
+      </ul>
+
+    </div>
+    <div class="service_tile">
+      <p><img class="service_icon zoom" src="circle.svg"></p>
+      <h5>Data Analysis and Reporting</h5>
+
+      <ul class="condensed_list">
+        <li>Offer comprehensive data analysis and reporting services, transforming raw data into actionable insights and detailed reports for informed decision-making.</li>
+      </ul>
+
+    </div>
+
+   
+  </div>
+</div>
+
+<!-- About Section -->
+
+<div class="container" style="background: aliceblue" id="about">
+  <div class="column padded" style="text-align: left">
+    <h4 class="bold center blue_text">ABOUT</h4>
+    <p>
+      Welcome to SPEC, where we specialize in innovative automation software solutions tailored to your specific needs. Our mission is to transform the way you interact with data, turning raw information into valuable insights and actionable outcomes.
+    </p>
+
+    <p>
+      We envision a future where data works seamlessly for you. By automating complex processes, we aim to help businesses across various industries make informed decisions, enhance efficiency, and achieve greater operational success.
+    </p>
+
+    <div class="collapsed" id="hidden_text">
+
+      <p>
+        <h3>Why choose us</h3>
+        <ul>
+          <li>Expertise: Our team has extensive knowledge and experience in automation software and environmental sensor data, ensuring you receive top-notch solutions tailored to your needs.</li>
+          <li>Innovation: We leverage the latest technologies and methodologies to provide you with the most efficient and effective automation solutions available.</li>
+          <li>Customer-Centric: Your success is our priority. We work closely with you to understand your challenges and deliver solutions that exceed your expectations.</li>
+        </ul>
+      </p>
+    </div>
+
+    <p onclick="read_more()"><a class="blue_text" id="read_more">+ Read more</a></p>
+
+  </div>
+
+
+
+
+
+<!-- Modal for full size images on click-->
+<div id="modal" class="black">
+  <span class="spec_button large_font black position_topright" onclick="closeModal()" title="Close Modal Image">×</span>
+  <span class="spec_button large_font black position_centerleft" onclick="slideIndex--; updateSlide()" title="Previous Image"><</span>
+  <span class="spec_button large_font black position_centerright" onclick="slideIndex++; updateSlide()" title="Next Image">></span>
+  <div id="modal_container" class="center">
+    <div id="slide_container">
+      <div id="frame_container" class="">
+        <a href="">Open in new window</a><br>
+        <iframe id="frame01"></iframe>
+      </div>
+      <img id="img01" src="" class="fade_in_animation feature">
+      <div id="loader" class="hidden"></div>
+    </div>
+    <div class="center">
+      <p id="slide_caption"></p>
+      <p id="slide_description"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Section -->
+<div class="container" style="background-color: aliceblue" id="contact">
+
+  <h4 class="blue_text">CONTACT</h4>
+  <p class="center ">Let's work together. Send us a message:</p>
+
+    <div >
+      <p><i class="fa fa-map-marker large_font"></i> New Zealand</p>
+      <p><i class="fa fa-phone large_font"></i> Phone: +64 210632297</p>
+      <p><i class="fa fa-envelope large_font"> </i> Email: <a href="mailto:enquiries@spec.nz?subject=SPEC Enquiry&body=Hello, ">enquiries@spec.nz</a></p>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="center container" style="color: black">
+  <p>This site does not use any cookies, log your IP, perform browser fingerprinting or send your data to any 3rd parties. Enjoy a simpler web &#127759;</p>
+  <p><span id="currentYear"></span></p>
+</footer>
+
+<script>
+
+const projects = {
+  "still": {
+    "title": "Air Still",
+    "thumbnail": "images/still_white.jpg",
+    "slides": [
+      {
+        "type": "image",
+        "url": "images/still_white.jpg",
+        "description": "This is a design for a new smart air distiller. Unlike a traditional small air still, this has an advanced controller and sensors to provide better heating and air cooling performance while also helping the user make recipees. This still is able to make distilled water, hydrosol & essential oils and spirits like gin, rum etc. A very small and user friendly product for the crafter."
+      },
+      {
+        "type": "image",
+        "url": "images/still_black.jpg",
+        "description": "Product render in black"
+      }
+    ]
+  },
+  "drill": {
+    "title": "Prototype Directional Drilling Mole",
+    "thumbnail": "images/drill.jpg",
+    "slides": [
+      {
+        "type": "image",
+        "url": "images/drill.jpg",
+        "description": "An early prototype to test the feasibility of drilling horizontal bore holes using a portable, self propelled, rotary impact driven device. The target application was for installing optical fiber cables on residential properties."
+      },
+      {
+        "type": "image",
+        "url": "images/drill_04.jpg",
+        "description": "Most of the body was 3D printed from titanium using a process called EBM (electron beam melting)."
+      },
+      {
+        "type": "image",
+        "url": "images/drill_03.jpg",
+        "description": "The bottom face of the auger required a machining operation to face off the rough EBM surface. This PLA fixture was created to allow the machinist to easily hold onto the part"
+      },
+      {
+        "type": "image",
+        "url": "images/drill_02.jpg",
+        "description": "The internals are taken from a pneumatic impact driver and modified."
+      },
+      {
+        "type": "image",
+        "url": "images/drill_01.jpg",
+        "description": "This is how it fits together."
+      },
+      {
+        "type": "image",
+        "url": "images/drillcad_01.jpg",
+        "description": "CAD model in Solidworks"
+      },
+      {
+        "type": "image",
+        "url": "images/drillcad_02.jpg",
+        "description": "CAD model in Solidworks"
+      },
+      {
+        "type": "image",
+        "url": "images/drillcad_03.jpg",
+        "description": "Exploded view"
+      },
+      {
+        "type": "image",
+        "url": "images/drilldwg_01.jpg",
+        "description": "Basic drawing of the housing. With 3D printing most of the features come out as desired, so only the machining operations are specified here"
+      }
+    ]
+  },
+  "valve": {
+    "title": "Fermenter Dual Valve Tap",
+    "thumbnail": "images/valve.jpg",
+    "slides": [
+      {
+        "type": "image",
+        "url": "images/valve.jpg",
+        "description": "This is a first of its kind valve used on fermenting vessels. It separates the good liquid from the waste material in the fermenter through a dual functional valve system. Before this design a fermenter would need to have two valves, this designed simplified that design into one product."
+      },
+      {
+        "type": "video",
+        "url": "https://www.youtube.com/embed//F0fKZXP94uk",
+        "description": "Product video of the dual valve tap"
+      }
+    ]
+  },
+  "cycloidal_gear": {
+    "title": "Cycloidal Gear Profile Calculator",
+    "thumbnail": "images/cycloidal_gear.png",
+    "slides": [
+      {
+        "type": "page",
+        "url": "other/cycloidal_gearbox/cycloidal_gear_profile_calculator.html",
+        "description": "This is an interactive cycloidal gear profile calculator created for an educational web platform. This form of gearbox is common in robotic and hobby applications for its compact size, minimal backlash, high reduction ratio and ease of manufacture using 3D printing."
+      },
+      {
+        "type": "image",
+        "url": "images/cycloid.svg",
+        "description": "Example output as an SVG."
+      },
+      {
+        "type": "image",
+        "url": "images/cycloidal_animation.gif",
+        "description": "Animated GIF"
+      },
+    ]
+  },
+  "fft": {
+    "title": "FFT Web App",
+    "thumbnail": "images/fft_waterfall_thumb.jpg",
+    "slides": [
+      {
+        "type": "image",
+        "url": "images/fft_waterfall.jpg",
+        "description": "View the next slide to view a live demo. Microphone permission required."
+      },
+      {
+        "type": "page",
+        "url": "other/microphone/microphone2.html",
+        "description": "This is an interactive Fast Fourier Transform (FFT) waterfall using your microphone as a source. This web app was created as part of an educational platform to teach the fundamentals of signal procesing."
+      }
+    ]
+  },
+  "unit_converter": {
+    "title": "Unit Converter",
+    "thumbnail": "images/converter.png",
+    "slides": [
+      {
+        "type": "image",
+        "url": "images/converter.png",
+        "description": "A unit conversion web app created as part of an educational web platform. See the next slide."
+      },
+      {
+        "type": "page",
+        "url": "other/converter/converter.html",
+        "description": "This web app allows one to convert between a multitude of different units at the same time. "
+      }
+    ]
+  }
+};
+
+
+
+var currentProject = "";
+var slideIndex = 0;
+
+// function to preload images
+// display spinner while loading
+function preloadImage(src, callback) {
+
+  // hide img01 while loading, display loader
+  document.getElementById("img01").classList.add("hidden");
+  document.getElementById("loader").classList.remove("hidden");
+  document.getElementById("frame_container").classList.add("hidden");
+  document.getElementById("frame01").src = "";
+
+  var preloader = new Image();
+
+  preloader.onload = function() {
+    document.getElementById("img01").classList.remove("hidden");
+    document.getElementById("loader").classList.add("hidden")
+    callback();
+    preloader.onload=function() {};
+  }
+  preloader.src = src;
+}
+
+  // load project into modal
+function openProject(projectName) {
+  currentProject = projectName;
+  slideIndex = 0;
+  document.getElementById("modal").style.display = "block";
+
+  updateSlide();
+
+}
+
+// update the modal slide and caption
+function updateSlide() {
+  // if modal is hidden, do nothing
+  if (document.getElementById("modal").style.display !== "block") { return }
+
+  var totalSlides = projects[currentProject].slides.length;
+  if (slideIndex > (totalSlides-1)) { slideIndex = 0 };
+  if (slideIndex < 0) { slideIndex = totalSlides - 1 };
+
+  // clear caption and description
+  document.getElementById("slide_caption").innerText = "";
+  document.getElementById("slide_description").innerText = "";
+
+  // images
+  if (projects[currentProject].slides[slideIndex].type == "image") {
+
+    preloadImage(projects[currentProject].slides[slideIndex].url, function() {
+
+      document.getElementById("img01").src = projects[currentProject].slides[slideIndex].url;
+      document.getElementById("slide_description").innerText = projects[currentProject].slides[slideIndex].description;
+
+    });
+
+  };
+
+  // video or other
+  if (projects[currentProject].slides[slideIndex].type !== "image") {
+
+    document.getElementById("frame_container").classList.remove("hidden");
+
+    var frame = document.getElementById("frame01");
+    document.getElementById("img01").classList.add("hidden");
+    frame.width = window.innerWidth * 0.9;
+    frame.height = frame.width * 0.56;
+    frame.src = projects[currentProject].slides[slideIndex].url;
+    document.querySelector("#frame_container a").href = projects[currentProject].slides[slideIndex].url;
+    document.getElementById("slide_description").innerText = projects[currentProject].slides[slideIndex].description;
+  }
+
+}
+
+
+// initialise project tiles
+function initProjectTiles() {
+  Object.keys(projects).forEach(function(project) {
+    var container = document.createElement("div");
+    container.classList.add("project_tile");
+    container.onclick = function() { openProject(project) }
+
+    var p = document.createElement("p");
+    container.appendChild(p);
+
+    var img = document.createElement("img");
+    img.classList.add("zoom");
+    p.appendChild(img);
+    img.src = projects[project].thumbnail;
+
+    var p2 = document.createElement("p");
+    container.appendChild(p2);
+    p2.innerText = projects[project].title;
+    p2.classList.add("center");
+
+    document.getElementById("project_tiles").appendChild(container);
+  })
+
+}
+
+// Toggle between showing and hiding the sidebar when clicking the menu icon
+var mySidebar = document.getElementById("mySidebar");
+
+function nav_open() {
+  if (mySidebar.style.display === "block") {
+    mySidebar.style.display = "none";
+  } else {
+    mySidebar.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function nav_close() {
+    mySidebar.style.display = "none";
+}
+
+// show or hide hidden text
+function read_more() {
+
+  var el = document.getElementById("hidden_text");
+  if (el.clientHeight == 0) {
+    el.style.maxHeight = "2000px";
+    el.style.display = "block";
+    document.getElementById("read_more").innerText = "- Read less";
+  } else {
+    el.style.maxHeight = "0px";
+    el.style.display = "none";
+    document.getElementById("read_more").innerText = "+ Read more"
+  }
+}
+
+// close modal view
+function closeModal() {
+  document.getElementById("modal").style.display="none";
+  document.getElementById("frame01").src = "";
+}
+
+// initialise project tiles
+document.addEventListener("DOMContentLoaded", function() {
+  initProjectTiles();
+  document.getElementById("currentYear").innerText = new Date().getFullYear() + " spec.nz";
+});
+
+
+// modal controls (escape key, arrow keys)
+document.addEventListener("keydown", function(e) {
+  if (e.key == "Escape") { closeModal() }
+  if (e.key == "ArrowRight") { slideIndex++; updateSlide() }
+  if (e.key == "ArrowLeft") { slideIndex--; updateSlide() }
+})
+
+
+// swipe functionality on modal
+var startx = 0;
+var dist = 0;
+const swipeThreshold = 20;
+
+document.getElementById("modal").addEventListener("touchstart", function(e) {
+  //e.preventDefault();
+	var touchobj = e.changedTouches[0]; // reference first touch point (ie: first finger)
+	startx = parseInt(touchobj.clientX); // get x position of touch point relative to left edge of browser
+}, false);
+
+document.getElementById("modal").addEventListener("touchmove", function(e){
+  //e.preventDefault();
+	var touchobj = e.changedTouches[0]; // reference first touch point for this event
+	dist = parseInt(touchobj.clientX) - startx;
+}, false);
+
+document.getElementById("modal").addEventListener("touchend", function(e){
+  //e.preventDefault();
+	if (dist > swipeThreshold) {
+		slideIndex--;
+    updateSlide();
+	}
+	else if (dist < -swipeThreshold) {
+		slideIndex++;
+    updateSlide();
+	}
+  dist = 0;
+}, false);
+
+
+
+</script>
+
+</body>
+</html>

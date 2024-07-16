@@ -1,0 +1,164 @@
+[
+  {
+    "name": "Century",
+    "namePlural": "Centuries",
+    "factor": 3153600000,
+    "symbol": "cent",
+    "tags": ["Common","Long"]
+  },
+  {
+    "name": "Day",
+    "namePlural": "Days",
+    "factor": 86400,
+    "symbol": "d",
+    "tags": ["Common","Calendar"]
+  },
+  {
+    "name": "Decade",
+    "namePlural": "Decades",
+    "factor": 315360000,
+    "symbol": "",
+    "tags": ["Common","Long"]
+  },
+  {
+    "name": "Femtosecond",
+    "namePlural": "Femtoseconds",
+    "factor": 1e-15,
+    "symbol": "fs",
+    "tags": ["Physics","Short"]
+  },
+  {
+    "name": "Fortnight",
+    "namePlural": "Fortnights",
+    "factor": 1209600,
+    "symbol": "",
+    "tags": ["Common","Calendar"]
+  },
+  {
+    "name": "Hour",
+    "namePlural": "hours",
+    "factor": 3600,
+    "symbol": "h",
+    "tags": ["Common","Clock"]
+  },
+  {
+    "name": "Microsecond",
+    "namePlural": "Microseconds",
+    "factor": 0.000001,
+    "symbol": "μs",
+    "tags": ["Physics","Short"]
+  },
+  {
+    "name": "Millennium",
+    "namePlural": "Millennia",
+    "factor": 31536000000,
+    "symbol": "",
+    "tags": ["Long"]
+  },
+  {
+    "name": "Millisecond",
+    "namePlural": "Milliseconds",
+    "factor": 0.001,
+    "symbol": "ms",
+    "tags": ["Common","Short"]
+  },
+  {
+    "name": "Minutes",
+    "namePlural": "Minutes",
+    "factor": 60,
+    "symbol": "min",
+    "tags": ["Clock","Common"]
+  },
+  {
+    "name": "Month (Common)",
+    "namePlural": "Months (Common)",
+    "factor": 2628000,
+    "symbol": "",
+    "tags": ["Common","Calendar"]
+  },
+  {
+    "name": "Month (Synodic)",
+    "namePlural": "Months (Synodic)",
+    "factor": 2551442.8896,
+    "symbol": "",
+    "tags": ["Other","Calendar"]
+  },
+  {
+    "name": "Nanosecond",
+    "namePlural": "Nanoseconds",
+    "factor": 1e-9,
+    "symbol": "ns",
+    "tags": ["Physcs","Short"]
+  },
+  {
+    "name": "Picosecond",
+    "namePlural": "Picoseconds",
+    "factor": 1e-12,
+    "symbol": "ps",
+    "tags": ["Physics","Short"]
+  },
+  {
+    "name": "Quarter (Common)",
+    "namePlural": "Quarters (Common)",
+    "factor": 7884000,
+    "symbol": "",
+    "tags": ["Long","Calendar"]
+  },
+  {
+    "name": "Second",
+    "namePlural": "Seconds",
+    "factor": 1,
+    "symbol": "s",
+    "tags": ["Common","Clock","SI"]
+  },
+  {
+    "name": "Shake",
+    "namePlural": "Shakes",
+    "factor": 1e-8,
+    "symbol": "",
+    "tags": ["Short","Other"]
+  },
+  {
+
+    "name": "Week",
+    "namePlural": "Weeks",
+    "factor": 604800,
+    "symbol": "",
+    "tags": ["Long","Calendar","Common"]
+  },
+  {
+    "name": "Years (Common)",
+    "namePlural": "Years (Common)",
+    "factor": 31536000,
+    "symbol": "y",
+    "tags": ["Long","Common","Calendar"]
+  },
+  {
+    "name": "Year (Average Gregorian)",
+    "namePlural": "Years (Average Gregorian)",
+    "factor": 31556952,
+    "symbol": "",
+    "tags": ["Long"]
+  },
+  {
+    "name": "Year (Julian)",
+    "namePlural": "Years (Julian)",
+    "factor": 31557600,
+    "symbol": "",
+    "tags": ["Long"]
+  },
+  {
+    "name": "Year (Leap)",
+    "namePlural": "Years (Leap)",
+    "factor": 31622400,
+    "symbol": "",
+    "tags": ["Long","Common","Calendar"]
+  },
+  {
+    "name": "Year (Tropical)",
+    "namePlural": "Years (Tropical)",
+    "factor": 31556925.216,
+    "symbol": "",
+    "tags": ["Long"]
+  }
+]

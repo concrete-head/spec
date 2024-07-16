@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Audio FFT</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<canvas id="fplot_canvas"></canvas>
+<canvas id="waterfall_canvas"></canvas>
+<canvas id="grid_canvas" style="position: absolute; top: 0px; left: 0px;"></canvas>
+<canvas id="cursor_canvas" style="position: absolute; top: 0px; left: 0px;"></canvas>
+
+<div id="stats">Sample Rate</div>
+
+<div class="button_wrapper">
+  <button class="buttons" onclick="pause()">Play/Pause</button>
+  <button class="buttons" onclick="changeMode()">Linear/Log</button>
+  <button class="buttons" onclick="showPeak = !showPeak">Show/Hide Peak</button>
+  <button class="buttons" onclick="changeFFT(256)">FFT 256</button>
+  <button class="buttons" onclick="changeFFT(512)">FFT 512</button>
+  <button class="buttons" onclick="changeFFT(1024)">FFT 1024</button>
+  <button class="buttons" onclick="changeFFT(2048)">FFT 2048</button>
+  <button class="buttons" onclick="changeFFT(4096)">FFT 4096</button>
+</div>
+
+<script src="colourScale.js"></script>
+<script src="draw.js"></script>
+<script type="text/javascript">
+
+//setup canvas's
+var waterfall_canvas = document.getElementById("waterfall_canvas")
+var fplot_canvas = document.getElementById("fplot_canvas")
+var grid_canvas = document.getElementById("grid_canvas")
+
+var waterfall_ctx = waterfall_canvas.getContext("2d")       //waterfall canvas - dynamic
+var fplot_ctx = fplot_canvas.getContext("2d")               //frequency plot canvas - dynamic
+var grid_ctx = grid_canvas.getContext("2d")                 //canvas for grid - mostly static
+var cursor_ctx = cursor_canvas.getContext("2d")             //for cursor - mostly static
+
+//global variables
+var keyMap = []
+var fftArray = []
+var colourScale = generateColourScale()
+var fftSize = 2048                                      //default fft size
+var maxFreq = null
+var binCount = null                                     //frequency bin count
+var hertzPerBin = null
+var linearPixelWidth = 5;                               //default pixel width
+var logPixelWidth = []
+var logPixelPositions = []
+var logCenterFreqs = []
+var scaleY = fplot_canvas.height/255                    //default y scale of frequency plot
+var logScale = 300                                      //default log scale
+var logFactor = 0                                       //correction factor for using different fft sizes
+var scaleDivisions = 10
+var mode = "log"                                        //linear or log
+var statsElement = document.getElementById("stats")
+var linearPlot = [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000, 20000, 21000, 22000, 23000, 24000]
+var logPlot = [0, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000, 10000, 20000, 25000]
+var peakFrequency = 0
+var peakIndex = 0
+var showPeak = true
+
+//initialise audio
+var audioContext = new AudioContext();
+var sampleRate = audioContext.sampleRate
+var microphoneStream = null
+var analyserNode = null
+
+
+//setup window events
+window.addEventListener("resize", resize, false);
+window.addEventListener('keydown', keyPress, true);
+window.addEventListener('keyup', keyPress, true);
+window.addEventListener('mousemove', mouse, true);
+document.addEventListener("DOMContentLoaded", resize);
+
+calculateBands()
+
+//browser compatiability
+if (!navigator.mediaDevices.getUserMedia) {
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+}
+
+//get audio stream
+navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
+
+  //create audio source
+  microphoneStream = audioContext.createMediaStreamSource(stream);
+
+  //setup analyser
+  analyserNode = audioContext.createAnalyser();
+  analyserNode.smoothingTimeConstant = 0;
+  analyserNode.fftSize = fftSize;
+  binCount = analyserNode.frequencyBinCount
+  maxFreq = sampleRate / 2
+  hertzPerBin = maxFreq / binCount
+  microphoneStream.connect(analyserNode);
+  logFactor = 4096 / fftSize                      //correction factor for using different fft sizes
+
+  updateStats()
+  resize()
+
+  audioContext.onstatechange = updateStats
+
+  //begin processing
+  processAudio()
+
+});
+
+
+//process microphone data
+function processAudio() {
+
+  //request new frame
+  requestAnimationFrame(processAudio)
+
+  fftArray = new Uint8Array(binCount);
+  analyserNode.getByteFrequencyData(fftArray);
+
+  //find peak frequency
+  var peak = Math.max.apply(null, fftArray)
+  peakIndex = fftArray.indexOf(peak)
+  peakFrequency = binToFrequency(peakIndex)
+
+  // draw the spectrogram
+  if (audioContext.state == "running") { draw(fftArray) }
+
+
+}
+
+//suspend or resume audio stream
+function pause() {
+
+  if (audioContext.state == "suspended") { audioContext.resume() }
+  else if (audioContext.state == "running") { audioContext.suspend() }
+
+}
+
+
+//switch between linear and log mode
+function changeMode() {
+
+  if (mode == "linear") { mode = "log" }
+  else if (mode == "log") { mode = "linear" }
+  console.log("Mode changed: " + mode)
+  drawGrid()
+  updateStats()
+
+}
+
+//change the fft size
+function changeFFT(size) {
+
+  fftSize = size
+  analyserNode.fftSize = fftSize
+  binCount = analyserNode.frequencyBinCount
+  hertzPerBin = maxFreq / binCount
+  logFactor = 4096 / fftSize
+
+  resize()
+  drawGrid()
+  updateStats()
+
+}
+
+
+//update stats window in corner
+function updateStats() {
+
+  statsElement.innerText = "Sample rate: " + sampleRate + " Hz" + "\n FFT Size: " + fftSize + "\n Mode: " + mode + "\n State: " + audioContext.state + "\nAccuracy: " + hertzPerBin + " Hz";
+
+}
+
+//convert a frequency to a virtual bin number
+function frequencyToBin(freq) {
+
+  return freq / hertzPerBin
+
+}
+
+//convert a virtual bin number to a frequency
+function binToFrequency(bin) {
+
+  return hertzPerBin * bin
+
+}
+
+//convert bin number to a pixel X coordinate on the plot
+function binToPixel(bin) {
+
+  //linear
+  if (mode == "linear") { return bin * linearPixelWidth }
+
+  //log
+  if (mode == "log") { return logFunction(bin) * logScale }
+
+}
+
+//convert a pixel x coordinate to a frequency
+function pixelToFrequency(x) {
+
+  //linear
+  if (mode == "linear") {
+
+    return binToFrequency(x / linearPixelWidth)
+
+  }
+
+  //log
+  if (mode == "log") {
+
+    return binToFrequency(Math.pow(10, x / logScale) - 1) / logFactor
+
+  }
+
+}
+
+
+//return an abbreviated version of numbers above 1000 with a "k"
+function abbreviate(n) {
+
+  if (n >= 1000) { return (Math.round(n/1000) + "k") }
+  if (n < 1000) { return n.toString() }
+
+}
+
+
+//resize canvases and update scales
+function resize() {
+
+  //resize canvases
+  let width = document.body.clientWidth;
+  let height = window.innerHeight;
+
+  waterfall_canvas.height = height - fplot_canvas.height;
+  waterfall_canvas.width = width;
+
+  fplot_canvas.width = width
+
+  grid_canvas.width = width
+  grid_canvas.height = height
+
+  cursor_canvas.width = width
+  cursor_canvas.height = height
+
+  //recalculate scales
+  scaleY = fplot_canvas.height/255
+  logScale = waterfall_canvas.width / logFunction(binCount)
+  linearPixelWidth = waterfall_canvas.width / binCount
+  calculateBands()
+
+  //redraw scale bars
+  drawGrid()
+
+}
+
+//log function with compensation to give same output for all fft sizes
+function logFunction(bin) {
+
+  return(Math.log10( (logFactor * bin) + 1) )
+
+}
+
+
+//setup arrays logPixelWidth and logPixelPositions
+function calculateBands() {
+
+  logPixelWidth = []
+  logPixelPositions = []
+  logCenterFreqs = []
+
+  //set 1st position to half of hertzPerBin
+  logPixelPositions[0] = -logFunction(0.5)
+
+  //calculate pixel positions
+  for (var i = 1; i < binCount ; i++) {
+
+    logPixelPositions.push(logScale * logFunction(i) )
+
+  }
+
+  //calculate pixel sizes
+  for (var i = 0; i < logPixelPositions.length; i++) {
+
+    logPixelWidth.push( logPixelPositions[i+1] - logPixelPositions[i] )
+    logCenterFreqs.push(binToFrequency(i))
+
+  }
+
+}
+
+
+//called onkeypress
+function keyPress(e) {
+
+  keyMap[e.keyCode] = e.type == 'keydown';
+  if (keyMap[80] || keyMap [32]) { pause() }
+
+}
+
+//called on mouse move
+function mouse(e) {
+
+  drawCursor(e.clientX, e.clientY, pixelToFrequency(e.clientX))
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

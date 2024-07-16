@@ -1,0 +1,62 @@
+[
+  {
+
+    "name": "Celsius",
+    "namePlural": "Celsius",
+    "factor": ["x + 273.15", "x - 273.15"],
+    "symbol": "°C",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Fahrenheit",
+    "namePlural": "Fahrenheit",
+    "factor": ["((x - 32) * 5/9) + 273.15", "((x - 273.15) * 9/5) + 32"],
+    "symbol": "°F",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Kelvin",
+    "namePlural": "Kelvin",
+    "factor": 1,
+    "symbol": "K",
+    "tags": ["Absolute", "SI", "Common"]
+  },
+  {
+
+    "name": "Rankine",
+    "namePlural": "Rankine",
+    "factor": ["5/9 * x", "9/5 * x"],
+    "symbol": "°R",
+    "tags": ["Absolute","Other"]
+  },
+  {
+    "name": "Réaumure",
+    "namePlural": "Réaumure",
+    "factor": ["5/4 * x + 273.15", "(x - 273.15) * 4/5"],
+    "symbol": "°Ré",
+    "tags": ["Absolute","Other"]
+  },
+  {
+    "name": "Newton",
+    "namePlural": "Newton",
+    "factor": ["x * 100/33 + 273.15", "(x - 273.15) * 33/100"],
+    "symbol": "°N",
+    "tags": ["Absolute","Other"]
+  },
+  {
+    "name": "Delisle",
+    "namePlural": "Delisle",
+    "factor": ["373.15 - (x * 2/3)", "(373.15 - x) * 3/2"],
+    "symbol": "°D",
+    "tags": ["Absolute","Other"]
+  },
+  {
+    "name": "Rømer",
+    "namePlural": "Rømer",
+    "factor": ["((x-7.5) * 40/21) + 273.15", "((x-273.15) * 21/40) + 7.5"],
+    "symbol": "°Rø",
+    "tags": ["Absolute","Other"]
+  }
+]

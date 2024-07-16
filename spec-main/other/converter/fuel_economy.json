@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Gallon (UK)/100 Mile",
+    "namePlural": "Gallons (UK)/100 Miles",
+    "factor": 0.000028248093633182216,
+    "symbol": "g/100mi",
+    "tags": ["Imperial","Units of Fuel per Fixed Distance"]
+  },
+  {
+    "name": "Gallon (US)/100 Mile",
+    "namePlural": "Gallons (US)/100 Miles",
+    "factor": 0.000023521458333333333,
+    "symbol": "g/100mi",
+    "tags": ["Imperial","Units of Fuel per Fixed Distance"]
+  },
+  {
+    "name": "Kilometer/Liter",
+    "namePlural": "Kilometers/Liter",
+    "factor": 1e-3,
+    "symbol": "km/l",
+    "tags": ["Metric", "Common","Units of Distance per Fixed Unit Fuel"]
+  },
+  {
+    "name": "Liter/100 Kilometer",
+    "namePlural": "Liter/100 Kilometer",
+    "factor": 1e-5,
+    "symbol": "l/100km",
+    "tags": ["Metric", "Common","Units of Fuel per Fixed Distance"]
+  },
+  {
+    "name": "Liter/Meter",
+    "namePlural": "Liters/Meter",
+    "factor": 1,
+    "symbol": "l/m",
+    "tags": ["Common", "Metric","Units of Fuel per Fixed Distance"]
+  },
+  {
+    "name": "Mile/Gallon (UK)",
+    "namePlural": "Miles/Gallon (UK)",
+    "factor": 2.8248093633182215859381213711925e-3,
+    "symbol": "mpg<sub>(UK)</sub>",
+    "tags": ["Imperial", "Common","Units of Distance per Fixed Unit Fuel"]
+  },
+  {
+    "name": "Mile/Gallon (US)",
+    "namePlural": "Miles/Gallon (US)",
+    "factor": 2.3521458333333333333333333333333e-3,
+    "symbol": "mpg<sub>(US)</sub>",
+    "tags": ["Imperial", "Common","Units of Distance per Fixed Unit Fuel"]
+  },
+  {
+    "name": "Mile/Liter",
+    "namePlural": "Miles/Liter",
+    "factor": 6.2137119223733396961743418436332e-4,
+    "symbol": "mi/l",
+    "tags": ["Imperial","Units of Distance per Fixed Unit Fuel"]
+  }
+]

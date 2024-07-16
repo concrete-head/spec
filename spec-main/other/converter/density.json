@@ -1,0 +1,170 @@
+[
+  {
+
+    "name": "Grains/Gallon (UK)",
+    "namePlural": "Grains/Gallon (UK)",
+    "factor": 0.000014253948343691203,
+    "symbol": "gr/gal",
+    "tags": ["Water Hardness", "UK"]
+  },
+  {
+
+    "name": "Grains/Gallon (US)",
+    "namePlural": "Grains/Gallon (US)",
+    "factor": 0.000017118011571775823,
+    "symbol": "gr/gal",
+    "tags": ["Water Hardness", "US"]
+  },
+  {
+
+    "name": "Grams/Cubic Centimeter",
+    "namePlural": "Grams/Cubic Centimeters",
+    "factor": 1,
+    "symbol": "g/cm<sup>3</sup>",
+    "tags": ["Common", "Metric"]
+  },
+  {
+
+    "name": "Grams/Liter",
+    "namePlural": "Grams/Liter",
+    "factor": 0.001,
+    "symbol": "g/l",
+    "tags": ["Common", "Metric"]
+  },
+  {
+
+    "name": "Grams/Milliliter",
+    "namePlural": "Grams/Milliliters",
+    "factor": 1,
+    "symbol": "g/ml",
+    "tags": ["Common", "Metric"]
+  },
+  {
+
+    "name": "Kilograms/Cubic Meters",
+    "namePlural": "kilograms/cubic meters",
+    "factor": 0.001,
+    "symbol": "kg/m<sup>3</sup>",
+    "tags": ["Common", "SI", "Metric"]
+  },
+  {
+
+    "name": "Kilograms/Liter",
+    "namePlural": "Kilograms/Liter",
+    "factor": 1,
+    "symbol": "kg/l",
+    "tags": ["Common", "Metric"]
+  },
+  {
+
+    "name": "Megagrams/Cubic Meter",
+    "namePlural": "Megagrams/Cubic Meter",
+    "factor": 1,
+    "symbol": "Mg/m³",
+    "tags": ["Metric"]
+  },
+  {
+
+    "name": "Milligrams/Milliliter",
+    "namePlural": "Milligrams/Milliliter",
+    "factor": 0.001,
+    "symbol": "mg/ml",
+    "tags": ["Metric"]
+  },
+  {
+
+    "name": "Milligrams/Liter",
+    "namePlural": "Milligrams/Liter",
+    "factor": 0.000001,
+    "symbol": "mg/l",
+    "tags": ["Common", "Metric"]
+  },
+  {
+
+    "name": "Ounces/Cubic Inch",
+    "namePlural": "Ounces/Cubic Inch",
+    "factor": 1.729994044,
+    "symbol": "oz/in³",
+    "tags": ["Imperial"]
+  },
+  {
+
+    "name": "Ounces/Gallon (UK)",
+    "namePlural": "Ounces/Gallon (UK)",
+    "factor": 0.006236023,
+    "symbol": "oz/gal",
+    "tags": ["Imperial", "UK"]
+  },
+  {
+
+    "name": "Ounces/Gallon (US)",
+    "namePlural": "Ounces/Gallon (US)",
+    "factor": 0.007489152,
+    "symbol": "oz/gal",
+    "tags": ["Imperial", "US"]
+  },
+  {
+
+    "name": "Pounds/Cubic Inch",
+    "namePlural": "Pounds/Cubic Inch",
+    "factor": 27.679904,
+    "symbol": "lb/in<sup>3</sup>",
+    "tags": ["Imperial"]
+  },
+  {
+
+    "name": "Pounds/Cubic Foot",
+    "namePlural": "Pounds/Cubic Foot",
+    "factor": 0.016018463,
+    "symbol": "lb/ft<sup>3</sup>",
+    "tags": ["Imperial"]
+  },
+  {
+
+    "name": "Pounds/Gallon (UK)",
+    "namePlural": "Pounds/Gallon (UK)",
+    "factor": 0.099776373,
+    "symbol": "lb/gal",
+    "tags": ["Imperial", "UK"]
+  },
+  {
+
+    "name": "Pounds/Gallon (US)",
+    "namePlural": "Pounds/Gallon (US)",
+    "factor": 0.119826427,
+    "symbol": "lb/gal",
+    "tags": ["Imperial", "US"]
+  },
+  {
+
+    "name": "Slugs/Cubic Foot",
+    "namePlural": "Slugs/Cubic Foot",
+    "factor": 0.51531788206,
+    "symbol": "slug/ft3<sup>3</sup>",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Tonnes/Cubic Meter",
+    "namePlural": "Tonnes/Cubic Meter",
+    "factor": 1,
+    "symbol": "Tonne/m<sup>3</sup>",
+    "tags": ["Metric"]
+  },
+  {
+
+    "name": "Tons (UK)/Cubic Yard",
+    "namePlural": "Tons (UK)/Cubic Yard",
+    "factor": 1.328939184,
+    "symbol": "Ton/m<sup>3</sup>",
+    "tags": ["Imperial", "UK"]
+  },
+  {
+
+    "name": "Tons (US)/Cubic Yard",
+    "namePlural": "Tons (US)/Cubic Yard",
+    "factor": 1.186552843,
+    "symbol": "Ton/yd<sup>3</sup>",
+    "tags": ["Imperial", "US"]
+  }
+]

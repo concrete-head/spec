@@ -1,0 +1,121 @@
+[
+  {
+    "name": "Acre",
+    "namePlural": "Acres",
+    "factor": 4046.8564224,
+    "symbol": "ac",
+    "tags": ["Common", "Land"]
+  },
+  {
+
+    "name": "Are",
+    "namePlural": "Ares",
+    "factor": 100,
+    "symbol": "are",
+    "tags": ["Land"]
+  },
+  {
+
+    "name": "Circular Inche",
+    "namePlural": "Circular Inches",
+    "factor": 0.000506707479,
+    "symbol": "",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Hectare",
+    "namePlural": "Hectares",
+    "factor": 10000,
+    "symbol": "ha",
+    "tags": ["Common", "Land", "SI"]
+  },
+  {
+
+    "name": "Hide",
+    "namePlural": "Hides",
+    "factor": 485000,
+    "symbol": "",
+    "tags": ["Land"]
+  },
+  {
+
+    "name": "Rood",
+    "namePlural": "Roods",
+    "factor": 1011.7141056,
+    "symbol": "",
+    "tags": ["Land"]
+  },
+  {
+
+    "name": "Square Centimeter",
+    "namePlural": "Square Centimeters",
+    "factor": 0.0001,
+    "symbol": "cm²",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Square Foot",
+    "namePlural": "Square Feet",
+    "factor": 0.09290304,
+    "symbol": "ft<sup>2</sup>",
+    "tags": ["Common", "Imperial"]
+  },
+  {
+
+    "name": "Square Inch",
+    "namePlural": "Square Inches",
+    "factor": 0.00064516,
+    "symbol": "sq inch",
+    "tags": ["Common", "Imperial"]
+  },
+  {
+
+    "name": "Square Kilometer",
+    "namePlural": "Square Kilometers",
+    "factor": 1000000,
+    "symbol": "km<sup>2</sup>",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Square Meter",
+    "namePlural": "Square Meters",
+    "factor": 1,
+    "symbol": "m<sup>2</sup>",
+    "tags": ["Common", "SI"]
+  },
+  {
+
+    "name": "Square Mile",
+    "namePlural": "Square Miles",
+    "factor": 2589988.110336,
+    "symbol": "sq mi",
+    "tags": ["Common", "Imperial"]
+  },
+  {
+
+    "name": "Square Millimeter",
+    "namePlural": "Square Millimeters",
+    "factor": 0.000001,
+    "symbol": "mm²",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Square Rod (or pole)",
+    "namePlural": "Square Rods (or poles)",
+    "factor": 25.29285264,
+    "symbol": "sq rod",
+    "tags": ["Imperial"]
+  },
+  {
+
+    "name": "Square Yard",
+    "namePlural": "Square Yards",
+    "factor": 0.83612736,
+    "symbol": "sq yd",
+    "tags": ["Imperial"]
+  }
+]

@@ -1,0 +1,215 @@
+[
+  {
+    "name": "BTU/Hour",
+    "namePlural": "BTU/Hour",
+    "factor": 0.2930711,
+    "symbol": "BTU/hr",
+    "tags": ["British"]
+  },
+  {
+
+    "name": "BTU/Minute",
+    "namePlural": "BTU/Minute",
+    "factor": 17.584267,
+    "symbol": "BTU/min",
+    "tags": ["British"]
+  },
+  {
+
+    "name": "BTU/Second",
+    "namePlural": "BTU/Second",
+    "factor": 1055.056,
+    "symbol": "BTU/s",
+    "tags": ["British"]
+  },
+  {
+
+    "name": "Calorie(th)/Hour",
+    "namePlural": "Calories(th)/Hour",
+    "factor": 0.001162222222222222,
+    "symbol": "cal/hr",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Calorie(th)/Minute",
+    "namePlural": "Calories(th)/Minute",
+    "factor": 0.06973333333333333,
+    "symbol": "cal/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Calorie(th)/Second",
+    "namePlural": "Calories(th)/Second",
+    "factor": 4.184,
+    "symbol": "cal/s",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Foot Pound-force/Minute",
+    "namePlural": "Foot Pounds-force/Minute",
+    "factor": 0.022597,
+    "symbol": "ft lbf/min",
+    "tags": ["Imperial"]
+  },
+  {
+
+    "name": "Foot Pound-force/Second",
+    "namePlural": "Foot Pounds-force/Second",
+    "factor": 1.35582,
+    "symbol": "ft lbf/s",
+    "tags": ["Imperial"]
+  },
+  {
+    "name": "Gigawatt",
+    "namePlural": "Gigawatts",
+    "factor": 1e9,
+    "symbol": "GW",
+    "tags": ["Metric"]
+  },
+  {
+    "name": "Milliwatt",
+    "namePlural": "Milliwatts",
+    "factor": 1e-3,
+    "symbol": "mW",
+    "tags": ["Metric","Common"]
+  },
+  {
+
+    "name": "Horsepower (electric)",
+    "namePlural": "Horsepowers (electric)",
+    "factor": 746,
+    "symbol": "hp",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Horsepower (international)",
+    "namePlural": "Horsepowers (international)",
+    "factor": 745.6998715822702,
+    "symbol": "hp",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Horsepower (water)",
+    "namePlural": "Horsepowers (water)",
+    "factor": 746.043,
+    "symbol": "hp",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Horsepower (metric)",
+    "namePlural": "Horsepowers (metric)",
+    "factor": 735.4988,
+    "symbol": "hp",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Watt",
+    "namePlural": "Watts",
+    "factor": 1,
+    "symbol": "W",
+    "tags": ["Metric", "Common", "SI"]
+  },
+  {
+
+    "name": "Joule/Hour",
+    "namePlural": "Joules/Hour",
+    "factor": 0.0002777777777777778,
+    "symbol": "J/hr",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Joule/Minute",
+    "namePlural": "Joules/Minute",
+    "factor": 0.016666666666666666,
+    "symbol": "J/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Joules/Second",
+    "namePlural": "Joules/Second",
+    "factor": 1,
+    "symbol": "J/s",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Kilocalorie(th)/Hour",
+    "namePlural": "Kilocalories(th)/Hour",
+    "factor": 1.1622222222222223,
+    "symbol": "kcal/hr",
+    "tags": [""]
+  },
+  {
+
+    "name": "Kilocalorie(th)/Minute",
+    "namePlural": "Kilocalories(th)/Minute",
+    "factor": 69.73333333333333,
+    "symbol": "kcal/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Kilogram-force Meter/Hour",
+    "namePlural": "Kilogram-force Meters/Hour",
+    "factor": 0.002724,
+    "symbol": "kgfm/hr",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Kilogram-force Meter/Minute",
+    "namePlural": "Kilogram-force Meters/Minute",
+    "factor": 0.163444,
+    "symbol": "kgfm/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Kilowatt",
+    "namePlural": "Kilowatts",
+    "factor": 1000,
+    "symbol": "kW",
+    "tags": ["Common","Metric"]
+  },
+  {
+
+    "name": "Megawatt",
+    "namePlural": "Megawatts",
+    "factor": 1e6,
+    "symbol": "MW",
+    "tags": ["Common","Metric"]
+  },
+  {
+
+    "name": "Terawatt",
+    "namePlural": "Terawatts",
+    "factor": 1e12,
+    "symbol": "TW",
+    "tags": ["Metric"]
+  },
+  {
+
+    "name": "Ton of Refrigeration",
+    "namePlural": "Ton of Refrigeration",
+    "factor": 3516.853,
+    "symbol": "TR",
+    "tags": ["Refrigeration"]
+  },
+  {
+
+    "name": "Petawatt",
+    "namePlural": "Petawatts",
+    "factor": 1e15,
+    "symbol": "PW",
+    "tags": ["Metric"]
+  }
+]

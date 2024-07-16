@@ -1,0 +1,178 @@
+[
+  {
+
+    "name": "Centimeter/Minute",
+    "namePlural": "Centimeters/Minute",
+    "factor": 0.00016666666666666666,
+    "symbol": "cm/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Centimeter/Second",
+    "namePlural": "Centimeters/Second",
+    "factor": 0.01,
+    "symbol": "cm/s",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Foot/Hour",
+    "namePlural": "Feet/Hour",
+    "factor": 0.00008466683600033866,
+    "symbol": "ft/hr",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Foot/Minute",
+    "namePlural": "Feet/Minute",
+    "factor": 0.00508,
+    "symbol": "ft/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Foot/Second",
+    "namePlural": "Feet/Second",
+    "factor": 0.3048,
+    "symbol": "ft/s",
+    "tags": ["Common","Imperial"]
+  },
+  {
+
+    "name": "Inch/Minute",
+    "namePlural": "Inches/Minute",
+    "factor": 0.0004233341800016934,
+    "symbol": "in/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Inch/Second",
+    "namePlural": "Inches/Second",
+    "factor": 0.0254,
+    "symbol": "in/s",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Kilometer/Hour",
+    "namePlural": "Kilometers/Hour",
+    "factor": 0.2777777777777778,
+    "symbol": "km/h",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Kilometer/Second",
+    "namePlural": "Kilometers/Second",
+    "factor": 1000,
+    "symbol": "km/s",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Knot",
+    "namePlural": "Knots",
+    "factor": 0.5144444444444445,
+    "symbol": "kn",
+    "tags": ["Common","Sailing","Aeronautics"]
+  },
+  {
+
+    "name": "Mach Number (Sea level)",
+    "namePlural": "Mach Number (Sea level)",
+    "factor": 340.2933,
+    "symbol": "mach",
+    "tags": ["Common","Aeronautics"]
+  },
+  {
+
+    "name": "Meter/Hour",
+    "namePlural": "Meters/Hour",
+    "factor": 0.0002777777777777778,
+    "symbol": "m/hr",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Meter/Minute",
+    "namePlural": "Meters/Minute",
+    "factor": 0.016666666666666666,
+    "symbol": "m/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Meter/Second",
+    "namePlural": "Meters/Second",
+    "factor": 1,
+    "symbol": "m/s",
+    "tags": ["Common","Physics"]
+  },
+  {
+
+    "name": "Mile/Hour",
+    "namePlural": "Miles/Hour",
+    "factor": 0.44704,
+    "symbol": "mph",
+    "tags": ["Common","Imperial"]
+  },
+  {
+
+    "name": "Mile/Minute",
+    "namePlural": "Miles/Minute",
+    "factor": 26.8224,
+    "symbol": "mi/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Mile/Second",
+    "namePlural": "Miles/Second",
+    "factor": 1609.344,
+    "symbol": "mi/s",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Speed of Light",
+    "namePlural": "Speed of Light",
+    "factor": 299790000,
+    "symbol": "",
+    "tags": ["Physics"]
+  },
+  {
+
+    "name": "Speed of Sound",
+    "namePlural": "Speed of Sound",
+    "factor": 343,
+    "symbol": "",
+    "tags": ["Physics"]
+  },
+  {
+
+    "name": "Yard/Hour",
+    "namePlural": "Yards/Hour",
+    "factor": 0.000254000508001016,
+    "symbol": "yd/hr",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Yard/Minute",
+    "namePlural": "Yards/Minute",
+    "factor": 0.01524,
+    "symbol": "yd/min",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Yard/Second",
+    "namePlural": "Yards/Second",
+    "factor": 0.9144,
+    "symbol": "yd/s",
+    "tags": ["Other"]
+  }
+]

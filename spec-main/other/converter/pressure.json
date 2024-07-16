@@ -1,0 +1,304 @@
+[
+  {
+    "name": "Atmosphere",
+    "namePlural": "Atmospheres",
+    "factor": 101325,
+    "symbol": "atm",
+    "tags": ["Common", "Air"]
+  },
+  {
+
+    "name": "Bar",
+    "namePlural": "Bars",
+    "factor": 100000,
+    "symbol": "bar",
+    "tags": ["Common", "Air", "Diving"]
+  },
+  {
+
+    "name": "Millibar",
+    "namePlural": "Millibars",
+    "factor": 100,
+    "symbol": "mbar",
+    "tags": ["Common", "Air", "Vacuum","Weather"]
+  },
+  {
+
+    "name": "Centimeter Mercury",
+    "namePlural": "Centimeters Mercury",
+    "factor": 1333.22,
+    "symbol": "cm.Hg",
+    "tags": ["Manometer"]
+  },
+  {
+
+    "name": "Centimeter Water",
+    "namePlural": "Centimeters Water",
+    "factor": 98.0665,
+    "symbol": "cm H<sub>2</sub>O",
+    "tags": ["Water","Manometer"]
+  },
+  {
+    "name": "Feet of Water",
+    "namePlural": "Feet of Water",
+    "factor": 2989.06692,
+    "symbol": "ft H<sub>2</sub>O",
+    "tags": ["Water"]
+  },
+  {
+    "name": "Feet of Salt Water",
+    "namePlural": "Feet of Salt Water",
+    "factor": 3064.30593138,
+    "symbol": "fsw",
+    "tags": ["Diving", "Water"]
+  },
+  {
+    "name": "Meter of Salt Water",
+    "namePlural": "Meters of Salt Water",
+    "factor": 10000,
+    "symbol": "msw",
+    "tags": ["Diving", "Water"]
+  },
+  {
+
+    "name": "Hectopascals",
+    "namePlural": "Hectopascals",
+    "factor": 100,
+    "symbol": "hPa",
+    "tags": ["Weather"]
+  },
+  {
+
+    "name": "Inches of Water",
+    "namePlural": "Inches of Water",
+    "factor": 249.08891,
+    "symbol": "in H<sub>2</sub>O",
+    "tags": ["Water","Manometer"]
+  },
+  {
+
+    "name": "Inches of Mercury",
+    "namePlural": "Inches of Mercury",
+    "factor": 3386.388,
+    "symbol": "in.Hg",
+    "tags": ["Mercury","Manometer"]
+  },
+  {
+
+    "name": "Kilogram-force/sq.Centimeter",
+    "namePlural": "Kilogram-forces/sq.Centimeter",
+    "factor": 98066.5,
+    "symbol": "kg/cm<sup>2</sup>",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Kilogram-forces/sq.meter",
+    "namePlural": "Kilogram-forces/sq.meter",
+    "factor": 9.80665,
+    "symbol": "kg/m<sup>2</sup>",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Kilonewton/sq.meter",
+    "namePlural": "kilonewtons/sq.meter",
+    "factor": 1000,
+    "symbol": "KN/m<sup>2</sup>",
+    "tags": ["Engineering"]
+  },
+  {
+
+    "name": "Kilonewton/sq.millimeter",
+    "namePlural": "Kilonewtons/sq.millimeter",
+    "factor": 1e9,
+    "symbol": "KN/mm<sup>2</sup>",
+    "tags": ["Engineering"]
+  },
+  {
+
+    "name": "Kilopascal",
+    "namePlural": "Kilopascals",
+    "factor": 1000,
+    "symbol": "kPa",
+    "tags": ["Common", "Engineering"]
+  },
+  {
+    "name": "Meganewton/sq.meter",
+    "namePlural": "Meganewtons/sq.meter",
+    "factor": 1e6,
+    "symbol": "MN/m<sup>2</sup>",
+    "tags": ["Engineering"]
+  },
+  {
+
+    "name": "Meganewtons/sq.millimeter",
+    "namePlural": "Meganewtons/sq.millimeter",
+    "factor": 1000000000000,
+    "symbol": "MN/mm<sup>2</sup>",
+    "tags": ["Engineering"]
+  },
+  {
+
+    "name": "Megapascals",
+    "namePlural": "Megapascals",
+    "factor": 1000000,
+    "symbol": "MPa",
+    "tags": ["Common","Engineering"]
+  },
+  {
+
+    "name": "Meters of Water",
+    "namePlural": "Meters of Water",
+    "factor": 9806.65,
+    "symbol": "m H2O",
+    "tags": ["Water"]
+  },
+  {
+
+    "name": "Millimeters of Mercury",
+    "namePlural": "Millimeters of Mercury",
+    "factor": 133.322,
+    "symbol": "mmHg",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Millimeters of Water",
+    "namePlural": "Millimeters of Water",
+    "factor": 9.80665,
+    "symbol": "mm H2O",
+    "tags": ["Water"]
+  },
+  {
+
+    "name": "Newtons/sq.centimeter",
+    "namePlural": "Newtons/sq.centimeter",
+    "factor": 10000,
+    "symbol": "N/cm<sup>2</sup>",
+    "tags": ["Engineering"]
+  },
+  {
+
+    "name": "Newtons/sq.meter",
+    "namePlural": "Newtons/sq.meter",
+    "factor": 1,
+    "symbol": "N/m<sup>2</sup>",
+    "tags": ["Engineering"]
+  },
+  {
+
+    "name": "Newtons/sq.millimeter",
+    "namePlural": "Newtons/sq.millimeter",
+    "factor": 1000000,
+    "symbol": "N/mm<sup>2</sup>",
+    "tags": [""]
+  },
+  {
+    "name": "Pascals",
+    "namePlural": "Pascals",
+    "factor": 1,
+    "symbol": "Pa",
+    "tags": ["Common", "SI", "Weather", "Engineering"]
+  },
+  {
+    "name": "Gigapascals",
+    "namePlural": "Gigapascals",
+    "factor": 1000000000,
+    "symbol": "GPa",
+    "tags": ["Common", "Engineering"]
+  },
+  {
+    "name": "Pounds-force/sq.foot",
+    "namePlural": "Pounds-force/sq.foot",
+    "factor": 47.88,
+    "symbol": "lbf.sqft",
+    "tags": ["Imperial"]
+  },
+  
+  {
+
+    "name": "Pounds-force/sq.inch",
+    "namePlural": "Pounds-force/sq.inch",
+    "factor": 6894.757,
+    "symbol": "psi",
+    "tags": ["Common", "Air", "Imperial"]
+  },
+  {
+
+    "name": "Kilopounds-force/sq.inch",
+    "namePlural": "Kilopounds-force/sq.inch",
+    "factor": 6894757.293178,
+    "symbol": "ksi",
+    "tags": ["Engineering", "Common", "Imperial"]
+  },
+  {
+
+    "name": "Poundals/sq.foot",
+    "namePlural": "Poundals/sq.foot",
+    "factor": 1.44816,
+    "symbol": "pdl/i",
+    "tags": ["Imperial"]
+  },
+  {
+
+    "name": "Tons (UK)-force/sq.foot",
+    "namePlural": "Tons (UK)-force/sq.foot",
+    "factor": 107251,
+    "symbol": "Ton/ft<sup>2</sup>",
+    "tags": ["UK"]
+  },
+  {
+    "name": "Tons (UK)-force/sq.inch",
+    "namePlural": "Tons (UK)-force/sq.inch",
+    "factor": 15444300,
+    "symbol": "Ton/in<sup>2</sup>",
+    "tags": ["UK"]
+  },
+  {
+
+    "name": "Tons (US)-force/sq.foot",
+    "namePlural": "Tons (US)-force/sq.foot",
+    "factor": 95760,
+    "symbol": "Ton/ft<sup>2</sup>",
+    "tags": ["US"]
+  },
+  {
+
+    "name": "Tons (US)-force/sq.inch",
+    "namePlural": "Tons (US)-force/sq.inch",
+    "factor": 13789500,
+    "symbol": "Ton/in<sup>2</sup>",
+    "tags": ["US"]
+  },
+  {
+
+    "name": "Tonnes-force/sq.cm",
+    "namePlural": "Tonnes-force/sq.cm",
+    "factor": 98066500,
+    "symbol": "Tonne/cm<sup>2</sup>",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Tonnes-force/sq.meter",
+    "namePlural": "Tonnes-force/sq.meter",
+    "factor": 9806.65,
+    "symbol": "Tonne/m<sup>2</sup>",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Torr",
+    "namePlural": "Torr",
+    "factor": 133.322,
+    "symbol": "Torr",
+    "tags": ["Common", "Vacuum"]
+  },
+  {
+    "name": "Millitorr",
+    "namePlural": "Millitorr",
+    "factor": 0.133322,
+    "symbol": "mTorr",
+    "tags": ["Common", "Vacuum"]
+  }
+]

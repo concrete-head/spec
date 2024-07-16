@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<h1>Unit Converter</h1>
+
+<div id="icon_container">
+
+  <div class="profiles" id="angle" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/angle.svg">
+      <p>
+        Angle
+      </p>
+    </div>
+  </div>
+
+
+  <div class="profiles" id="area" onclick="loadProfile(this.id)">
+    <div class="button_content">
+    <img class="profiles_icon" src="icons/area.svg">
+    <p>
+      Area
+    </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="computing" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/computing.svg">
+      <p>
+        Computing
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="density" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/density.svg">
+      <p>
+      Density
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="electric_current" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/electric_current.svg">
+      <p>
+        Electric Current
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="energy" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/energy.svg">
+      <p>
+        Energy
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="force" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/force.svg">
+      <p>
+        Force
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="fuel_economy" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/fuel_economy.svg">
+      <p>
+      Fuel Economy
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="fuel_economy_electric" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/fuel_economy_electric.svg">
+      <p>
+      E-Fuel Economy
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="length" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/length.svg">
+      <p>
+        Length
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="mass" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/mass.svg">
+      <p>
+        Mass
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="other" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/other.svg">
+      <p>
+      Other
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="power" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/power.svg">
+      <p>
+      Power
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="pressure" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/pressure.svg">
+      <p>
+      Pressure
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="speed" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/speed.svg">
+      <p>
+      Speed
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="temperature" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/temperature.svg">
+      <p>
+      Temperature
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="time" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/time.svg">
+      <p>
+      Time
+      </p>
+    </div>
+  </div>
+
+  <div class="profiles" id="torque" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/torque.svg">
+      <p>
+      Torque
+      </p>
+    </div>
+  </div>
+
+
+  <div class="profiles" id="volume" onclick="loadProfile(this.id)">
+    <div class="button_content">
+      <img class="profiles_icon" src="icons/volume.svg">
+      <p>
+        Volume
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div class="textbox"><strong>Filters:</strong>
+<span id="filter_wrapper">
+</div>
+
+<table id="table">
+  <tr>
+    <th>Name</th>
+    <th>Symbol</th>
+    <th>Value</th>
+  </tr>
+</table>
+
+
+<script>
+
+//array to store the unit objects from the current profile
+var units = []
+
+//array to store the filtered unit objects from the current profile
+var filteredUnits = []
+
+//table element where conversions are listed
+var table = document.getElementById("table")
+
+//last changed unit
+var changedUnit = null
+var changedUnitValue = 0
+
+//x used as input for evaluating equations
+var x = 0
+var valueInBaseUnits = 0
+
+//current filters
+var filters = []
+
+//all available tags
+var allTags = []
+
+//default quantity to load
+loadProfile(getHash())
+//loadProfile("length")
+
+
+//change or load a new quantity profile
+//called by button presses
+function loadProfile(quantity) {
+
+  //change selected button colour and reset all others
+  var buttonCollection = document.getElementsByClassName("profiles")
+  for (var i = 0; i < buttonCollection.length; i++) {
+
+    buttonCollection[i].classList.remove("profiles_selected")
+
+  }
+
+  document.getElementById(quantity).classList.add("profiles_selected")
+
+  //load json objects
+  var xmlhttp = new XMLHttpRequest()
+  var filename = quantity + ".json"
+  xmlhttp.open("GET", filename, true)
+
+  xmlhttp.onreadystatechange = function() {
+
+    //if valid response
+    if (this.readyState === 4 && this.status === 200) {
+
+    	//parse JSON data
+    	units = JSON.parse(xmlhttp.response)
+
+    	//sort alphabetically
+    	units.sort(compareUnitsAlphabetically)
+
+      //find all tags
+      getAllTags()
+      drawFilterButtons()
+      applyFilter()
+      changedUnitValue = 0
+      changedUnit = null
+
+      //populate the table
+      populateTable()
+
+    }
+
+  }
+
+  xmlhttp.send()
+
+}
+
+//find all unique tags in selected database, sort and populate allTags[] array
+function getAllTags() {
+
+  filters = []
+  allTags = []
+
+  //for every tag in every unit add it to allTags
+  for (var i = 0; i < units.length; i++) {
+
+    if (units[i].tags) {
+
+      for (var j = 0; j < units[i].tags.length; j++) {
+
+        var tag = units[i].tags[j]
+
+        //filter out empty or duplicate tags
+        if ((allTags.indexOf(tag) == -1) && (tag != "")) { allTags.push(tag) }
+
+      }
+    }
+
+  }
+
+  allTags.sort(compareTagsAlphabetically)
+
+}
+
+//draw the tag select buttons
+function drawFilterButtons() {
+
+  var wrapper = document.getElementById("filter_wrapper")
+  wrapper.innerHTML = ""
+
+  //create button and add it to the wrapper
+  for (var i = 0; i < allTags.length; i++) {
+
+    var button = document.createElement("span")
+    button.innerText = allTags[i]
+    button.classList.add("filters")
+    button.id = "tag_" + allTags[i]
+    button.addEventListener("click", switchFilter.bind(null, allTags[i]), false)
+  	wrapper.append(button)
+
+  }
+
+}
+
+//populate table with the html of each unit in filteredUnits
+function populateTable() {
+
+  //clear all table rows leaving just the header
+  table.innerHTML = table.rows[0].innerHTML
+
+  //draw table rows in filteredUnits
+	for (var i = 0; i < filteredUnits.length; i++) {
+
+	  //filteredUnits[i].html = createTableRow(filteredUnits[i])
+	  //table.append(filteredUnits[i].html)
+  	table.append(createTableRow(filteredUnits[i], i))
+
+	}
+
+}
+
+//construct html code for a table row
+//called whenever table changes
+function createTableRow(object, index) {
+
+  //create dummy table
+  var dummyTable = document.createElement("table")
+
+  //create row
+  var row = dummyTable.insertRow()
+
+	//1st cell contains name
+	row.insertCell().innerHTML = object.namePlural
+
+	//2nd cell contains symbol
+	row.insertCell().innerHTML = object.symbol
+
+	//3rd cell contains text field
+	//construct input field
+	var form = document.createElement("input")
+	form.value = null
+	form.id = index
+	form.type = "number"
+	form.addEventListener("change", updateFields, false)
+
+
+	//construct "copy to clipboard" button
+	var button = document.createElement("img")
+	button.src = "icons/clipboard.svg"
+	button.alt = "Copy to Clipboard"
+	button.classList.add("clipboard")
+	button.addEventListener("click", copyToClipboard, false)
+
+	//add to the cell
+	row.insertCell().append(form, button)
+
+	return row
+
+}
+
+
+//apply filter, search for units that match the current filters[] array
+function applyFilter() {
+
+  filteredUnits = []
+
+  //populate filteredUnits[] array with all units that have the tags
+  for (var i = 0; i < units.length; i++) {
+
+    if (hasTags(units[i])) { filteredUnits.push(units[i]) }
+
+  }
+
+}
+
+//switch filters on or off and update the filters[] array
+function switchFilter(tag) {
+
+  //add tag if no filters already exist
+  if (filters.length == 0) {
+
+    filters.push(tag)
+
+  } else {
+
+    //check if tag is already enabled
+    var index = filters.indexOf(tag)
+
+    //tag already exists
+    if (index > -1) {
+
+      //remove item
+      filters.splice(index, 1)
+
+    //tag doesnt exist
+    } else {
+
+      //add item
+      filters.push(tag)
+
+    }
+  }
+
+  //colour selected filters and reset all others
+  var buttonCollection = document.getElementsByClassName("filters")
+  for (var i = 0; i < buttonCollection.length; i++) {
+
+    buttonCollection[i].classList.remove("filters_selected")
+
+  }
+
+  for (var i = 0; i < filters.length; i++) {
+
+    document.getElementById("tag_" + filters[i]).classList.add("filters_selected")
+
+  }
+
+  applyFilter()
+
+  //draw the table
+  populateTable()
+  updateFields(-1)
+
+}
+
+//return true/false if the parsed unit contains any of the enabled filters
+function hasTags(object) {
+
+  //if no filters are enabled then show all
+  if (filters.length == 0) { return true; console.log("no filters enabled") }
+
+  //if object has no tag then hide
+  if (!object.tags) { return false }
+
+  for (var i = 0; i < filters.length; i++) {
+
+    if (object.tags.indexOf(filters[i]) > -1 ) { return true; }
+
+  }
+
+  return false
+
+}
+
+//compare function for sorting units alphabetically by name
+function compareUnitsAlphabetically(a,b) {
+
+  var nameA = a.name.toUpperCase()
+  var nameB = b.name.toUpperCase()
+
+  if (nameA < nameB)
+
+    return -1;
+
+  if (nameA > nameB)
+
+    return 1;
+
+  return 0;
+
+}
+
+//compare function for sorting filters alphabetically
+function compareTagsAlphabetically(a,b) {
+
+  var filterA = a.toUpperCase()
+  var filterB = b.toUpperCase()
+
+  if (filterA < filterB)
+
+    return -1;
+
+  if (filterA > filterB)
+
+    return 1;
+
+  return 0;
+}
+
+//make conversions and update all text values
+//i is the id of the changed element
+//if i==-1 then update all fields with valueInBaseUnits
+function updateFields(u) {
+
+  //if new value
+  if (u != -1) {
+
+    //update all elements except the one changed by the user
+    changedUnit = filteredUnits[u.target.id]
+    console.log("Changed unit: " + filteredUnits[u.target.id].name)
+
+    //calculate the valueInBaseUnits
+    changedUnitValue = Number(document.getElementById(u.target.id).value)
+    x = changedUnitValue
+    valueInBaseUnits = 0
+
+    //if factor is a formula
+    if (typeof changedUnit.factor == "object") {
+
+      //evaluate using x
+      valueInBaseUnits = eval(changedUnit.factor[0])
+
+    }
+
+    //if factor is a straight multiplier
+    if (typeof changedUnit.factor == "number") {
+
+      valueInBaseUnits = x * changedUnit.factor
+
+    }
+
+    console.log("Value in base units: " + valueInBaseUnits)
+
+  }
+
+  //update all other units
+  if (changedUnit != null) {
+
+    for (var i = 0; i < filteredUnits.length; i++) {
+
+  		//if factor is a formula
+  		if (typeof filteredUnits[i].factor == "object") {
+
+  		  x = valueInBaseUnits
+  		  //evaluate using x
+  		  document.getElementById(i).value = eval(filteredUnits[i].factor[1])
+
+  		}
+
+  		//if factor is a straight multiplier
+  		if (typeof filteredUnits[i].factor == "number") {
+
+  		  document.getElementById(i).value = valueInBaseUnits / filteredUnits[i].factor
+
+  		}
+
+  		if (filteredUnits[i].name == changedUnit.name) { document.getElementById(i).value = changedUnitValue }
+
+  	}
+
+  }
+
+}
+
+//copy selection to clipboard
+function copyToClipboard(u) {
+
+  //get context of textbox in same table cell
+  document.getElementById(u.target.parentElement.children[0].id).select()
+  document.execCommand("copy")
+
+}
+
+//check page anchor and load unit
+function getHash() {
+
+  if (window.location.hash) {
+
+    return(window.location.hash.replace("#", ""))
+
+  }
+
+  return "length"
+
+}
+
+</script>
+</body>
+</html>

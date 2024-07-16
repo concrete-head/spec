@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Kilometer/kWh",
+    "namePlural": "Kilometers/kWh",
+    "factor": 0.2777777777777778,
+    "symbol": "km/kWh",
+    "tags": ["Metric","Units of Distance per Fixed Unit Fuel"]
+  },
+  {
+    "name": "Mile/kWh",
+    "namePlural": "Miles/kWh",
+    "factor": 0.4470388888888889,
+    "symbol": "mi/kWh",
+    "tags": ["Imperial","Units of Distance per Fixed Unit Fuel"]
+  },
+  {
+    "name": "Kilowatt Hour/100 Mile",
+    "namePlural": "Kilowatt Hours/100 Miles",
+    "factor": 22.369418519393044,
+    "symbol": "kWh/100mi",
+    "tags": ["Imperial", "Units of Fuel per Fixed Distance"]
+  },
+  {
+    "name": "Kilowatt Hour/100 Kilometer",
+    "namePlural": "Kilowatt Hours/100 Kilometer",
+    "factor": 36,
+    "symbol": "kWh/100km",
+    "tags": ["Metric","Units of Fuel per Fixed Distance"]
+  },
+  {
+    "name": "Kilowatt Hour/Kilometer",
+    "namePlural": "Kilowatt Hours/Kilometer",
+    "factor": 0.0036,
+    "symbol": "kWh/km",
+    "tags": ["Metric", "Units of Fuel per Fixed Distance"]
+  },
+  {
+    "name": "Watt Hour/Kilometer",
+    "namePlural": "Watt Hours/Kilometer",
+    "factor": 3.6,
+    "symbol": "Wh/km",
+    "tags": ["Metric", "Units of Fuel per Fixed Distance"]
+  },
+  {
+    "name": "Joule/Meter",
+    "namePlural": "Joules/Meter",
+    "factor": 1,
+    "symbol": "J/m",
+    "tags": ["Metric", "Units of Fuel per Fixed Distance"]
+  },
+  {
+    "name": "Watt Hour/Mile",
+    "namePlural": "Watt Hours/Mile",
+    "factor": 2.2369418519393043,
+    "symbol": "Wh/mi",
+    "tags": ["Imperial", "Units of Fuel per Fixed Distance"]
+  }
+]

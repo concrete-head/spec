@@ -1,0 +1,264 @@
+[
+  {
+    "name": "BTU (mean)",
+    "namePlural": "BTU's (mean)",
+    "factor": 1055.87,
+    "symbol": "BTU<sub>mean</sub>",
+    "tags": ["Common","British", "BTU"]
+  },
+  {
+    "name": "BTU (Thermal)",
+    "namePlural": "BTU's (Thermal)",
+    "factor": 1054.3503,
+    "symbol": "BTU<sub>Thermal</sub>",
+    "tags": ["Common","British", "BTU"]
+  },
+  {
+    "name": "BTU (4C)",
+    "namePlural": "BTU's (4C)",
+    "factor": 1059.67,
+    "symbol": "BTU<sub>4C</sub>",
+    "tags": ["Common","British", "BTU"]
+  },
+  {
+    "name": "BTU (15C)",
+    "namePlural": "BTU's (15C)",
+    "factor": 1054.80,
+    "symbol": "BTU<sub>15C</sub>",
+    "tags": ["Common","British", "BTU"]
+  },
+  {
+    "name": "Calorie (IT)",
+    "namePlural": "Calories (IT)",
+    "factor": 4.1868,
+    "symbol": "cal<sub>IT</sub>",
+    "tags": ["Calorie","Common"]
+  },
+  {
+    "name": "Calorie (Thermal)",
+    "namePlural": "Calories (Thermal)",
+    "factor": 4.184,
+    "symbol": "cal<sub>th</sub>",
+    "tags": ["Calorie","Common"]
+  },
+  {
+    "name": "Calorie (mean)",
+    "namePlural": "Calories (mean)",
+    "factor": 4.19002,
+    "symbol": "cal<sub>mean</sub>",
+    "tags": ["Calorie","Common"]
+  },
+  {
+    "name": "Calorie (4C)",
+    "namePlural": "Calories (4C)",
+    "factor": 4.204,
+    "symbol": "cal<sub>15C</sub>",
+    "tags": ["Calorie","Common"]
+  },
+  {
+    "name": "Calorie (15C)",
+    "namePlural": "Calories (15C)",
+    "factor": 4.1855,
+    "symbol": "cal<sub>15C</sub>",
+    "tags": ["Calorie","Common"]
+  },
+  {
+    "name": "Calorie (20C)",
+    "namePlural": "Calories (20C)",
+    "factor": 4.1819,
+    "symbol": "cal<sub>20C</sub>",
+    "tags": ["Calorie","Common"]
+  },
+  {
+    "name": "Kilocalorie (food)",
+    "namePlural": "Kilocalories (food)",
+    "factor": 4186,
+    "symbol": "kcal",
+    "tags": ["Calorie","Common", "Food"]
+  },
+  {
+    "name": "Centigrade Heat Units",
+    "namePlural": "Centigrade Heat Units",
+    "factor": 1898.754944,
+    "symbol": "Chu",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Electron Volt",
+    "namePlural": "Electron Volts",
+    "factor": 1.60219e-19,
+    "symbol": "eV",
+    "tags": ["Physics"]
+  },
+  {
+    "name": "Kilo-electron Volt",
+    "namePlural": "Kilo-electron Volts",
+    "factor": 1.60219e-16,
+    "symbol": "KeV",
+    "tags": ["Physics"]
+  },
+  {
+    "name": "Mega-electron Volt",
+    "namePlural": "Mega-electron Volts",
+    "factor": 1.60219e-13,
+    "symbol": "MeV",
+    "tags": ["Physics"]
+  },
+  {
+    "name": "Giga-electron Volt",
+    "namePlural": "Giga-electron Volts",
+    "factor": 1.60219e-10,
+    "symbol": "eV",
+    "tags": ["Physics"]
+  },
+
+  {
+    "name": "Erg",
+    "namePlural": "Ergs",
+    "factor": 1e-7,
+    "symbol": "erg",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Foot-pound Force",
+    "namePlural": "Foot-pound Force",
+    "factor": 1.3558179483314003,
+    "symbol": "ft lbs",
+    "tags": ["British"]
+  },
+  {
+
+    "name": "Foot Poundals",
+    "namePlural": "Foot Poundals",
+    "factor": 0.04214,
+    "symbol": "ft pdl",
+    "tags": ["Other"]
+  },
+  {
+    "name": "Gigajoule",
+    "namePlural": "Gigajoules",
+    "factor": 1e9,
+    "symbol": "GJ",
+    "tags": ["Physics"]
+  },
+  {
+
+    "name": "Horsepower Hour",
+    "namePlural": "Horsepower Hours",
+    "factor": 2684520,
+    "symbol": "Hp hrs",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Inch-pound Force",
+    "namePlural": "Inch-pound Force",
+    "factor": 0.11298482902761668,
+    "symbol": "in lbf",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Joule",
+    "namePlural": "Joules",
+    "factor": 1,
+    "symbol": "J",
+    "tags": ["Common","SI"]
+  },
+  {
+
+    "name": "Kilocalorie (IT)",
+    "namePlural": "Kilocalories (IT)",
+    "factor": 4186.8,
+    "symbol": "kcal<sub>IT</sub>",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Kilocalorie (th)",
+    "namePlural": "Kilocalories (th)",
+    "factor": 4184,
+    "symbol": "kcal<sub>th</sub>",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "kilogram-force meters",
+    "namePlural": "Kilogram-force meters",
+    "factor": 9.80665,
+    "symbol": "kgNm",
+    "tags": ["Other"]
+  },
+  {
+
+    "name": "Kilojoule",
+    "namePlural": "Kilojoules",
+    "factor": 1000,
+    "symbol": "kJ",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Kilowatt Hour",
+    "namePlural": "Kilowatt Hours",
+    "factor": 3600000,
+    "symbol": "kWh",
+    "tags": ["Common","Electricity"]
+  },
+  {
+
+    "name": "Megajoule",
+    "namePlural": "Megajoules",
+    "factor": 1e6,
+    "symbol": "MJ",
+    "tags": ["Common"]
+  },
+  {
+
+    "name": "Newton Meter",
+    "namePlural": "Newton Meters",
+    "factor": 1,
+    "symbol": "Nm",
+    "tags": ["Mechanics"]
+  },
+  {
+
+    "name": "Petajoule",
+    "namePlural": "Petajoules",
+    "factor": 1e15,
+    "symbol": "PJ",
+    "tags": ["Physics"]
+  },
+  {
+
+    "name": "Terajoule",
+    "namePlural": "Terajoules",
+    "factor": 1e12,
+    "symbol": "TJ",
+    "tags": ["Physics"]
+  },
+  {
+
+    "name": "Therm",
+    "namePlural": "Therms",
+    "factor": 105505585.257348,
+    "symbol": "thm",
+    "tags": ["Natural Gas"]
+  },
+  {
+
+    "name": "Watt Second",
+    "namePlural": "Watt Seconds",
+    "factor": 1,
+    "symbol": "Ws",
+    "tags": ["Electricity"]
+  },
+  {
+
+    "name": "Watt Hours",
+    "namePlural": "Watt Hours",
+    "factor": 3600,
+    "symbol": "Wh",
+    "tags": ["Common","Electricity"]
+  }
+]

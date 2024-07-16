@@ -1,0 +1,146 @@
+[
+  {
+    "name": "Bit",
+    "namePlural": "Bits",
+    "factor": 0.125,
+    "symbol": "b",
+    "tags": ["Bits", "Common"]
+  },
+  {
+    "name": "Byte",
+    "namePlural": "Bytes",
+    "factor": 1,
+    "symbol": "B",
+    "tags": ["Bytes", "Common"]
+  },
+  {
+    "name": "Kilobit",
+    "namePlural": "Kilobits",
+    "factor": 128,
+    "symbol": "Kb",
+    "tags": ["Bits", "Common"]
+  },
+  {
+    "name": "Kilobyte",
+    "namePlural": "Kilobytes",
+    "factor": 1024,
+    "symbol": "KB",
+    "tags": ["Bytes", "Common"]
+  },
+  {
+    "name": "Megabit",
+    "namePlural": "Megabits",
+    "factor": 131072,
+    "symbol": "Mb",
+    "tags": ["Bits", "Common"]
+  },
+  {
+    "name": "Megabyte",
+    "namePlural": "Megabytes",
+    "factor": 1048576,
+    "symbol": "MB",
+    "tags": ["Bytes", "Common"]
+  },
+  {
+    "name": "Gigabit",
+    "namePlural": "Gigabits",
+    "factor": 134217728,
+    "symbol": "Gb",
+    "tags": ["Bits", "Common"]
+  },
+  {
+    "name": "Gigabyte",
+    "namePlural": "Gigabytes",
+    "factor": 1073741824,
+    "symbol": "GB",
+    "tags": ["Bytes", "Common"]
+  },
+  {
+
+    "name": "Terabit",
+    "namePlural": "Terabits",
+    "factor": 137438953472,
+    "symbol": "Tb",
+    "tags": ["Bits", "Common"]
+  },
+  {
+
+    "name": "Terabyte",
+    "namePlural": "Terabytes",
+    "factor": 1099511627776,
+    "symbol": "TB",
+    "tags": ["Bytes", "Common"]
+  },
+  {
+
+    "name": "Petabit",
+    "namePlural": "Petabits",
+    "factor": 140737488355328,
+    "symbol": "Pb",
+    "tags": ["Bits"]
+  },
+  {
+    "name": "Petabyte",
+    "namePlural": "Petabytes",
+    "factor": 1125899906842624,
+    "symbol": "PB",
+    "tags": ["Bytes"]
+  },
+  {
+    "name": "Exabit",
+    "namePlural": "Exabits",
+    "factor": 144115188075855870,
+    "symbol": "Eb",
+    "tags": ["Bits"]
+  },
+  {
+    "name": "Exabyte",
+    "namePlural": "Exabytes",
+    "factor": 1152921504606847000,
+    "symbol": "EB",
+    "tags": ["Bytes"]
+  },
+  {
+    "name": "Zettabit",
+    "namePlural": "Zettabits",
+    "factor": 147573952589676410000,
+    "symbol": "Zb",
+    "tags": ["Bits"]
+  },
+  {
+
+    "name": "Zettabyte",
+    "namePlural": "Zettabytes",
+    "factor": 1.1805916207174113e+21,
+    "symbol": "ZB",
+    "tags": ["Bytes"]
+  },
+  {
+    "name": "Yottabit",
+    "namePlural": "Yottabits",
+    "factor": 1.5111572745182865e+23,
+    "symbol": "Yb",
+    "tags": ["Bits"]
+  },
+  {
+    "name": "Yottabyte",
+    "namePlural": "Yottabytes",
+    "factor": 1.2089258196146292e+24,
+    "symbol": "YB",
+    "tags": ["Bytes"]
+  },
+  {
+    "name": "Floppy Disk",
+    "namePlural": "Floopy Disks",
+    "factor": 1457664,
+    "symbol": "floppy",
+    "tags": ["Media"]
+  },
+  {
+    "name": "Compact Disk",
+    "namePlural": "Compact Disks",
+    "factor": 736279247,
+    "symbol": "CD",
+    "tags": ["Media"]
+  }
+]

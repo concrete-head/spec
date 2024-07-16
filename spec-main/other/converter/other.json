@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Shit Tonne",
+    "namePlural": "Shit Tonnes",
+    "factor": 1,
+    "symbol": "",
+    "tags": ["Common"]
+  },
+  {
+    "name": "Fuck Tonne",
+    "namePlural": "Fuck Tonnes",
+    "factor": 0.1,
+    "symbol": "",
+    "tags": ["Common"]
+  },
+  {
+    "name": "Ass Load",
+    "namePlural": "Ass Loads",
+    "factor": 0.041666666666666664,
+    "symbol": "",
+    "tags": ["Common"]
+  }
+]
