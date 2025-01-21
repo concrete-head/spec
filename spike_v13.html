@@ -79,7 +79,7 @@
 
     <div class="grid_item">
 
-      <h3>Input Data</h3>
+      <h3>Input</h3>
 
 
       <input type="radio" id="CAMERA_INPUT" name="INPUT_TYPE" value="Camera input" checked>
@@ -100,11 +100,10 @@
         <canvas class="vision_canvas" id="VISION_CANVAS_2" width="64" height="64"></canvas>
       </div>
 
-      <h3>Input Spike Train<h3>
-        <label for="DRAW_SPIKE_TRAIN">Draw spike train: </label>
-        <input type="checkbox" id="DRAW_SPIKE_TRAIN" checked><br>
-        <canvas style="" id="input_history_canvas" width="256" height="100" style="border: 1px solid black"></canvas><br>
-      </div>
+      <input type="checkbox" id="DRAW_SPIKE_TRAIN" checked>
+      <label for="DRAW_SPIKE_TRAIN">Draw spike train: </label><br>
+      <canvas style="" id="input_history_canvas" width="256" height="100" style="border: 1px solid black"></canvas><br>
+    </div>
 
       <div class="grid_item">
         <h3>Network Weights</h3>
@@ -139,13 +138,18 @@
           <script src="spike_v13.js"></script>
           <script>
 
-          const ANIMATION_INTERVAL = 1000/10;  // ms delay between steps
+          // Initialise global variables that reference DOM elements here
+          window.onload = function () {
+            // Your script here
+            console.log("Page has fully loaded!");
+          };
+
+          const ANIMATION_INTERVAL = 100;  // ms delay between steps
           var ANIMATE = document.getElementById("AnimationButton").checked;
           var PLAYING = document.getElementById("PlayPauseButton").checked;
           var PAUSE_AFTER_NEXT_FRAME = false;
           var GRID_SIZE = 4;           // Determines the size of the grid when drawn
           var LOGGING = document.getElementById("LoggingButton").checked;
-          var DRAW_GRIDLINES = false;
           var LEARNING = true;
           var RANDOM_INPUT = false;   // Use random (noise) input data
 
@@ -193,13 +197,15 @@
           // Draw the input spike train
           function drawInputHistory(canvas, network) {
 
+            var yScale = canvas.height / network.inputNodes.length;
+            console.log(yScale)
             var ctx = canvas.getContext("2d", { willReadFrequently: true });
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "red";
 
             for (var h = 0; h < network.inputHistory.length; h++) {
               for (var i = 0; i < network.inputHistory[h].length; i++) {
-                ctx.fillRect(h, canvas.height - network.inputHistory[h][i], 4, 4);
+                ctx.fillRect(h, canvas.height - (yScale * network.inputHistory[h][i]), 4, 4);
 
               }
             }
@@ -351,6 +357,8 @@
             ctx.lineTo(0, GRID_SIZE);
             ctx.stroke()
 
+            var yScale = canvas.height / network.inputNodes.length;
+
             // For each connection
             network.weightSums = new Array(network.outputNodes.length).fill(0);
             for (var c = 0; c < network.connections.length; c++) {
@@ -358,6 +366,7 @@
               var conn = network.connections[c];
               var x = GRID_SIZE + (conn.toId*GRID_SIZE);
               var y = GRID_SIZE + (conn.fromId*GRID_SIZE);
+              y = y * yScale;
               var weight = parseInt((1-conn.weight) * 255);
               var colour =  `rgb(${weight}, ${weight}, ${weight})`;
               if (conn.weight < 0) {
@@ -390,33 +399,18 @@
                 ctx.fillRect(x, 0, GRID_SIZE, GRID_SIZE);
               }
 
-              // Vertical grid lines
-              if (DRAW_GRIDLINES) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, GRID_SIZE + (network.inputNodes.length*GRID_SIZE));
-                ctx.stroke();
-              }
-
             }
 
             // For each input
             for (let i = 0; i < network.inputNodes.length; i++) {
               var y = GRID_SIZE + (GRID_SIZE * i);
+              y = y * yScale;
 
               if (network.inputNodes[i].isFiring) {
                 ctx.fillStyle = "red";
                 ctx.fillRect(0, y, GRID_SIZE, GRID_SIZE);
               }
 
-              // Horizontal grid lines
-              if (DRAW_GRIDLINES) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(GRID_SIZE + (network.inputNodes.length*GRID_SIZE), y);
-                ctx.lineWidth = 1;
-                ctx.stroke();
-              }
             }
 
           }
@@ -684,7 +678,7 @@
 
 
           var inputSize = parseInt(document.getElementById("VISION_CANVAS_1").width * document.getElementById("VISION_CANVAS_1").height)*2;
-          var snn = new Network({ numInputs: inputSize, numOutputs: 6, LTPRate: 0.2, LTDRate: 0.02, threshold: 10, refractoryTime: 255, LTPWindow: 100, decayRate: 0.00, inhibition: true, numWinners: 1 });
+          var snn = new Network({ numInputs: inputSize, numOutputs: 6, LTPRate: 0.2, LTDRate: 0.02, threshold: 10, refractoryTime: 1, LTPWindow: 50, decayRate: 0.00, inhibition: true, numWinners: 1 });
           var randomGenerator = new PseudoRandomGenerator();
 
           resizeCanvases();
@@ -697,8 +691,8 @@
 
             RECONSTRUCTION_CANVAS.width = document.getElementById("VISION_CANVAS_1").width*2;
             RECONSTRUCTION_CANVAS.height = snn.outputNodes.length * document.getElementById("VISION_CANVAS_1").width;
-            INPUT_HISTORY_CANVAS.height = snn.inputNodes.length;
-            WEIGHT_CANVAS.height = GRID_SIZE * (snn.inputNodes.length + 1);
+            INPUT_HISTORY_CANVAS.height = snn.inputNodes.length * 0.1;
+            WEIGHT_CANVAS.height = 0.04 * GRID_SIZE * (snn.inputNodes.length + 1);
             WEIGHT_CANVAS.width = GRID_SIZE * (snn.outputNodes.length + 1);
 
           }
