@@ -9,7 +9,7 @@
         font-family: monospace;
       }
 
-      .vision_canvas {
+      .input_canvas {
         width: 320px;
       }
 
@@ -46,30 +46,33 @@
       <li>Nodes to fire</li>
       <li>At 64x64 image size. Only approx 500 of 4096 (i.e. 12%) of inputs are needed determine what an object is. i.e. NodesToFire should be 500 and threshold needs to be less than that. The closer the threshold to 500 the more pixels have to match to get a node to fire</li>
       <li>Still unsure what best decay rate is. Perhaps zero?</li>
+      <li>Add reinforcement step. Favour a node to fire</li>
     </ul>
 
+    <h1>Fundamental issue with LTP and LTD nor being applied correctly.</h1>
+    <h1>Spike how does the spike train get stored, graphed and why is there a shift operator there?</h1>
   </div>
 
   <div id="contols">
 
+    <h3>Controls</h3>
+
     <input type="checkbox" id="PlayPauseButton" onclick="PLAYING = this.checked">
-    <label for="PlayPauseButton">Play/Pause (Space)</label>
+    <label for="PlayPauseButton">Play/Pause (Space)</label><br>
 
     <input type="checkbox" id="AnimationButton" onclick="ANIMATE = this.checked" checked>
-    <label for="AnimationButton">Animate (a)</label>
+    <label for="AnimationButton">Animate (a)</label><br>
 
     <input type="checkbox" id="LoggingButton" onclick="LOGGING = this.checked">
-    <label for="LoggingButton">Logging ON/OFF (L)</label>
+    <label for="LoggingButton">Logging ON/OFF (L)</label><br>
 
     <input type="checkbox" id="LearningButton" onclick="LEARNING = this.checked" checked>
-    <label for="LearningButton">Learning ON/OFF</label>
+    <label for="LearningButton">Learning ON/OFF</label><br>
 
     <input type="checkbox" id="InhibitionButton" onclick="snn.inhibition = !snn.inhibition" checked>
     <label for="InhibitionButton">Local Inhibition ON/OFF (i)</label><br>
-    <label>Frame by frame (Right Arrow)</label>
+    <label>To simulate frame by frame press the right arrow key</label><br>
 
-    <br>
-    <button onclick="snn.addOutputNode()">New node (n)</button><br>
     Cycle: <span id="cycle_count"></span><br>
   </div>
 
@@ -90,31 +93,32 @@
 
 
 
-      <input type="checkbox" id="DRAW_VISION_CANVAS" onclick="showVision(this.checked)">
-      <label for="DRAW_VISION_CANVAS">Show vision </label><br>
+      <input type="checkbox" id="DRAW_INPUT_CANVAS" onclick="showInput(this.checked)">
+      <label for="DRAW_INPUT_CANVAS">Show Input </label><br>
 
-      <div id="vision_container" class="none">
+      <div id="input_container" class="none">
         <h4>ON-Center</h4>
-        <canvas class="vision_canvas" id="VISION_CANVAS_1" width="64" height="64"></canvas>
+        <canvas class="input_canvas" id="INPUT_CANVAS_1" width="64" height="64"></canvas>
         <h4>OFF-Center</h4>
-        <canvas class="vision_canvas" id="VISION_CANVAS_2" width="64" height="64"></canvas>
+        <canvas class="input_canvas" id="INPUT_CANVAS_2" width="64" height="64"></canvas>
       </div>
 
       <input type="checkbox" id="DRAW_SPIKE_TRAIN" checked>
       <label for="DRAW_SPIKE_TRAIN">Draw spike train: </label><br>
-      <canvas style="" id="input_history_canvas" width="256" height="100" style="border: 1px solid black"></canvas><br>
+      <canvas style="" id="spike_train_canvas" width="256" height="100" style="border: 1px solid black"></canvas><br>
     </div>
 
       <div class="grid_item">
         <h3>Network Weights</h3>
         <div>
-          Total Connections: <span id="total_connections"></span>
-          <button onclick="snn.pruneNetwork(0.05)">Prune</button><br>
+          Total Connections: <span id="total_connections"></span><br>
+          <button onclick="snn.pruneNetwork(0.05)">Prune Connections</button><br>
+          <button onclick="snn.addOutputNode(); resizeCanvases()">New node (n)</button><br>
         </div>
         <div id="weights">
 
-          <label for="DRAW_WEIGHT_CANVAS">Draw weights: </label>
-          <input type="checkbox" id="DRAW_WEIGHT_CANVAS" checked><br>
+          <input type="checkbox" id="DRAW_WEIGHT_CANVAS" checked>
+          <label for="DRAW_WEIGHT_CANVAS">Draw weights: </label><br>
           <canvas id="weight_canvas" width="256" height="100" style="border: 1px solid black"></canvas>
 
         </div>
@@ -157,9 +161,9 @@
           const RECONSTRUCTION_CANVAS = document.getElementById("reconstruction_canvas");
           const WEIGHT_CANVAS = document.getElementById("weight_canvas");
           const OUTPUT_HISTORY_CANVAS = document.getElementById("output_history_canvas");
-          const INPUT_HISTORY_CANVAS = document.getElementById("input_history_canvas");
-          const VISION_CANVAS_1 = document.getElementById("VISION_CANVAS_1");
-          const VISION_CANVAS_2 = document.getElementById("VISION_CANVAS_2");
+          const SPIKE_TRAIN_CANVAS = document.getElementById("spike_train_canvas");
+          const INPUT_CANVAS_1 = document.getElementById("INPUT_CANVAS_1");
+          const INPUT_CANVAS_2 = document.getElementById("INPUT_CANVAS_2");
           const WEIGHT_SUMS_CANVAS = document.getElementById("WEIGHT_SUMS_CANVAS");
 
           const KERNEL_ON_CENTER = [
@@ -195,18 +199,16 @@
 
 
           // Draw the input spike train
-          function drawInputHistory(canvas, network) {
+          function drawSpikeTrain(canvas, network) {
 
             var yScale = canvas.height / network.inputNodes.length;
-            console.log(yScale)
             var ctx = canvas.getContext("2d", { willReadFrequently: true });
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "red";
 
-            for (var h = 0; h < network.inputHistory.length; h++) {
-              for (var i = 0; i < network.inputHistory[h].length; i++) {
-                ctx.fillRect(h, canvas.height - (yScale * network.inputHistory[h][i]), 4, 4);
-
+            for (var bin = 0; bin < network.spikeTrain.length; bin++) {
+              for (var i = 0; i < network.spikeTrain[bin].length; i++) {
+                ctx.fillRect(255-bin, canvas.height - (yScale * network.spikeTrain[bin][i]), 4, 4);
               }
             }
 
@@ -215,7 +217,7 @@
           // Draw stats
           function printStats(network) {
 
-            document.getElementById("cycle_count").innerText = network.cycle;
+            document.getElementById("cycle_count").innerText = network.cycle.toLocaleString();
             document.getElementById("total_connections").innerText = network.connections.length;
 
           }
@@ -246,7 +248,7 @@
             // ctx.beginPath();
             // ctx.moveTo(0, canvas.height/2);
             // ctx.lineTo(canvas.width, canvas.height/2);
-          // ctx.stroke();
+            // ctx.stroke();
 
             // Find node with highest activation to set the graph scale
             let max = network.outputNodes[0].threshold;
@@ -285,12 +287,12 @@
 
           }
 
-          // Hide/show the vision canvas
-          function showVision(state) {
+          // Hide/show the input canvas
+          function showInput(state) {
             if (!state) {
-              document.getElementById("vision_container").classList.add("none")
+              document.getElementById("input_container").classList.add("none")
             } else {
-              document.getElementById("vision_container").classList.remove("none")
+              document.getElementById("input_container").classList.remove("none")
             }
           }
 
@@ -347,15 +349,15 @@
             var ctx = canvas.getContext("2d", { willReadFrequently: true });
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw X in top left
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(GRID_SIZE, GRID_SIZE);
-            ctx.stroke()
-            ctx.beginPath();
-            ctx.moveTo(GRID_SIZE, 0);
-            ctx.lineTo(0, GRID_SIZE);
-            ctx.stroke()
+            // // Draw X in top left
+            // ctx.beginPath();
+            // ctx.moveTo(0, 0);
+            // ctx.lineTo(GRID_SIZE, GRID_SIZE);
+            // ctx.stroke()
+            // ctx.beginPath();
+            // ctx.moveTo(GRID_SIZE, 0);
+            // ctx.lineTo(0, GRID_SIZE);
+            // ctx.stroke()
 
             var yScale = canvas.height / network.inputNodes.length;
 
@@ -485,13 +487,13 @@
             video.srcObject = stream;
 
             // Flip the main video stream
-            const ctx = VISION_CANVAS_1.getContext("2d");
+            const ctx = INPUT_CANVAS_1.getContext("2d");
             ctx.scale(-1, 1);
-            ctx.translate(-VISION_CANVAS_1.width, 0);
+            ctx.translate(-INPUT_CANVAS_1.width, 0);
 
-            const ctx2 = VISION_CANVAS_2.getContext("2d");
+            const ctx2 = INPUT_CANVAS_2.getContext("2d");
             ctx2.scale(-1, 1);
-            ctx2.translate(-VISION_CANVAS_1.width, 0);
+            ctx2.translate(-INPUT_CANVAS_1.width, 0);
 
           })
           .catch(function(err) {
@@ -502,9 +504,9 @@
             setInterval(function() {
               if (!PLAYING) { return }
 
-              // Calculate width, height and offsets for best fit to VISION_CANVAS_1
-              var ctx = VISION_CANVAS_1.getContext("2d");
-              const ctx2 = VISION_CANVAS_2.getContext("2d");
+              // Calculate width, height and offsets for best fit to INPUT_CANVAS_1
+              var ctx = INPUT_CANVAS_1.getContext("2d");
+              const ctx2 = INPUT_CANVAS_2.getContext("2d");
 
               var aspectRatio = video.videoWidth / video.videoHeight;
               let width, height, offsetX, offsetY;
@@ -544,15 +546,15 @@
 
               } else {
 
-                // Draw the best fit video onto the VISION_CANVAS_1 with best fit so pixels can be accessed
-                ctx.drawImage(video, offsetX, offsetY, width, height, 0, 0, VISION_CANVAS_1.width, VISION_CANVAS_1.height);
-                ctx2.drawImage(video, offsetX, offsetY, width, height, 0, 0, VISION_CANVAS_1.width, VISION_CANVAS_1.height);
+                // Draw the best fit video onto the INPUT_CANVAS_1 with best fit so pixels can be accessed
+                ctx.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+                ctx2.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
 
-                applyLoGConvolution(VISION_CANVAS_1, KERNEL_ON_CENTER);
-                applyLoGConvolution(VISION_CANVAS_2, KERNEL_OFF_CENTER);
+                applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);
+                applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);
 
               }
-              processFrame([VISION_CANVAS_1, VISION_CANVAS_2]);
+              canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
               if (PAUSE_AFTER_NEXT_FRAME) { PLAYING = false };
 
 
@@ -596,9 +598,10 @@
           }
 
 
-          // Convert pixel data into 1D luminance array (spike train), display it and feed it into the network
-          function processFrame(canvases) {
+          // Convert canvas pixel data into spike train, display it and feed it into the network
+          function canvasToSpikeTrain(canvases) {
 
+            // Setup array
             var spikeTrain = [];
             for (var t = 0; t < 256; t++) { spikeTrain[t] = [] }
 
@@ -647,15 +650,9 @@
               drawThresholds(snn, WEIGHT_SUMS_CANVAS);
               drawOutputHistory(OUTPUT_HISTORY_CANVAS, snn);
               if (document.getElementById("DRAW_SPIKE_TRAIN").checked) {
-                drawInputHistory(INPUT_HISTORY_CANVAS, snn);
+                drawSpikeTrain(SPIKE_TRAIN_CANVAS, snn);
               }
               printStats(snn);
-            }
-
-            // Reset the activations of every outputNode
-            for (var n = 0; n < snn.outputNodes.length; n++) {
-              snn.outputNodes[n].value = 0;
-              snn.outputNodes[n].isFiring = false;
             }
 
           }
@@ -664,7 +661,7 @@
           class PseudoRandomGenerator {
             constructor() {
               this.seed = 0;
-              this.resetInterval = 4*4096;
+              this.resetInterval = 2*4096;
             }
 
             random() {
@@ -677,21 +674,19 @@
 
 
 
-          var inputSize = parseInt(document.getElementById("VISION_CANVAS_1").width * document.getElementById("VISION_CANVAS_1").height)*2;
-          var snn = new Network({ numInputs: inputSize, numOutputs: 6, LTPRate: 0.2, LTDRate: 0.02, threshold: 10, refractoryTime: 1, LTPWindow: 50, decayRate: 0.00, inhibition: true, numWinners: 1 });
+          var inputSize = parseInt(document.getElementById("INPUT_CANVAS_1").width * document.getElementById("INPUT_CANVAS_1").height)*2;
+          var snn = new Network({ numInputs: inputSize, numOutputs: 6, LTPRate: 0.2, LTDRate: 0.02, threshold: 1, refractoryTime: 255, LTPWindow: 50, decayRate: 0.00, inhibition: true, numWinners: 1 });
           var randomGenerator = new PseudoRandomGenerator();
 
           resizeCanvases();
 
 
-
-
           // Resize the canvas's based on network sizew
           function resizeCanvases() {
 
-            RECONSTRUCTION_CANVAS.width = document.getElementById("VISION_CANVAS_1").width*2;
-            RECONSTRUCTION_CANVAS.height = snn.outputNodes.length * document.getElementById("VISION_CANVAS_1").width;
-            INPUT_HISTORY_CANVAS.height = snn.inputNodes.length * 0.1;
+            RECONSTRUCTION_CANVAS.width = document.getElementById("INPUT_CANVAS_1").width*2;
+            RECONSTRUCTION_CANVAS.height = snn.outputNodes.length * document.getElementById("INPUT_CANVAS_1").width;
+            SPIKE_TRAIN_CANVAS.height = snn.inputNodes.length * 0.1;
             WEIGHT_CANVAS.height = 0.04 * GRID_SIZE * (snn.inputNodes.length + 1);
             WEIGHT_CANVAS.width = GRID_SIZE * (snn.outputNodes.length + 1);
 

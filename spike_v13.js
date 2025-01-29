@@ -6,7 +6,6 @@ class Node {
     this.connectionIds = [];
     this.isFiring = false;
     this.lastFired = -100;
-    this.learning = true;
     this.threshold = threshold;
 
   }
@@ -39,7 +38,7 @@ class Network {
     this.inhibition = inhibition;
     this.decayRate = decayRate;
     this.outputHistory = [];
-    this.inputHistory = [];
+    this.spikeTrain = [];
     this.refractoryTime = refractoryTime;
     this.defaultThreshold = threshold;
 
@@ -52,11 +51,11 @@ class Network {
     };
 
     // Create connections
-    for (i = 0; i < numInputs; i++) {
-      for (var j = 0; j < numOutputs; j++) {
-        this.connections.push(new Connection(i, j));
-        this.inputNodes[i].connectionIds.push(this.connections.length-1);
-        this.outputNodes[j].connectionIds.push(this.connections.length-1);
+    for (i = 0; i < numOutputs; i++) {
+      for (var j = 0; j < numInputs; j++) {
+        this.connections.push(new Connection(j, i));
+        this.inputNodes[j].connectionIds.push(this.connections.length-1);
+        this.outputNodes[i].connectionIds.push(this.connections.length-1);
       }
     }
 
@@ -65,33 +64,19 @@ class Network {
 
 
   // Create a new output node
-  // Copy parameters from the node before it
   addOutputNode() {
 
     this.outputNodes.push(new Node(this.defaultThreshold));
 
-    let j = this.outputNodes.length-1;
+    let newNodeId = this.outputNodes.length-1;
+      // Connect it to all input nodes
     for (var i = 0; i < this.inputNodes.length; i++) {
-      this.connections.push(new Connection(i, j));
+      this.connections.push(new Connection(i, newNodeId));
       this.inputNodes[i].connectionIds.push(this.connections.length-1);
-      this.outputNodes[j].connectionIds.push(this.connections.length-1);
+      this.outputNodes[newNodeId].connectionIds.push(this.connections.length-1);
     }
 
   }
-
-  // Reset the weights of an output node
-  resetConnections(nodeId) {
-
-    for (var c = 0; c < this.connections.length; c++) {
-
-      let conn = this.connections[c];
-      if (conn.toId == nodeId) {
-        conn.weight = 0.8 + (0.2 * Math.random());
-      }
-    }
-
-  }
-
 
   // Remove connections with weights below a threshold
   pruneNetwork(threshold) {
@@ -121,33 +106,42 @@ class Network {
   }
 
 
-  // Run a feed forward on the network unitl the inputQueue is empty
+  // Run a feed forward step on the network
   feedForward(data) {
+
+    this.spikeTrain = data;
+    // Set previous activations to zero
+    for (var j = 0; j < this.outputNodes.length; j++) {
+      this.outputNodes[j].value = 0;
+      this.outputNodes[j].isFiring = false;
+    }
 
     for (var i = 0; i < data.length; i++) {
 
-      let firedId = this.step(data[i]);
+      var winnerIds = this.step(data[i]);
+      if (winnerIds.length > 0) { this.outputHistory.push(winnerIds) };
+
+      // if (winnerIds.length > 0) {
+      //   this.learn(this.outputNodes[3]);
+      //   console.log("learning 3")
+      // }
+      if (this.outputHistory.length > 256) { this.outputHistory.shift() };
       this.cycle = this.cycle + 1;
 
     }
 
   }
 
-  // Run a single forward step on the
+  // Run a single forward step
   step(inputData) {
 
-    // Reset all inputsNodes
-    for (var i = 0; i < this.inputNodes.length; i++) { this.inputNodes[i].isFiring = false };
-    this.inputHistory.push(inputData);
-
-    // Set inputs
-    for (i = 0; i < inputData.length; i++) {
+    // Process inputs
+    for (var i = 0; i < inputData.length; i++) {
       let fireId = inputData[i];
       var inputNode = this.inputNodes[fireId];
-      inputNode.isFiring = true;
       inputNode.lastFired = this.cycle;
 
-      // For each connection in inputNode.connectionIds
+      // Integrate firing signal to each connected node
       for (var c = 0; c < inputNode.connectionIds.length; c++) {
 
         let connectionId = inputNode.connectionIds[c];
@@ -155,7 +149,7 @@ class Network {
         let fromNode = this.inputNodes[conn.fromId];
         let toNode = this.outputNodes[conn.toId];
 
-        // Integrate firing signal to connected nodes
+        // Integrate only if the output isnt already firing
         if (!toNode.isFiring) { toNode.value = toNode.value + conn.weight };
 
       }
@@ -163,28 +157,24 @@ class Network {
     }
 
 
-    // Determine winning and losing nodes based on value
+    // Determine winning and losing nodes based on activation value and threshold
     var winnerIds = [];
     var loserIds = [];
 
     var activations = [];
-    for (var j = 0; j < this.outputNodes.length; j++) {
-      activations.push([j, this.outputNodes[j].value, this.outputNodes[j].threshold])
+    for (var nodeId = 0; nodeId < this.outputNodes.length; nodeId++) {
+      activations.push([nodeId, this.outputNodes[nodeId].value, this.outputNodes[nodeId].threshold, this.outputNodes[nodeId].value / this.outputNodes[nodeId].threshold]);
     }
 
     // Sort the outputNodes by activation
     activations.sort(function(a, b) {
-      if (a[1] < b[1]) {
-        return 1;  // Return 1 to move `a` after `b` (descending order)
-      }
-      if (a[1] > b[1]) {
-        return -1;  // Return -1 to move `a` before `b` (descending order)
-      }
-      return 0;  // Return 0 if they are equal
+      if (a[1] < b[1]) { return 1 }   // Return 1 to move `a` after `b` (descending order)
+      if (a[1] > b[1]) { return -1}   // Return -1 to move `a` before `b` (descending order)
+      return 0;                       // Return 0 if they are equal
     });
 
-    // Find winners and losers
-    for (j = 0; j < activations.length; j++) {
+    // Compile list of winners and losers
+    for (var j = 0; j < activations.length; j++) {
       if ((activations[j][1] >= activations[j][2]) && (winnerIds.length < this.numWinners)) {
         winnerIds.push(activations[j][0]);
       } else {
@@ -192,54 +182,16 @@ class Network {
       }
     }
 
-    // Spike the winner(s)
+    // Process winning output nodes
     for (var w = 0; w < winnerIds.length; w++) {
 
       var nodeId = winnerIds[w];
       var outputNode = this.outputNodes[nodeId];
 
-      var intensity = outputNode.value / outputNode.threshold;
-      if (LOGGING) { console.log("Node fired: " + nodeId + " on " + this.cycle + "/" + this.cycle%256 + " at intensity: " + intensity.toFixed(2)) }
-      outputNode.isFiring = true;
-      outputNode.lastFired = this.cycle;
+      var spikeIntensity = outputNode.value / outputNode.threshold;
+      if (LOGGING) { console.log("Node fired: " + nodeId + " on " + this.cycle + "/" + this.cycle%256 + " at spikeIntensity: " + spikeIntensity.toFixed(2)) }
+      this.learn(outputNode);
 
-      // Increase threshold of winner
-      //if (outputNode.value > outputNode.threshold*1.3) {
-      if (intensity > 1.3) {
-        outputNode.threshold = outputNode.threshold + (50*this.LTPRate);
-      }
-
-      // For each connection in outputNode.connectionIds
-      for (var c = 0; c < outputNode.connectionIds.length; c++) {
-
-        let connectionId = outputNode.connectionIds[c];
-        let conn = this.connections[connectionId];
-        let toNode = this.outputNodes[conn.toId];
-        let fromNode = this.inputNodes[conn.fromId];
-
-        // Determine if fromNode fired before toNode - LTP
-        let deltaT = fromNode.lastFired - toNode.lastFired;   // Negative number if fromNode was before toNode
-        let withinLTPRange = (deltaT <= 0) && (-deltaT < this.LTPWindow)
-        if (toNode.learning && (toNode.value > toNode.threshold*1.3)) {
-
-          if (withinLTPRange) {
-
-            // LTP this connection
-            //if (LOGGING) { console.log("%cLTP " + conn.fromId + " → " + conn.toId + "\tΔw = " + deltaW.toFixed(2) + "\tΔt = " + deltaT, "color: green") }
-            setWeight(conn, conn.weight + this.LTPRate);
-
-
-          } else {
-            // LTD this connection
-            setWeight(conn, conn.weight - this.LTDRate);
-
-          }
-
-        }
-      }
-
-      // Reset node to resting value
-      outputNode.value = 0;
     }
 
     // Inhibit losing nodes
@@ -264,12 +216,54 @@ class Network {
 
     }
 
-    // Calculate firing stats
-    if (winnerIds.length > 0) { this.outputHistory.push(winnerIds) }
-    if (this.outputHistory.length > 256) { this.outputHistory.shift() };
-    if (this.inputHistory.length > 256) { this.inputHistory.shift() };
-
     return winnerIds;
+  }
+
+
+  // Perform learning step (make output node more receptive to recently fired inputs)
+  learn(outputNode) {
+
+    var spikeIntensity = outputNode.value / outputNode.threshold;
+
+    // Spike the winner
+    outputNode.isFiring = true;
+    outputNode.lastFired = this.cycle;
+
+    // Increase threshold if spikeIntensity is above 130%
+    if (spikeIntensity > 1.3) {
+      outputNode.threshold = outputNode.threshold + (5);
+    }
+
+    // For each connection in outputNode.connectionIds
+    for (var c = 0; c < outputNode.connectionIds.length; c++) {
+
+      let connectionId = outputNode.connectionIds[c];
+      let conn = this.connections[connectionId];
+      let toNode = this.outputNodes[conn.toId];
+      let fromNode = this.inputNodes[conn.fromId];
+
+      // Determine if fromNode fired before toNode - LTP
+      var deltaT = fromNode.lastFired - toNode.lastFired;   // Negative number if fromNode was before toNode
+      let withinLTPRange = (deltaT <= 0) && (-deltaT < this.LTPWindow)
+      if (toNode.value > toNode.threshold) {
+
+        if (withinLTPRange) {
+
+          // LTP this connection
+          setWeight(conn, conn.weight + this.LTPRate);
+
+
+        } else {
+          // LTD this connection
+          setWeight(conn, conn.weight - this.LTDRate);
+
+        }
+
+      }
+    }
+
+    // Reset node to resting value
+    outputNode.value = 0;
   }
 
 }
