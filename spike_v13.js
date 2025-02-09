@@ -3,9 +3,10 @@ class Node {
   constructor(threshold) {
 
     this.value = 0;
+    this.peakValue = 0;
     this.connectionIds = [];
     this.isFiring = false;
-    this.lastFired = -100;
+    this.lastFired = -10000;
     this.threshold = threshold;
 
   }
@@ -113,7 +114,9 @@ class Network {
     // Set previous activations to zero
     for (var j = 0; j < this.outputNodes.length; j++) {
       this.outputNodes[j].value = 0;
-      this.outputNodes[j].isFiring = false;
+      this.outputNodes[j].peakValue = 0;
+      //this.outputNodes[j].lastFired = -1000;
+      //this.outputNodes[j].isFiring = false;
     }
 
     for (var i = 0; i < data.length; i++) {
@@ -121,10 +124,6 @@ class Network {
       var winnerIds = this.step(data[i]);
       if (winnerIds.length > 0) { this.outputHistory.push(winnerIds) };
 
-      // if (winnerIds.length > 0) {
-      //   this.learn(this.outputNodes[3]);
-      //   console.log("learning 3")
-      // }
       if (this.outputHistory.length > 256) { this.outputHistory.shift() };
       this.cycle = this.cycle + 1;
 
@@ -149,8 +148,8 @@ class Network {
         let fromNode = this.inputNodes[conn.fromId];
         let toNode = this.outputNodes[conn.toId];
 
-        // Integrate only if the output isnt already firing
-        if (!toNode.isFiring) { toNode.value = toNode.value + conn.weight };
+        // Integrate only if the output is not already firing
+        if (!toNode.isFiring) { toNode.value = toNode.value + conn.weight; toNode.peakValue = toNode.value };
 
       }
 
@@ -173,6 +172,13 @@ class Network {
       return 0;                       // Return 0 if they are equal
     });
 
+    // // Sort the outputNodes by intensity
+    // activations.sort(function(a, b) {
+    //   if (a[3] < b[3]) { return 1 }   // Return 1 to move `a` after `b` (descending order)
+    //   if (a[3] > b[3]) { return -1}   // Return -1 to move `a` before `b` (descending order)
+    //   return 0;                       // Return 0 if they are equal
+    // });
+
     // Compile list of winners and losers
     for (var j = 0; j < activations.length; j++) {
       if ((activations[j][1] >= activations[j][2]) && (winnerIds.length < this.numWinners)) {
@@ -189,7 +195,7 @@ class Network {
       var outputNode = this.outputNodes[nodeId];
 
       var spikeIntensity = outputNode.value / outputNode.threshold;
-      if (LOGGING) { console.log("Node fired: " + nodeId + " on " + this.cycle + "/" + this.cycle%256 + " at spikeIntensity: " + spikeIntensity.toFixed(2)) }
+      if (LOGGING) { console.log("Node fired: " + nodeId + " on " + this.cycle%256 + " with spikeIntensity: " + spikeIntensity.toFixed(2)) }
       this.learn(outputNode);
 
     }
@@ -251,6 +257,7 @@ class Network {
 
           // LTP this connection
           setWeight(conn, conn.weight + this.LTPRate);
+          //fromNode.lastFired = -1000;
 
 
         } else {

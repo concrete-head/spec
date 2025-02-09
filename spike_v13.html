@@ -42,15 +42,11 @@
 
     <h3>Learnings / Changes / Outstanding Questions</h3>
     <ul>
-      <li>By simply firing the node with the highest activation it causes multiple nodes to learn almost same thing. Each time a node fires it tunes itself more closely to the stimulus that just fired. Since the stimulus has a certain amount of natural variation we will end up creating one node for each of the infinite variations. A mechanism is needed to prevent this. This is solved by having a learning threshold that is some factor higher than the firing threshold. This causes nodes to learn a pattern only up to a certain point.</li>
-      <li>Nodes to fire</li>
-      <li>At 64x64 image size. Only approx 500 of 4096 (i.e. 12%) of inputs are needed determine what an object is. i.e. NodesToFire should be 500 and threshold needs to be less than that. The closer the threshold to 500 the more pixels have to match to get a node to fire</li>
-      <li>Still unsure what best decay rate is. Perhaps zero?</li>
-      <li>Add reinforcement step. Favour a node to fire</li>
+      <li>When a node fires, the input nodes that caused it to fire should have their lastFired value set to -1000</li>
+      <li>Nodes learning the same thing</li>
     </ul>
 
-    <h1>Fundamental issue with LTP and LTD nor being applied correctly.</h1>
-    <h1>Spike how does the spike train get stored, graphed and why is there a shift operator there?</h1>
+
   </div>
 
   <div id="contols">
@@ -65,9 +61,6 @@
 
     <input type="checkbox" id="LoggingButton" onclick="LOGGING = this.checked">
     <label for="LoggingButton">Logging ON/OFF (L)</label><br>
-
-    <input type="checkbox" id="LearningButton" onclick="LEARNING = this.checked" checked>
-    <label for="LearningButton">Learning ON/OFF</label><br>
 
     <input type="checkbox" id="InhibitionButton" onclick="snn.inhibition = !snn.inhibition" checked>
     <label for="InhibitionButton">Local Inhibition ON/OFF (i)</label><br>
@@ -112,7 +105,7 @@
         <h3>Network Weights</h3>
         <div>
           Total Connections: <span id="total_connections"></span><br>
-          <button onclick="snn.pruneNetwork(0.05)">Prune Connections</button><br>
+          <button onclick="snn.pruneNetwork(0.8)">Prune Connections</button><br>
           <button onclick="snn.addOutputNode(); resizeCanvases()">New node (n)</button><br>
         </div>
         <div id="weights">
@@ -154,7 +147,6 @@
           var PAUSE_AFTER_NEXT_FRAME = false;
           var GRID_SIZE = 4;           // Determines the size of the grid when drawn
           var LOGGING = document.getElementById("LoggingButton").checked;
-          var LEARNING = true;
           var RANDOM_INPUT = false;   // Use random (noise) input data
 
           // Get the canvas element
@@ -254,6 +246,7 @@
             let max = network.outputNodes[0].threshold;
             for (let i = 1; i < network.outputNodes.length; i++) if (network.outputNodes[i].threshold > max) { max = network.outputNodes[i].threshold };
             if (network.defaultThreshold > max) { max = network.defaultThreshold };
+            max = max * 1.5;
             let scaleFactor = canvas.height / max;
             //scaleFactor = 0.2
             let xScale = canvas.width / network.outputNodes.length;
@@ -261,21 +254,22 @@
             // Draw threshold bars in blue
             for (var s = 0; s < network.outputNodes.length; s++) {
 
-              ctx.fillStyle = "blue";
-              ctx.fillRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].threshold * scaleFactor);
+              ctx.strokeStyle = "blue";
+              ctx.strokeRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].threshold * scaleFactor);
               ctx.fillStyle = "black";
               ctx.fillText(network.outputNodes[s].threshold.toFixed(1), s*xScale, canvas.height);
 
             }
 
-            // Draw activation bars in red
+            // Draw peak activation bars in red
             for (s = 0; s < network.outputNodes.length; s++) {
-              ctx.fillStyle = "red";
-              ctx.fillRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].value * scaleFactor);
+              ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Semi transparent red
+              ctx.fillRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].peakValue * scaleFactor);
             }
 
             // Draw starting threshold line
             ctx.beginPath();
+            ctx.strokeStyle = "black";
             ctx.moveTo(0, canvas.height - (network.defaultThreshold * scaleFactor));
             ctx.lineTo(canvas.width, canvas.height - (network.defaultThreshold * scaleFactor));
             ctx.stroke();
@@ -327,20 +321,6 @@
 
             }
 
-            // // Red box around node currently firing
-            // if (network.outputHistory.length > 0) {
-            //
-            //   ctx.strokeStyle = "red";
-            //   ctx.strokeRect(0, network.outputHistory[network.outputHistory.length-1]*frameWidth*2, frameWidth, frameWidth);
-            // }
-            //
-            // // Green box around nodes that have finished learning
-            // for (var n = 0; n < network.outputNodes.length; n++) {
-            //   if (!network.outputNodes[n].learning) {
-            //     ctx.strokeStyle = "green";
-            //     ctx.strokeRect(2, (n*frameWidth*2)+2, frameWidth-4, frameWidth-4);
-            //   }
-            // }
           }
 
           // Draw the weights grid
@@ -348,17 +328,6 @@
 
             var ctx = canvas.getContext("2d", { willReadFrequently: true });
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // // Draw X in top left
-            // ctx.beginPath();
-            // ctx.moveTo(0, 0);
-            // ctx.lineTo(GRID_SIZE, GRID_SIZE);
-            // ctx.stroke()
-            // ctx.beginPath();
-            // ctx.moveTo(GRID_SIZE, 0);
-            // ctx.lineTo(0, GRID_SIZE);
-            // ctx.stroke()
-
             var yScale = canvas.height / network.inputNodes.length;
 
             // For each connection
@@ -529,16 +498,37 @@
                 const imageData = ctx.createImageData(width, height);
                 const data = imageData.data;
 
-                // Fill the ImageData with random data
-                for (let i = 0; i < data.length; i += 4) {
 
-                  //let rand = Math.floor(Math.random() * 255);
-                  let rand = Math.floor(randomGenerator.random() * 255);
-                  data[i] = rand;    // Red channel
-                  data[i + 1] = rand // Green channel
-                  data[i + 2] = rand // Blue channel
-                  data[i + 3] = 255; // Alpha channel (fully opaque)
+                var s = new Date().getSeconds();
+                var ms =  new Date().getMilliseconds()
+                if ((s%2 == 0) && (ms < 600)) {
+                  randomGenerator.seed = 0;
+                } else {
+                  randomGenerator.seed = Math.floor(Math.random() * 1000000)
                 }
+
+                // Generate 5000 random data points
+                for (let i = 0; i < 5000; i++) {
+
+                  let pixelId = parseInt(randomGenerator.random(0, data.length/4));
+                  let id = pixelId * 4;
+                  data[id] = 255;
+                  data[id+3] = 255;
+
+                }
+
+
+
+                // // Fill the ImageData with random data
+                // for (let i = 0; i < data.length; i += 4) {
+                //
+                //   //let rand = Math.floor(Math.random() * 255);
+                //   let rand = Math.floor(randomGenerator.random() * 255);
+                //   data[i] = rand;    // Red channel
+                //   data[i + 1] = rand // Green channel
+                //   data[i + 2] = rand // Blue channel
+                //   data[i + 3] = 255; // Alpha channel (fully opaque)
+                // }
 
                 // Draw the random pixel data onto the canvas
                 ctx.putImageData(imageData, 0, 0);
@@ -603,7 +593,7 @@
 
             // Setup array
             var spikeTrain = [];
-            for (var t = 0; t < 256; t++) { spikeTrain[t] = [] }
+            for (var bin = 0; bin < 256; bin++) { spikeTrain[bin] = [] }
 
             // Collect pixel data from on-center and off-center canvases and populate spikeTrain
             for (var c = 0; c < canvases.length; c++) {
@@ -615,7 +605,8 @@
 
                 if (imageData[i] > 0) {
                   const luminance = imageData[i];
-                  spikeTrain[parseInt(255-luminance)].push(inputNodeId);
+                  let bin = parseInt(255-luminance);
+                  spikeTrain[bin].push(inputNodeId);
                 }
                 inputNodeId = inputNodeId + 1;
               }
@@ -664,10 +655,19 @@
               this.resetInterval = 2*4096;
             }
 
-            random() {
+
+            random(min, max) {
               var x = Math.sin(this.seed++) * 10000;
-              this.seed = this.seed % this.resetInterval;
-              return x - Math.floor(x);
+              x = x - Math.floor(x)
+
+              // var s = new Date().getSeconds();
+              // var ms =  new Date().getMilliseconds()
+              // if ((s%3 == 0) && (ms < 200)) { return ms }
+
+
+              return Math.floor(x * (max - min + 1)) + min;
+              //if ((s%4 == 0) && (ms < 400)) { return 1000+ms }
+              //this.seed = this.seed % this.resetInterval;
             }
           }
 
@@ -675,7 +675,7 @@
 
 
           var inputSize = parseInt(document.getElementById("INPUT_CANVAS_1").width * document.getElementById("INPUT_CANVAS_1").height)*2;
-          var snn = new Network({ numInputs: inputSize, numOutputs: 6, LTPRate: 0.2, LTDRate: 0.02, threshold: 1, refractoryTime: 255, LTPWindow: 50, decayRate: 0.00, inhibition: true, numWinners: 1 });
+          var snn = new Network({ numInputs: inputSize, numOutputs: 1, LTPRate: 0.2, LTDRate: 0.05, threshold: 1, refractoryTime: 200, LTPWindow: 100, decayRate: 0.00, inhibition: true, numWinners: 1 });
           var randomGenerator = new PseudoRandomGenerator();
 
           resizeCanvases();
