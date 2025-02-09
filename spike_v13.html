@@ -246,9 +246,7 @@
             let max = network.outputNodes[0].threshold;
             for (let i = 1; i < network.outputNodes.length; i++) if (network.outputNodes[i].threshold > max) { max = network.outputNodes[i].threshold };
             if (network.defaultThreshold > max) { max = network.defaultThreshold };
-            max = max * 1.5;
-            let scaleFactor = canvas.height / max;
-            //scaleFactor = 0.2
+            let scaleFactor = canvas.height / (max * 1.5);
             let xScale = canvas.width / network.outputNodes.length;
 
             // Draw threshold bars in blue
@@ -257,7 +255,6 @@
               ctx.strokeStyle = "blue";
               ctx.strokeRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].threshold * scaleFactor);
               ctx.fillStyle = "black";
-              ctx.fillText(network.outputNodes[s].threshold.toFixed(1), s*xScale, canvas.height);
 
             }
 
@@ -276,8 +273,7 @@
             ctx.fillStyle = "black";
             ctx.textAlign = "left";
             ctx.textBaseline = "top";
-            // ctx.fillText("Starting threshold", 0, canvas.height/2);
-            ctx.fillText((canvas.height / scaleFactor).toFixed(1), 0, 0);
+            ctx.fillText((max).toFixed(1), 0, 0);
 
           }
 

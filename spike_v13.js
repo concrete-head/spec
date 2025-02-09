@@ -3,7 +3,7 @@ class Node {
   constructor(threshold) {
 
     this.value = 0;
-    this.peakValue = 0;
+    this.peakValue = 0;           // Peak activation for this cycle
     this.connectionIds = [];
     this.isFiring = false;
     this.lastFired = -10000;
@@ -28,6 +28,7 @@ class Connection {
 // Network class
 class Network {
   constructor({numInputs, numOutputs, LTPRate, LTDRate, threshold, LTPWindow, refractoryTime, decayRate, inhibition, numWinners}) {
+    
     this.inputNodes = [];
     this.outputNodes = [];
     this.connections = [];
@@ -107,10 +108,10 @@ class Network {
   }
 
 
-  // Run a feed forward step on the network
-  feedForward(data) {
+  // Run a feed forward pass on the network
+  feedForward(inputData) {
 
-    this.spikeTrain = data;
+    this.spikeTrain = inputData;
     // Set previous activations to zero
     for (var j = 0; j < this.outputNodes.length; j++) {
       this.outputNodes[j].value = 0;
@@ -119,12 +120,17 @@ class Network {
       //this.outputNodes[j].isFiring = false;
     }
 
-    for (var i = 0; i < data.length; i++) {
+    for (var i = 0; i < inputData.length; i++) {
 
-      var winnerIds = this.step(data[i]);
-      if (winnerIds.length > 0) { this.outputHistory.push(winnerIds) };
+      var winnerIds = this.step(inputData[i]);
+      
+      if (winnerIds.length > 0) { 
+        
+        this.outputHistory.push(winnerIds);
+        if (this.outputHistory.length > 256) { this.outputHistory.shift() };
+      
+      };
 
-      if (this.outputHistory.length > 256) { this.outputHistory.shift() };
       this.cycle = this.cycle + 1;
 
     }
@@ -167,17 +173,10 @@ class Network {
 
     // Sort the outputNodes by activation
     activations.sort(function(a, b) {
-      if (a[1] < b[1]) { return 1 }   // Return 1 to move `a` after `b` (descending order)
-      if (a[1] > b[1]) { return -1}   // Return -1 to move `a` before `b` (descending order)
+      if (a[1] < b[1]) { return -1 }   // Return 1 to move `a` after `b` (descending order)
+      if (a[1] > b[1]) { return 1}   // Return -1 to move `a` before `b` (descending order)
       return 0;                       // Return 0 if they are equal
     });
-
-    // // Sort the outputNodes by intensity
-    // activations.sort(function(a, b) {
-    //   if (a[3] < b[3]) { return 1 }   // Return 1 to move `a` after `b` (descending order)
-    //   if (a[3] > b[3]) { return -1}   // Return -1 to move `a` before `b` (descending order)
-    //   return 0;                       // Return 0 if they are equal
-    // });
 
     // Compile list of winners and losers
     for (var j = 0; j < activations.length; j++) {
