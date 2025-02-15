@@ -32,20 +32,24 @@
         grid-template-columns: auto auto auto auto;
       }
 
+      .grid_item {
+        padding: 10px;
+      }
+
+      .small {
+        font-size: small;
+      }
+
     </style>
   </head>
 <body>
   <div style="display: block">
     <h1>Spiking Neural Network v13</h1>
-    <p>This is a single layer leaky integrate and fire (LIF) spiking neural network (SNN) that uses spike timing dependent plasticity (STDP). The leftmost column shows the input spikes, the topmost row is the output nodes, the main grid shows the connections.</p>
-    <p>With sufficient output nodes the network can learn any pattern.</p>
 
     <h3>Learnings / Changes / Outstanding Questions</h3>
     <ul>
-      <li>When a node fires, the input nodes that caused it to fire should have their lastFired value set to -1000</li>
-      <li>Nodes learning the same thing</li>
+      <li>interestingly, sorting the winners from lowest to highest still works!</li>
     </ul>
-
 
   </div>
 
@@ -64,6 +68,16 @@
 
     <input type="checkbox" id="InhibitionButton" onclick="snn.inhibition = !snn.inhibition" checked>
     <label for="InhibitionButton">Local Inhibition ON/OFF (i)</label><br>
+
+    <input type="checkbox" id="DepletionButton" onclick="snn.depletion = !snn.depletion" checked>
+    <label for="DepletionButton">Depletion ON/OFF</label><br>
+
+    <input type="checkbox" id="ThresholdIncreaseButton" onclick="snn.thresholdIncrease = !snn.thresholdIncrease" checked>
+    <label for="ThresholdIncreaseButton">Threshold Increase ON/OFF</label><br>
+
+    <label for="DecayRateSlider">Decay rate</label>
+    <input type="number" min="0" max="1" value="0.01" step="0.01" id="DecayRateSlider" onchange="snn.decayRate = this.value"><br>
+
     <label>To simulate frame by frame press the right arrow key</label><br>
 
     Cycle: <span id="cycle_count"></span><br>
@@ -77,14 +91,10 @@
 
       <h3>Input</h3>
 
-
       <input type="radio" id="CAMERA_INPUT" name="INPUT_TYPE" value="Camera input" checked>
       <label for="CAMERA_INPUT">Camera input</label><br>
       <input type="radio" id="RANDOM_INPUT" name="INPUT_TYPE" value="Pseudo random input">
       <label for="RANDOM_INPUT">Pseudo random noise input</label><br>
-
-
-
 
       <input type="checkbox" id="DRAW_INPUT_CANVAS" onclick="showInput(this.checked)">
       <label for="DRAW_INPUT_CANVAS">Show Input </label><br>
@@ -102,7 +112,7 @@
     </div>
 
       <div class="grid_item">
-        <h3>Network Weights</h3>
+        <h3>Weights</h3>
         <div>
           Total Connections: <span id="total_connections"></span><br>
           <button onclick="snn.pruneNetwork(0.8)">Prune Connections</button><br>
@@ -118,28 +128,21 @@
       </div>
 
       <div class="grid_item">
-        <h3>Output Thresholds and Activations<h3>
-          <div style="color: red">&#9632; Activation</div>
-          <div style="color: blue">&#9632; Threshold</div>
-          <div style="color: black">─ Starting Threshold</div>
-          <canvas id="WEIGHT_SUMS_CANVAS" width="200" height="200"></canvas>
+        <h3>Outputs<h3>
+          <div class="small" style="color: red">&#9632; Activation</div>
+          <div class="small" style="color: blue">&#9632; Threshold</div>
+          <canvas id="WEIGHT_SUMS_CANVAS" width="256" height="200"></canvas>
 
           <h3>Output Spike Train<h3>
             <canvas id="output_history_canvas" width="256" height="100" style="border: 1px solid black"></canvas>
           </div>
           <div class="grid_item">
-            <h3>Reconstruction / Receptivity</h3>
+            <h3>Reconstruction</h3>
             <canvas id="reconstruction_canvas"></canvas>
           </div>
 
           <script src="spike_v13.js"></script>
           <script>
-
-          // Initialise global variables that reference DOM elements here
-          window.onload = function () {
-            // Your script here
-            console.log("Page has fully loaded!");
-          };
 
           const ANIMATION_INTERVAL = 100;  // ms delay between steps
           var ANIMATE = document.getElementById("AnimationButton").checked;
@@ -148,6 +151,8 @@
           var GRID_SIZE = 4;           // Determines the size of the grid when drawn
           var LOGGING = document.getElementById("LoggingButton").checked;
           var RANDOM_INPUT = false;   // Use random (noise) input data
+          var randomGenerator;
+          var snn;                    // The global spiking neural network
 
           // Get the canvas element
           const RECONSTRUCTION_CANVAS = document.getElementById("reconstruction_canvas");
@@ -220,10 +225,13 @@
             var ctx = canvas.getContext("2d", { willReadFrequently: true });
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            var yScale = canvas.height / network.outputNodes.length;
+
             for (var x = 0; x < network.outputHistory.length; x++) {
               for (var i = 0; i < network.outputHistory[x].length; i++) {
-                let y = canvas.height - (GRID_SIZE*network.outputHistory[x][i])
-                ctx.fillRect(x, y, 2, -GRID_SIZE);
+                //let y = canvas.height - (GRID_SIZE*network.outputHistory[x][i])
+                let y = canvas.height - (yScale * network.outputHistory[x][i]);
+                ctx.fillRect(x, y, 2, -yScale);
               }
             }
 
@@ -382,24 +390,6 @@
 
           }
 
-          // Set a connection weight to range [0 - 1]
-          function setWeight(conn, x) {
-            if (!conn.locked) {
-              if (x < 0) {
-                //conn.locked = true;
-                //snn.pruneNetwork(0.01);
-                conn.weight = 0;
-              } else if (x > 1) {
-                //conn.locked = true;
-                conn.weight = 1;
-              } else {
-                conn.weight = x;
-              }
-
-            }
-          }
-
-
           const inputSelectorButtons = document.querySelectorAll('input[name="INPUT_TYPE"]');
           // Add an event listener to each radio button
           inputSelectorButtons.forEach(function(radio) {
@@ -425,11 +415,9 @@
               PAUSE_AFTER_NEXT_FRAME = false;
             }
             if (event.key === "L" || event.key === "l") {
-              //LOGGING = !LOGGING;
               document.getElementById("LoggingButton").click();
             }
             if (event.key === "A" || event.key === "a") {
-              //ANIMATE = !ANIMATE;
               document.getElementById("AnimationButton").click();
             }
 
@@ -441,7 +429,6 @@
             if (event.key === "I" || event.key === "i") {
               document.getElementById("InhibitionButton").click();
             }
-
 
           });
 
@@ -654,27 +641,17 @@
 
             random(min, max) {
               var x = Math.sin(this.seed++) * 10000;
-              x = x - Math.floor(x)
+              x = x - Math.floor(x);
 
               // var s = new Date().getSeconds();
               // var ms =  new Date().getMilliseconds()
               // if ((s%3 == 0) && (ms < 200)) { return ms }
-
 
               return Math.floor(x * (max - min + 1)) + min;
               //if ((s%4 == 0) && (ms < 400)) { return 1000+ms }
               //this.seed = this.seed % this.resetInterval;
             }
           }
-
-
-
-
-          var inputSize = parseInt(document.getElementById("INPUT_CANVAS_1").width * document.getElementById("INPUT_CANVAS_1").height)*2;
-          var snn = new Network({ numInputs: inputSize, numOutputs: 1, LTPRate: 0.2, LTDRate: 0.05, threshold: 1, refractoryTime: 200, LTPWindow: 100, decayRate: 0.00, inhibition: true, numWinners: 1 });
-          var randomGenerator = new PseudoRandomGenerator();
-
-          resizeCanvases();
 
 
           // Resize the canvas's based on network sizew
@@ -688,6 +665,47 @@
 
           }
 
-          </script>
-        </body>
-      </html>
+          // Initialise global variables that reference DOM elements here
+          window.onload = function () {
+
+            var inputSize = parseInt(document.getElementById("INPUT_CANVAS_1").width * document.getElementById("INPUT_CANVAS_1").height)*2;
+            randomGenerator = new PseudoRandomGenerator();
+            snn = new Network({
+              numInputs: inputSize,
+              numOutputs: 1,
+              LTPRate: 0.2,
+              LTDRate: 0.05,
+              threshold: 1,
+              refractoryTime: 200,
+              LTPWindow: 100,
+              decayRate: 0.00,
+              inhibition: document.getElementById("InhibitionButton").checked,
+              numWinners: 1,
+              depletion: document.getElementById("DepletionButton").checked,
+              thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
+            });
+
+            resizeCanvases();
+
+
+            var text_snn = new Network({
+              numInputs: 100,
+              numOutputs: 10,
+              LTPRate: 0.2,
+              LTDRate: 0.05,
+              threshold: 1,
+              refractoryTime: 200,
+              LTPWindow: 100,
+              decayRate: 0.00,
+              inhibition: document.getElementById("InhibitionButton").checked,
+              numWinners: 1,
+              depletion: document.getElementById("DepletionButton").checked,
+              thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
+            });
+
+            console.log("Initialisation Complete!");
+          };
+
+    </script>
+  </body>
+</html>

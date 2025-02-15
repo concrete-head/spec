@@ -22,13 +22,32 @@ class Connection {
     //this.weight = 0.8 + (0.2 * Math.random());
     this.weight = 0.1;
   }
+
+  // Set a connection weight to range [0 - 1]
+  setWeight(x) {
+    if (!this.locked) {
+      if (x < 0) {
+        //conn.locked = true;
+        this.weight = 0;
+        //this.weight = x;
+      } else if (x > 1) {
+        //this.locked = true;
+        this.weight = 1;
+        //this.weight = x;
+      } else {
+        this.weight = x;
+      }
+
+    }
+  }
+
 }
 
 
 // Network class
 class Network {
-  constructor({numInputs, numOutputs, LTPRate, LTDRate, threshold, LTPWindow, refractoryTime, decayRate, inhibition, numWinners}) {
-    
+  constructor({numInputs, numOutputs, LTPRate, LTDRate, threshold, LTPWindow, refractoryTime, decayRate, inhibition, numWinners, depletion, thresholdIncrease}) {
+
     this.inputNodes = [];
     this.outputNodes = [];
     this.connections = [];
@@ -43,6 +62,8 @@ class Network {
     this.spikeTrain = [];
     this.refractoryTime = refractoryTime;
     this.defaultThreshold = threshold;
+    this.depletion = depletion;
+    this.thresholdIncrease = thresholdIncrease;
 
     // Create input and output nodes
     for (var i = 0; i < numInputs; i++) {
@@ -108,6 +129,27 @@ class Network {
   }
 
 
+  // Make it so the sum of weights to an output node is 1
+  normaliseWeights() {
+
+    for (var j = 0; j < this.outputNodes.length; j++) {
+      let node = this.outputNodes[j];
+      var sum = 0;
+      for (var c = 0; c < node.connectionIds.length; c++) {
+        let connectionId = node.connectionIds[c];
+        let conn = this.connections[connectionId];
+        sum = sum + conn.weight;
+      }
+
+      console.log("Neuron: " + j + " sum = " + sum)
+      var k = 10 / sum;
+      for (c = 0; c < node.connectionIds.length; c++) {
+        let connectionId = node.connectionIds[c];
+        this.connections[connectionId].weight = this.connections[connectionId].weight * k;
+      }
+    }
+  }
+
   // Run a feed forward pass on the network
   feedForward(inputData) {
 
@@ -123,12 +165,12 @@ class Network {
     for (var i = 0; i < inputData.length; i++) {
 
       var winnerIds = this.step(inputData[i]);
-      
-      if (winnerIds.length > 0) { 
-        
+
+      if (winnerIds.length > 0) {
+
         this.outputHistory.push(winnerIds);
         if (this.outputHistory.length > 256) { this.outputHistory.shift() };
-      
+
       };
 
       this.cycle = this.cycle + 1;
@@ -173,8 +215,8 @@ class Network {
 
     // Sort the outputNodes by activation
     activations.sort(function(a, b) {
-      if (a[1] < b[1]) { return -1 }   // Return 1 to move `a` after `b` (descending order)
-      if (a[1] > b[1]) { return 1}   // Return -1 to move `a` before `b` (descending order)
+      if (a[1] < b[1]) { return 1 }   // Return 1 to move `a` after `b` (descending order)
+      if (a[1] > b[1]) { return -1}   // Return -1 to move `a` before `b` (descending order)
       return 0;                       // Return 0 if they are equal
     });
 
@@ -196,7 +238,7 @@ class Network {
       var spikeIntensity = outputNode.value / outputNode.threshold;
       if (LOGGING) { console.log("Node fired: " + nodeId + " on " + this.cycle%256 + " with spikeIntensity: " + spikeIntensity.toFixed(2)) }
       this.learn(outputNode);
-
+      //this.normaliseWeights()
     }
 
     // Inhibit losing nodes
@@ -234,9 +276,11 @@ class Network {
     outputNode.isFiring = true;
     outputNode.lastFired = this.cycle;
 
-    // Increase threshold if spikeIntensity is above 130%
-    if (spikeIntensity > 1.3) {
-      outputNode.threshold = outputNode.threshold + (5);
+    //Increase threshold if spikeIntensity is above 130%
+    if (this.thresholdIncrease) {
+      if (spikeIntensity > 1.3) {
+        outputNode.threshold = outputNode.threshold + (5);
+      }
     }
 
     // For each connection in outputNode.connectionIds
@@ -255,13 +299,15 @@ class Network {
         if (withinLTPRange) {
 
           // LTP this connection
-          setWeight(conn, conn.weight + this.LTPRate);
-          //fromNode.lastFired = -1000;
+          conn.setWeight(conn.weight + this.LTPRate);
+          if (this.depletion) {
+            fromNode.lastFired = -1000;
+          }
 
 
         } else {
           // LTD this connection
-          setWeight(conn, conn.weight - this.LTDRate);
+          conn.setWeight(conn.weight - this.LTDRate);
 
         }
 
