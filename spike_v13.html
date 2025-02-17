@@ -40,25 +40,87 @@
         font-size: small;
       }
 
+    .checkbox-container {
+      width: 60px;
+      height: 60px;
+    }
+
+    .checkbox-container input {
+      display: none;
+    }
+
+    .play-pause {
+      width: 100%;
+      height: 100%;
+      background-color: #4caf50;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .play-pause::before {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 12px 0 12px 20px;
+      border-color: transparent transparent transparent white;
+      transition: transform 0.3s ease;
+    }
+
+    .checkbox-container input:checked + .play-pause {
+      background-color: red;
+    }
+
+    .checkbox-container input:checked + .play-pause::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background-color: white;
+      border-radius: 2px;
+    }
+
+    .checkbox-container input:checked + .play-pause::after {
+      content: '';
+      width: 8px;
+      height: 20px;
+      background-color: white;
+      border-radius: 2px;
+      position: absolute;
+    }
+
+
+
+
     </style>
   </head>
 <body>
+
+
+
+
+
+
   <div style="display: block">
     <h1>Spiking Neural Network v13</h1>
-
-    <h3>Learnings / Changes / Outstanding Questions</h3>
-    <ul>
-      <li>interestingly, sorting the winners from lowest to highest still works!</li>
-    </ul>
 
   </div>
 
   <div id="contols">
 
+
+
     <h3>Controls</h3>
 
-    <input type="checkbox" id="PlayPauseButton" onclick="PLAYING = this.checked">
-    <label for="PlayPauseButton">Play/Pause (Space)</label><br>
+    <div class="checkbox-container">
+      <input type="checkbox" id="play-pause" onclick="PLAYING = this.checked">
+      <label for="play-pause" class="play-pause"></label>
+    </div><br>
+
 
     <input type="checkbox" id="AnimationButton" onclick="ANIMATE = this.checked" checked>
     <label for="AnimationButton">Animate (a)</label><br>
@@ -69,11 +131,14 @@
     <input type="checkbox" id="InhibitionButton" onclick="snn.inhibition = !snn.inhibition" checked>
     <label for="InhibitionButton">Local Inhibition ON/OFF (i)</label><br>
 
-    <input type="checkbox" id="DepletionButton" onclick="snn.depletion = !snn.depletion" checked>
-    <label for="DepletionButton">Depletion ON/OFF</label><br>
+    <input type="checkbox" id="NodeLagButton" onclick="snn.nodeLag = !snn.nodeLag" checked>
+    <label for="NodeLagButton">Presynaptic Node Lag ON/OFF</label><br>
 
     <input type="checkbox" id="ThresholdIncreaseButton" onclick="snn.thresholdIncrease = !snn.thresholdIncrease" checked>
     <label for="ThresholdIncreaseButton">Threshold Increase ON/OFF</label><br>
+
+    <input type="checkbox" id="ResetAfterFrame" onclick="RESET = this.checked" checked>
+    <label for="ResetAfterFrame">Reset neurons after each frame</label><br>
 
     <label for="DecayRateSlider">Decay rate</label>
     <input type="number" min="0" max="1" value="0.01" step="0.01" id="DecayRateSlider" onchange="snn.decayRate = this.value"><br>
@@ -94,7 +159,7 @@
       <input type="radio" id="CAMERA_INPUT" name="INPUT_TYPE" value="Camera input" checked>
       <label for="CAMERA_INPUT">Camera input</label><br>
       <input type="radio" id="RANDOM_INPUT" name="INPUT_TYPE" value="Pseudo random input">
-      <label for="RANDOM_INPUT">Pseudo random noise input</label><br>
+      <label for="RANDOM_INPUT">Pseudo random noise input (includes a repeating pattern every 2 seconds)</label><br>
 
       <input type="checkbox" id="DRAW_INPUT_CANVAS" onclick="showInput(this.checked)">
       <label for="DRAW_INPUT_CANVAS">Show Input </label><br>
@@ -146,7 +211,8 @@
 
           const ANIMATION_INTERVAL = 100;  // ms delay between steps
           var ANIMATE = document.getElementById("AnimationButton").checked;
-          var PLAYING = document.getElementById("PlayPauseButton").checked;
+          var PLAYING = document.getElementById("play-pause").checked;
+          var RESET = document.getElementById("ResetAfterFrame").checked;
           var PAUSE_AFTER_NEXT_FRAME = false;
           var GRID_SIZE = 4;           // Determines the size of the grid when drawn
           var LOGGING = document.getElementById("LoggingButton").checked;
@@ -411,7 +477,7 @@
             }
             if (event.key === " " || event.key === "Space") {
               event.preventDefault();
-              document.getElementById("PlayPauseButton").click();
+              document.getElementById("play-pause").click();
               PAUSE_AFTER_NEXT_FRAME = false;
             }
             if (event.key === "L" || event.key === "l") {
@@ -480,7 +546,6 @@
 
                 const imageData = ctx.createImageData(width, height);
                 const data = imageData.data;
-
 
                 var s = new Date().getSeconds();
                 var ms =  new Date().getMilliseconds()
@@ -614,7 +679,7 @@
 
             spikeTrain = trimmed;
 
-            snn.feedForward(spikeTrain)
+            snn.feedForward(spikeTrain, RESET)
 
             if (ANIMATE) {
               reconstruct(snn, RECONSTRUCTION_CANVAS);
@@ -672,36 +737,21 @@
             randomGenerator = new PseudoRandomGenerator();
             snn = new Network({
               numInputs: inputSize,
-              numOutputs: 1,
+              numOutputs: 5,
               LTPRate: 0.2,
               LTDRate: 0.05,
-              threshold: 1,
+              startingThreshold: 1,
               refractoryTime: 200,
-              LTPWindow: 100,
-              decayRate: 0.00,
+              LTPWindow: 10,
+              decayRate: document.getElementById("DecayRateSlider").value,
               inhibition: document.getElementById("InhibitionButton").checked,
               numWinners: 1,
-              depletion: document.getElementById("DepletionButton").checked,
+              nodeLag: document.getElementById("NodeLagButton").checked,
               thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
             });
 
             resizeCanvases();
 
-
-            var text_snn = new Network({
-              numInputs: 100,
-              numOutputs: 10,
-              LTPRate: 0.2,
-              LTDRate: 0.05,
-              threshold: 1,
-              refractoryTime: 200,
-              LTPWindow: 100,
-              decayRate: 0.00,
-              inhibition: document.getElementById("InhibitionButton").checked,
-              numWinners: 1,
-              depletion: document.getElementById("DepletionButton").checked,
-              thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
-            });
 
             console.log("Initialisation Complete!");
           };

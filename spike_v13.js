@@ -46,7 +46,7 @@ class Connection {
 
 // Network class
 class Network {
-  constructor({numInputs, numOutputs, LTPRate, LTDRate, threshold, LTPWindow, refractoryTime, decayRate, inhibition, numWinners, depletion, thresholdIncrease}) {
+  constructor({numInputs, numOutputs, LTPRate, LTDRate, startingThreshold, LTPWindow, refractoryTime, decayRate, inhibition, numWinners, nodeLag, thresholdIncrease}) {
 
     this.inputNodes = [];
     this.outputNodes = [];
@@ -61,16 +61,16 @@ class Network {
     this.outputHistory = [];
     this.spikeTrain = [];
     this.refractoryTime = refractoryTime;
-    this.defaultThreshold = threshold;
-    this.depletion = depletion;
-    this.thresholdIncrease = thresholdIncrease;
+    this.startingThreshold = startingThreshold;
+    this.nodeLag = nodeLag;                     // When enabled, if an output node spikes, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from being involved in LTP until they fire again.
+    this.thresholdIncrease = thresholdIncrease;     // When enabled, nodes that fire with strong intensity have their thresholds increased
 
     // Create input and output nodes
     for (var i = 0; i < numInputs; i++) {
-      this.inputNodes.push(new Node(threshold));
+      this.inputNodes.push(new Node(startingThreshold));
     };
     for (i = 0; i < numOutputs; i++) {
-      this.outputNodes.push(new Node(threshold));
+      this.outputNodes.push(new Node(startingThreshold));
     };
 
     // Create connections
@@ -89,7 +89,7 @@ class Network {
   // Create a new output node
   addOutputNode() {
 
-    this.outputNodes.push(new Node(this.defaultThreshold));
+    this.outputNodes.push(new Node(this.startingThreshold));
 
     let newNodeId = this.outputNodes.length-1;
       // Connect it to all input nodes
@@ -151,15 +151,18 @@ class Network {
   }
 
   // Run a feed forward pass on the network
-  feedForward(inputData) {
+  feedForward(inputData, reset) {
 
     this.spikeTrain = inputData;
+
     // Set previous activations to zero
-    for (var j = 0; j < this.outputNodes.length; j++) {
-      this.outputNodes[j].value = 0;
-      this.outputNodes[j].peakValue = 0;
-      //this.outputNodes[j].lastFired = -1000;
-      //this.outputNodes[j].isFiring = false;
+    if (reset) {
+      for (var j = 0; j < this.outputNodes.length; j++) {
+        this.outputNodes[j].value = 0;
+        this.outputNodes[j].peakValue = 0;
+        //this.outputNodes[j].lastFired = -1000;
+        //this.outputNodes[j].isFiring = false;
+      }
     }
 
     for (var i = 0; i < inputData.length; i++) {
@@ -300,7 +303,7 @@ class Network {
 
           // LTP this connection
           conn.setWeight(conn.weight + this.LTPRate);
-          if (this.depletion) {
+          if (this.nodeLag) {
             fromNode.lastFired = -1000;
           }
 
