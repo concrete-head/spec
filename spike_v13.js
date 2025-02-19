@@ -160,8 +160,8 @@ class Network {
       for (var j = 0; j < this.outputNodes.length; j++) {
         this.outputNodes[j].value = 0;
         this.outputNodes[j].peakValue = 0;
-        //this.outputNodes[j].lastFired = -1000;
-        //this.outputNodes[j].isFiring = false;
+        this.outputNodes[j].lastFired = -1000;
+        this.outputNodes[j].isFiring = false;
       }
     }
 

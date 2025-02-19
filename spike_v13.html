@@ -7,6 +7,8 @@
     <style>
       body {
         font-family: monospace;
+        background: #f2f4f4;
+        margin: 0;
       }
 
       .input_canvas {
@@ -29,10 +31,11 @@
 
       .grid_container {
         display: grid;
-        grid-template-columns: auto auto auto auto;
+        grid-template-columns: repeat(4, 1fr);
+
       }
 
-      .grid_item {
+      .grid_item, #controls {
         padding: 10px;
       }
 
@@ -40,9 +43,11 @@
         font-size: small;
       }
 
-    .checkbox-container {
+    .checkbox-container, .next-button {
       width: 60px;
       height: 60px;
+      display: inline-block;
+      font-size: 60px;
     }
 
     .checkbox-container input {
@@ -63,7 +68,7 @@
 
     .play-pause::before {
       content: '';
-      display: block;
+      display: inline-block;
       width: 0;
       height: 0;
       border-style: solid;
@@ -110,7 +115,7 @@
 
   </div>
 
-  <div id="contols">
+  <div id="controls">
 
 
 
@@ -119,7 +124,10 @@
     <div class="checkbox-container">
       <input type="checkbox" id="play-pause" onclick="PLAYING = this.checked">
       <label for="play-pause" class="play-pause"></label>
-    </div><br>
+    </div>
+    <span class="next-button" onclick="nextFrame()">⏭️</span>
+    <br>
+
 
 
     <input type="checkbox" id="AnimationButton" onclick="ANIMATE = this.checked" checked>
@@ -141,7 +149,7 @@
     <label for="ResetAfterFrame">Reset neurons after each frame</label><br>
 
     <label for="DecayRateSlider">Decay rate</label>
-    <input type="number" min="0" max="1" value="0.01" step="0.01" id="DecayRateSlider" onchange="snn.decayRate = this.value"><br>
+    <input type="number" min="0" max="1" value="0" step="0.01" id="DecayRateSlider" onchange="snn.decayRate = this.value"><br>
 
     <label>To simulate frame by frame press the right arrow key</label><br>
 
@@ -152,7 +160,7 @@
 
   <div class="grid_container">
 
-    <div class="grid_item">
+    <div style="background: #eafaf1" class="grid_item">
 
       <h3>Input</h3>
 
@@ -176,7 +184,7 @@
       <canvas style="" id="spike_train_canvas" width="256" height="100" style="border: 1px solid black"></canvas><br>
     </div>
 
-      <div class="grid_item">
+      <div style="background: #ebf5fb" class="grid_item">
         <h3>Weights</h3>
         <div>
           Total Connections: <span id="total_connections"></span><br>
@@ -192,7 +200,7 @@
         </div>
       </div>
 
-      <div class="grid_item">
+      <div style="background: #fbeee6" class="grid_item">
         <h3>Outputs<h3>
           <div class="small" style="color: red">&#9632; Activation</div>
           <div class="small" style="color: blue">&#9632; Threshold</div>
@@ -201,7 +209,7 @@
           <h3>Output Spike Train<h3>
             <canvas id="output_history_canvas" width="256" height="100" style="border: 1px solid black"></canvas>
           </div>
-          <div class="grid_item">
+          <div style="background: #f4ecf7" class="grid_item">
             <h3>Reconstruction</h3>
             <canvas id="reconstruction_canvas"></canvas>
           </div>
@@ -347,7 +355,7 @@
             ctx.fillStyle = "black";
             ctx.textAlign = "left";
             ctx.textBaseline = "top";
-            ctx.fillText((max).toFixed(1), 0, 0);
+            ctx.fillText("Peak: " + max.toFixed(1), 0, 0);
 
           }
 
@@ -449,8 +457,10 @@
 
               if (network.inputNodes[i].isFiring) {
                 ctx.fillStyle = "red";
-                ctx.fillRect(0, y, GRID_SIZE, GRID_SIZE);
+              } else {
+                ctx.fillStyle = "white";
               }
+              ctx.fillRect(0, y, GRID_SIZE, GRID_SIZE);
 
             }
 
@@ -552,7 +562,7 @@
                 if ((s%2 == 0) && (ms < 600)) {
                   randomGenerator.seed = 0;
                 } else {
-                  randomGenerator.seed = Math.floor(Math.random() * 1000000)
+                  randomGenerator.seed = Math.floor(Math.random() * 1000000);
                 }
 
                 // Generate 5000 random data points
@@ -679,7 +689,7 @@
 
             spikeTrain = trimmed;
 
-            snn.feedForward(spikeTrain, RESET)
+            snn.feedForward(spikeTrain, RESET);
 
             if (ANIMATE) {
               reconstruct(snn, RECONSTRUCTION_CANVAS);
@@ -724,8 +734,8 @@
 
             RECONSTRUCTION_CANVAS.width = document.getElementById("INPUT_CANVAS_1").width*2;
             RECONSTRUCTION_CANVAS.height = snn.outputNodes.length * document.getElementById("INPUT_CANVAS_1").width;
-            SPIKE_TRAIN_CANVAS.height = snn.inputNodes.length * 0.1;
-            WEIGHT_CANVAS.height = 0.04 * GRID_SIZE * (snn.inputNodes.length + 1);
+            SPIKE_TRAIN_CANVAS.height = snn.inputNodes.length * 0.05;
+            WEIGHT_CANVAS.height = 0.05 * (snn.inputNodes.length + 1);
             WEIGHT_CANVAS.width = GRID_SIZE * (snn.outputNodes.length + 1);
 
           }
