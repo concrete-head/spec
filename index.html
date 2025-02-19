@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPEC</title>
+    <link rel="icon" href="favicon.drawio.png" type="image/png" >
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #202020;
+            color: #d1d1d1;
+            overflow: hidden;
+            font-family: monospace, sans-serif;
+        }
+
+        .grid {
+            position: absolute;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            width: 100%;
+            height: 100%;
+        }
+
+        .square {
+            background-color: rgba(20, 20, 20, 0.8);
+            animation: flicker 0.5s infinite;
+        }
+
+        .logo-container {
+            z-index: 1;
+            position: relative;
+            max-width:80%;
+            text-align: center;
+
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes flicker {
+          0%, 100% {
+              filter: brightness(1); /* Full brightness */
+          }
+          20%, 80% {
+              filter: brightness(0); /* Dark */
+          }
+          50% {
+              filter: brightness(0.7); /* Partial brightness */
+          }
+        }
+
+        /* Randomize flicker delay */
+        .square:nth-child(1) { animation-delay: 0s; }
+        .square:nth-child(2) { animation-delay: 0.1s; }
+        .square:nth-child(3) { animation-delay: 0.2s; }
+        .square:nth-child(4) { animation-delay: 0.15s; }
+        .square:nth-child(5) { animation-delay: 0.05s; }
+        .square:nth-child(6) { animation-delay: 0.25s; }
+        .square:nth-child(7) { animation-delay: 0.12s; }
+        .square:nth-child(8) { animation-delay: 0.18s; }
+        .square:nth-child(9) { animation-delay: 0.08s; }
+        .square:nth-child(10) { animation-delay: 0.22s; }
+        .square:nth-child(11) { animation-delay: 0.3s; }
+        .square:nth-child(12) { animation-delay: 0.14s; }
+        .square:nth-child(13) { animation-delay: 0.11s; }
+        .square:nth-child(14) { animation-delay: 0.27s; }
+        .square:nth-child(15) { animation-delay: 0.09s; }
+        .square:nth-child(16) { animation-delay: 0.24s; }
+        .square:nth-child(17) { animation-delay: 0.13s; }
+        .square:nth-child(18) { animation-delay: 0.28s; }
+        .square:nth-child(19) { animation-delay: 0.19s; }
+        .square:nth-child(20) { animation-delay: 0.26s; }
+        .square:nth-child(21) { animation-delay: 0.1s; }
+        .square:nth-child(22) { animation-delay: 0.16s; }
+        .square:nth-child(23) { animation-delay: 0.2s; }
+        .square:nth-child(24) { animation-delay: 0.3s; }
+        .square:nth-child(25) { animation-delay: 0.29s; }
+    </style>
+</head>
+<body>
+    <div class="grid">
+        <!-- 25 squares -->
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+    </div>
+
+    <div class="logo-container">
+        <img src="spec_logo.svg" alt="SPEC logo">
+        <p><strong>POSTS</strong></p>
+        <p>
+          <a href="SNN in JS.html">Spiking Neural Network in JS</a><br>
+          Attempts to create an interactive spiking neural network from scratch in JS.
+        </p>
+    </div>
+</body>
+</html>
