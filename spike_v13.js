@@ -1,14 +1,12 @@
 // Node class
 class Node {
   constructor(threshold) {
-
     this.value = 0;
     this.peakValue = 0;           // Peak activation for this cycle
     this.connectionIds = [];
     this.isFiring = false;
     this.lastFired = -10000;
     this.threshold = threshold;
-
   }
 }
 
@@ -18,31 +16,16 @@ class Connection {
     this.fromId = fromId;
     this.toId = toId;
     this.locked = false;
-
-    //this.weight = 0.8 + (0.2 * Math.random());
     this.weight = 0.1;
   }
 
   // Set a connection weight to range [0 - 1]
   setWeight(x) {
     if (!this.locked) {
-      if (x < 0) {
-        //conn.locked = true;
-        this.weight = 0;
-        //this.weight = x;
-      } else if (x > 1) {
-        //this.locked = true;
-        this.weight = 1;
-        //this.weight = x;
-      } else {
-        this.weight = x;
-      }
-
+      this.weight = Math.max(0, Math.min(1, x));
     }
   }
-
 }
-
 
 // Network class
 class Network {
@@ -213,7 +196,12 @@ class Network {
 
     var activations = [];
     for (var nodeId = 0; nodeId < this.outputNodes.length; nodeId++) {
-      activations.push([nodeId, this.outputNodes[nodeId].value, this.outputNodes[nodeId].threshold, this.outputNodes[nodeId].value / this.outputNodes[nodeId].threshold]);
+      activations.push([
+        nodeId,
+        this.outputNodes[nodeId].value,
+        this.outputNodes[nodeId].threshold,
+        this.outputNodes[nodeId].value / this.outputNodes[nodeId].threshold
+      ]);
     }
 
     // Sort the outputNodes by activation

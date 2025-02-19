@@ -1,162 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNN Demo</title>
-    <style>
-      body {
-        font-family: monospace;
-        background: #f2f4f4;
-        margin: 0;
-      }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SNN Demo</title>
+  <style>
+  body {
+    font-family: monospace;
+    background: #f2f4f4;
+    margin: 0;
+  }
 
-      .input_canvas {
-        width: 320px;
-      }
+  .input_canvas {
+    width: 320px;
+  }
 
-      #weights canvas {
-        display: inline-block;
-        vertical-align: top;
-      }
+  #weights canvas {
+    display: inline-block;
+    vertical-align: top;
+  }
 
-      canvas {
-        border: 1px solid black;
-        image-rendering: pixelated;
-      }
+  canvas {
+    border: 1px solid black;
+    image-rendering: pixelated;
+  }
 
-      .none {
-        display: none;
-      }
+  .none {
+    display: none;
+  }
 
-      .grid_container {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
+  .grid_container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
 
-      }
+  }
 
-      .grid_item, #controls {
-        padding: 10px;
-      }
+  .grid_item {
+    padding: 10px;
+  }
 
-      .small {
-        font-size: small;
-      }
+  #controls {
+    padding: 10px;
+  }
 
-    .checkbox-container, .next-button {
-      width: 60px;
-      height: 60px;
-      display: inline-block;
-      font-size: 60px;
-    }
+  .small {
+    font-size: small;
+  }
 
-    .checkbox-container input {
-      display: none;
-    }
+  .checkbox-container, .next-button {
+    width: 60px;
+    height: 60px;
+    font-size: 60px;
+    display: flex; /* Changed from inline-block to flex for better centering */
+    justify-content: center;
+    align-items: center;
+    user-select: none; /* Prevent text selection */
+  }
 
-    .play-pause {
-      width: 100%;
-      height: 100%;
-      background-color: #4caf50;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+  .checkbox-container input {
+    display: none;
+  }
 
-    .play-pause::before {
-      content: '';
-      display: inline-block;
-      width: 0;
-      height: 0;
-      border-style: solid;
-      border-width: 12px 0 12px 20px;
-      border-color: transparent transparent transparent white;
-      transition: transform 0.3s ease;
-    }
+  .play-pause {
+    width: 100%;
+    height: 100%;
+    background-color: #4caf50;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
 
-    .checkbox-container input:checked + .play-pause {
-      background-color: red;
-    }
+  .play-pause::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 12px 0 12px 20px;
+    border-color: transparent transparent transparent white;
+    transition: transform 0.3s ease;
+  }
 
-    .checkbox-container input:checked + .play-pause::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background-color: white;
-      border-radius: 2px;
-    }
+  .checkbox-container input:checked + .play-pause {
+    background-color: red;
+  }
 
-    .checkbox-container input:checked + .play-pause::after {
-      content: '';
-      width: 8px;
-      height: 20px;
-      background-color: white;
-      border-radius: 2px;
-      position: absolute;
-    }
+  .checkbox-container input:checked + .play-pause::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 2px;
+  }
 
+  .checkbox-container input:checked + .play-pause::after {
+    content: '';
+    width: 8px;
+    height: 20px;
+    background-color: white;
+    border-radius: 2px;
+    position: absolute;
+  }
 
+  .controls-buttons {
+    display: flex;
+    gap: 10px; /* Adds space between the buttons */
+    align-items: center;
+  }
 
+  .next-button {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
 
-    </style>
-  </head>
+  video {
+    display: none
+  }
+
+</style>
+</head>
 <body>
 
-
-
-
-
-
-  <div style="display: block">
-    <h1>Spiking Neural Network v13</h1>
-
-  </div>
+  <h1>Spiking Neural Network v13</h1>
 
   <div id="controls">
-
-
-
     <h3>Controls</h3>
-
-    <div class="checkbox-container">
-      <input type="checkbox" id="play-pause" onclick="PLAYING = this.checked">
-      <label for="play-pause" class="play-pause"></label>
+    <div class="controls-buttons">
+      <div class="checkbox-container">
+        <input type="checkbox" id="play-pause" onclick="PLAYING = this.checked">
+        <label for="play-pause" class="play-pause"></label>
+      </div>
+      <span class="next-button" onclick="nextFrame()" aria-label="Next frame">⏭️</span>
     </div>
-    <span class="next-button" onclick="nextFrame()">⏭️</span>
-    <br>
 
+    <p>
+    <fieldset>
+      <legend>Network Settings</legend>
 
+      <input type="checkbox" id="AnimationButton" onclick="ANIMATE = this.checked" checked>
+      <label for="AnimationButton">Enable Animation (a)</label><br>
 
-    <input type="checkbox" id="AnimationButton" onclick="ANIMATE = this.checked" checked>
-    <label for="AnimationButton">Animate (a)</label><br>
+      <input type="checkbox" id="LoggingButton" onclick="LOGGING = this.checked">
+      <label for="LoggingButton">Console Logging ON/OFF (L)</label><br>
 
-    <input type="checkbox" id="LoggingButton" onclick="LOGGING = this.checked">
-    <label for="LoggingButton">Logging ON/OFF (L)</label><br>
+      <input type="checkbox" id="InhibitionButton" onclick="snn.inhibition = !snn.inhibition" checked>
+      <label for="InhibitionButton">Local Inhibition ON/OFF (i)</label><br>
 
-    <input type="checkbox" id="InhibitionButton" onclick="snn.inhibition = !snn.inhibition" checked>
-    <label for="InhibitionButton">Local Inhibition ON/OFF (i)</label><br>
+      <input type="checkbox" id="NodeLagButton" onclick="snn.nodeLag = !snn.nodeLag" checked>
+      <label for="NodeLagButton">Presynaptic Node Lag ON/OFF</label><br>
 
-    <input type="checkbox" id="NodeLagButton" onclick="snn.nodeLag = !snn.nodeLag" checked>
-    <label for="NodeLagButton">Presynaptic Node Lag ON/OFF</label><br>
+      <input type="checkbox" id="ThresholdIncreaseButton" onclick="snn.thresholdIncrease = !snn.thresholdIncrease" checked>
+      <label for="ThresholdIncreaseButton">Threshold Increase ON/OFF</label><br>
 
-    <input type="checkbox" id="ThresholdIncreaseButton" onclick="snn.thresholdIncrease = !snn.thresholdIncrease" checked>
-    <label for="ThresholdIncreaseButton">Threshold Increase ON/OFF</label><br>
+      <input type="checkbox" id="ResetAfterFrame" onclick="RESET = this.checked" checked>
+      <label for="ResetAfterFrame">Reset neurons after each frame</label><br>
 
-    <input type="checkbox" id="ResetAfterFrame" onclick="RESET = this.checked" checked>
-    <label for="ResetAfterFrame">Reset neurons after each frame</label><br>
+      <label for="DecayRateSlider">Decay rate</label>
+      <input type="number" min="0" max="1" value="0" step="0.01" id="DecayRateSlider" onchange="snn.decayRate = this.value"><br>
+    </fieldset>
+  </p>
 
-    <label for="DecayRateSlider">Decay rate</label>
-    <input type="number" min="0" max="1" value="0" step="0.01" id="DecayRateSlider" onchange="snn.decayRate = this.value"><br>
+    <span>Cycle: </span><span id="cycle_count"></span><br>
 
-    <label>To simulate frame by frame press the right arrow key</label><br>
-
-    Cycle: <span id="cycle_count"></span><br>
   </div>
 
-  <video autoplay="true" id="videoElement" style="display: none"></video>
+  <video autoplay="true" id="videoElement"></video>
 
   <div class="grid_container">
 
@@ -181,591 +192,595 @@
 
       <input type="checkbox" id="DRAW_SPIKE_TRAIN" checked>
       <label for="DRAW_SPIKE_TRAIN">Draw spike train: </label><br>
-      <canvas style="" id="spike_train_canvas" width="256" height="100" style="border: 1px solid black"></canvas><br>
+      <canvas id="spike_train_canvas" width="256" height="100"></canvas><br>
     </div>
 
-      <div style="background: #ebf5fb" class="grid_item">
-        <h3>Weights</h3>
-        <div>
-          Total Connections: <span id="total_connections"></span><br>
-          <button onclick="snn.pruneNetwork(0.8)">Prune Connections</button><br>
-          <button onclick="snn.addOutputNode(); resizeCanvases()">New node (n)</button><br>
-        </div>
-        <div id="weights">
+    <div style="background: #ebf5fb" class="grid_item">
+      <h3>Weights</h3>
+      <div>
+        Total Connections: <span id="total_connections"></span><br>
+        <button onclick="snn.pruneNetwork(0.8)">Prune Connections</button><br>
+        <button onclick="snn.addOutputNode(); resizeCanvases()">New node (n)</button><br>
+      </div>
+      <div id="weights">
 
-          <input type="checkbox" id="DRAW_WEIGHT_CANVAS" checked>
-          <label for="DRAW_WEIGHT_CANVAS">Draw weights: </label><br>
-          <canvas id="weight_canvas" width="256" height="100" style="border: 1px solid black"></canvas>
+        <input type="checkbox" id="DRAW_WEIGHT_CANVAS" checked>
+        <label for="DRAW_WEIGHT_CANVAS">Draw weights: </label><br>
+        <canvas id="weight_canvas" width="256" height="100"></canvas>
 
-        </div>
+      </div>
+    </div>
+
+    <div style="background: #fbeee6" class="grid_item">
+      <h3>Outputs</h3>
+      <div class="small" style="color: red">&#9632; Activation</div>
+      <div class="small" style="color: blue">&#9632; Threshold</div>
+      <canvas id="WEIGHT_SUMS_CANVAS" width="256" height="200"></canvas>
+
+      <h3>Output Spike Train<h3>
+        <canvas id="output_history_canvas" width="256" height="100"></canvas>
+      </div>
+      <div style="background: #f4ecf7" class="grid_item">
+        <h3>Reconstruction</h3>
+        <canvas id="reconstruction_canvas"></canvas>
       </div>
 
-      <div style="background: #fbeee6" class="grid_item">
-        <h3>Outputs<h3>
-          <div class="small" style="color: red">&#9632; Activation</div>
-          <div class="small" style="color: blue">&#9632; Threshold</div>
-          <canvas id="WEIGHT_SUMS_CANVAS" width="256" height="200"></canvas>
+      <script src="spike_v13.js"></script>
+      <script>
 
-          <h3>Output Spike Train<h3>
-            <canvas id="output_history_canvas" width="256" height="100" style="border: 1px solid black"></canvas>
-          </div>
-          <div style="background: #f4ecf7" class="grid_item">
-            <h3>Reconstruction</h3>
-            <canvas id="reconstruction_canvas"></canvas>
-          </div>
+      const ANIMATION_INTERVAL = 100;  // ms delay between steps
+      var ANIMATE = document.getElementById("AnimationButton").checked;
+      var PLAYING = document.getElementById("play-pause").checked;
+      var RESET = document.getElementById("ResetAfterFrame").checked;
+      var PAUSE_AFTER_NEXT_FRAME = false;
+      var GRID_SIZE = 4;           // Determines the size of the grid when drawn
+      var LOGGING = document.getElementById("LoggingButton").checked;
+      var RANDOM_INPUT = false;   // Use random (noise) input data
+      var randomGenerator;
+      var snn;                    // The global spiking neural network
 
-          <script src="spike_v13.js"></script>
-          <script>
+      // Get the canvas element
+      const RECONSTRUCTION_CANVAS = document.getElementById("reconstruction_canvas");
+      const WEIGHT_CANVAS = document.getElementById("weight_canvas");
+      const OUTPUT_HISTORY_CANVAS = document.getElementById("output_history_canvas");
+      const SPIKE_TRAIN_CANVAS = document.getElementById("spike_train_canvas");
+      const INPUT_CANVAS_1 = document.getElementById("INPUT_CANVAS_1");
+      const INPUT_CANVAS_2 = document.getElementById("INPUT_CANVAS_2");
+      const WEIGHT_SUMS_CANVAS = document.getElementById("WEIGHT_SUMS_CANVAS");
 
-          const ANIMATION_INTERVAL = 100;  // ms delay between steps
-          var ANIMATE = document.getElementById("AnimationButton").checked;
-          var PLAYING = document.getElementById("play-pause").checked;
-          var RESET = document.getElementById("ResetAfterFrame").checked;
-          var PAUSE_AFTER_NEXT_FRAME = false;
-          var GRID_SIZE = 4;           // Determines the size of the grid when drawn
-          var LOGGING = document.getElementById("LoggingButton").checked;
-          var RANDOM_INPUT = false;   // Use random (noise) input data
-          var randomGenerator;
-          var snn;                    // The global spiking neural network
+      const KERNEL_ON_CENTER = [
+        [0,  0, -1,  0,  0],    // On center
+        [0, -1, -2, -1,  0],
+        [-1, -2, 16, -2, -1],
+        [0, -1, -2, -1,  0],
+        [0,  0, -1,  0,  0]
+      ];
 
-          // Get the canvas element
-          const RECONSTRUCTION_CANVAS = document.getElementById("reconstruction_canvas");
-          const WEIGHT_CANVAS = document.getElementById("weight_canvas");
-          const OUTPUT_HISTORY_CANVAS = document.getElementById("output_history_canvas");
-          const SPIKE_TRAIN_CANVAS = document.getElementById("spike_train_canvas");
-          const INPUT_CANVAS_1 = document.getElementById("INPUT_CANVAS_1");
-          const INPUT_CANVAS_2 = document.getElementById("INPUT_CANVAS_2");
-          const WEIGHT_SUMS_CANVAS = document.getElementById("WEIGHT_SUMS_CANVAS");
+      const KERNEL_OFF_CENTER = [
+        [0,  0,  1,  0,  0],  // Off center
+        [0,  1,  2,  1,  0],
+        [1,  2, -16, 2,  1],
+        [0,  1,  2,  1,  0],
+        [0,  0,  1,  0,  0]
+      ];
 
-          const KERNEL_ON_CENTER = [
-            [0,  0, -1,  0,  0],    // On center
-            [0, -1, -2, -1,  0],
-            [-1, -2, 16, -2, -1],
-            [0, -1, -2, -1,  0],
-            [0,  0, -1,  0,  0]
-          ];
-
-          const KERNEL_OFF_CENTER = [
-            [0,  0,  1,  0,  0],  // Off center
-            [0,  1,  2,  1,  0],
-            [1,  2, -16, 2,  1],
-            [0,  1,  2,  1,  0],
-            [0,  0,  1,  0,  0]
-          ];
-
-          // const kernel = [
-          //   // [-1, -1, -1],
-          //   // [-1,  8, -1],  // Enchanced laplacian
-          //   // [-1, -1, -1]
-          //   // [0, -1, 0],
-          //   // [-1,  5, -1], // Sharpen
-          //   // [0, -1, 0]
-          //   // [1, -2, 1],
-          //   // [-2,  4, -2], // Difference of gaussian
-          //   // [1, -2, 1]
-          //   [0, -1, 0],
-          //   [-1,  4, -1], // Sharpen
-          //   [0, -1, 0]
-          // ];
+      // const kernel = [
+      //   // [-1, -1, -1],
+      //   // [-1,  8, -1],  // Enchanced laplacian
+      //   // [-1, -1, -1]
+      //   // [0, -1, 0],
+      //   // [-1,  5, -1], // Sharpen
+      //   // [0, -1, 0]
+      //   // [1, -2, 1],
+      //   // [-2,  4, -2], // Difference of gaussian
+      //   // [1, -2, 1]
+      //   [0, -1, 0],
+      //   [-1,  4, -1], // Sharpen
+      //   [0, -1, 0]
+      // ];
 
 
-          // Draw the input spike train
-          function drawSpikeTrain(canvas, network) {
+      // Draw the input spike train
+      function drawSpikeTrain(canvas, network) {
 
-            var yScale = canvas.height / network.inputNodes.length;
-            var ctx = canvas.getContext("2d", { willReadFrequently: true });
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var yScale = canvas.height / network.inputNodes.length;
+        var ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "red";
+
+        for (var bin = 0; bin < network.spikeTrain.length; bin++) {
+          for (var i = 0; i < network.spikeTrain[bin].length; i++) {
+            ctx.fillRect(255-bin, canvas.height - (yScale * network.spikeTrain[bin][i]), 4, 4);
+          }
+        }
+
+      }
+
+      // Draw stats
+      function printStats(network) {
+
+        document.getElementById("cycle_count").innerText = network.cycle.toLocaleString();
+        document.getElementById("total_connections").innerText = network.connections.length;
+
+      }
+
+      // Draw output firing history graph
+      function drawOutputHistory(canvas, network) {
+
+        var ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        var yScale = canvas.height / network.outputNodes.length;
+
+        for (var x = 0; x < network.outputHistory.length; x++) {
+          for (var i = 0; i < network.outputHistory[x].length; i++) {
+            //let y = canvas.height - (GRID_SIZE*network.outputHistory[x][i])
+            let y = canvas.height - (yScale * network.outputHistory[x][i]);
+            ctx.fillRect(x, y, 2, -yScale);
+          }
+        }
+
+      }
+
+
+      // Draw bar graph showing total weights of an output node
+      function drawThresholds(network, canvas) {
+
+        var ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw zero line
+        // ctx.beginPath();
+        // ctx.moveTo(0, canvas.height/2);
+        // ctx.lineTo(canvas.width, canvas.height/2);
+        // ctx.stroke();
+
+        // Find node with highest activation to set the graph scale
+        let max = network.outputNodes[0].threshold;
+        for (let i = 1; i < network.outputNodes.length; i++) if (network.outputNodes[i].threshold > max) { max = network.outputNodes[i].threshold };
+        if (network.defaultThreshold > max) { max = network.defaultThreshold };
+        let scaleFactor = canvas.height / (max * 1.5);
+        let xScale = canvas.width / network.outputNodes.length;
+
+        // Draw threshold bars in blue
+        for (var s = 0; s < network.outputNodes.length; s++) {
+
+          ctx.strokeStyle = "blue";
+          ctx.strokeRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].threshold * scaleFactor);
+          ctx.fillStyle = "black";
+
+        }
+
+        // Draw peak activation bars in red
+        for (s = 0; s < network.outputNodes.length; s++) {
+          ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Semi transparent red
+          ctx.fillRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].peakValue * scaleFactor);
+        }
+
+        // Draw starting threshold line
+        ctx.beginPath();
+        ctx.strokeStyle = "black";
+        ctx.moveTo(0, canvas.height - (network.defaultThreshold * scaleFactor));
+        ctx.lineTo(canvas.width, canvas.height - (network.defaultThreshold * scaleFactor));
+        ctx.stroke();
+        ctx.fillStyle = "black";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillText("Peak: " + max.toFixed(1), 0, 0);
+
+      }
+
+      // Hide/show the input canvas
+      function showInput(state) {
+        if (!state) {
+          document.getElementById("input_container").classList.add("none")
+        } else {
+          document.getElementById("input_container").classList.remove("none")
+        }
+      }
+
+      // Reconstruct images of the feature detectors
+      function reconstruct(network, canvas) {
+
+        var ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.fillStyle = "#000000"
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        var frameWidth = parseInt(Math.sqrt(parseInt(network.inputNodes.length/2)));
+
+        // Draw all connections as pixels
+        for (var c = 0; c < network.connections.length; c++) {
+
+          let conn = network.connections[c];
+          var gridPosition = frameWidth * conn.toId;
+          var x = 0;
+          var y = 0;
+          var colour = "black"
+          var weight = parseInt(conn.weight * 255);
+
+
+          let section = parseInt(conn.fromId / (frameWidth * frameWidth));  // left or right image
+          colour =  `rgb(${weight}, ${weight}, ${weight})`;
+
+          x = (section * frameWidth) + (conn.fromId) % frameWidth;
+          y = (conn.toId * frameWidth) + parseInt((conn.fromId % (frameWidth*frameWidth)) / frameWidth);
+
+          ctx.fillStyle = colour;
+          ctx.lineWidth = 2;
+          ctx.fillRect(x, y, 1, 1);
+
+        }
+
+      }
+
+      // Draw the weights grid
+      function drawWeightMatrix(network, canvas) {
+
+        var ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var yScale = canvas.height / network.inputNodes.length;
+
+        // For each connection
+        network.weightSums = new Array(network.outputNodes.length).fill(0);
+        for (var c = 0; c < network.connections.length; c++) {
+
+          var conn = network.connections[c];
+          var x = GRID_SIZE + (conn.toId*GRID_SIZE);
+          var y = GRID_SIZE + (conn.fromId*GRID_SIZE);
+          y = y * yScale;
+          var weight = parseInt((1-conn.weight) * 255);
+          var colour =  `rgb(${weight}, ${weight}, ${weight})`;
+          if (conn.weight < 0) {
+            weight = parseInt(Math.abs(1+conn.weight)*255);
+            colour =  `rgb(255, ${weight}, ${weight})`;
+          }
+
+          network.weightSums[conn.toId] = network.weightSums[conn.toId] + conn.weight;
+
+          ctx.fillStyle = colour;
+          ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
+
+        }
+
+
+        // For each output node
+        for (var n = 0; n < network.outputNodes.length; n++) {
+
+          var x = GRID_SIZE + (GRID_SIZE * n);
+          var y = GRID_SIZE + (network.inputNodes.length * GRID_SIZE);
+
+          var intensity = network.outputNodes[n].value / network.outputNodes[n].threshold;
+          var value = parseInt((1-intensity) * 255);
+          var colour =  `rgb(${value}, ${value}, ${value})`;
+          ctx.fillStyle = colour;
+          ctx.fillRect(x, 0, GRID_SIZE, GRID_SIZE);
+
+          if (network.outputNodes[n].isFiring) {
             ctx.fillStyle = "red";
-
-            for (var bin = 0; bin < network.spikeTrain.length; bin++) {
-              for (var i = 0; i < network.spikeTrain[bin].length; i++) {
-                ctx.fillRect(255-bin, canvas.height - (yScale * network.spikeTrain[bin][i]), 4, 4);
-              }
-            }
-
+            ctx.fillRect(x, 0, GRID_SIZE, GRID_SIZE);
           }
 
-          // Draw stats
-          function printStats(network) {
+        }
 
-            document.getElementById("cycle_count").innerText = network.cycle.toLocaleString();
-            document.getElementById("total_connections").innerText = network.connections.length;
+        // For each input
+        for (let i = 0; i < network.inputNodes.length; i++) {
+          var y = GRID_SIZE + (GRID_SIZE * i);
+          y = y * yScale;
 
+          if (network.inputNodes[i].isFiring) {
+            ctx.fillStyle = "red";
+          } else {
+            ctx.fillStyle = "white";
+          }
+          ctx.fillRect(0, y, GRID_SIZE, GRID_SIZE);
+
+        }
+
+      }
+
+      const inputSelectorButtons = document.querySelectorAll('input[name="INPUT_TYPE"]');
+      // Add an event listener to each radio button
+      inputSelectorButtons.forEach(function(radio) {
+        radio.addEventListener('change', function(event) {
+          RANDOM_INPUT = document.getElementById("RANDOM_INPUT").checked;
+          let type = document.querySelector('input[name="INPUT_TYPE"]:checked');
+          console.log("Input type changed: " + type.value);
+
+        });
+      });
+
+      // Add event listener for keydown event
+      document.addEventListener('keydown', function(event) {
+        if (event.key === "ArrowRight") {
+          nextFrame();
+        }
+        if (event.key === " " || event.key === "Space") {
+          event.preventDefault();
+          document.getElementById("play-pause").click();
+          PAUSE_AFTER_NEXT_FRAME = false;
+        }
+        if (event.key === "L" || event.key === "l") {
+          document.getElementById("LoggingButton").click();
+        }
+        if (event.key === "A" || event.key === "a") {
+          document.getElementById("AnimationButton").click();
+        }
+
+        if (event.key === "N" || event.key === "n") {
+          snn.addOutputNode();
+          resizeCanvases();
+        }
+
+        if (event.key === "I" || event.key === "i") {
+          document.getElementById("InhibitionButton").click();
+        }
+
+      });
+
+
+      const video = document.getElementById("videoElement");
+      navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function(stream) {
+        video.srcObject = stream;
+
+        // Flip the main video stream
+        const ctx = INPUT_CANVAS_1.getContext("2d");
+        ctx.scale(-1, 1);
+        ctx.translate(-INPUT_CANVAS_1.width, 0);
+
+        const ctx2 = INPUT_CANVAS_2.getContext("2d");
+        ctx2.scale(-1, 1);
+        ctx2.translate(-INPUT_CANVAS_1.width, 0);
+
+      })
+      .catch(function(err) {
+        console.log("Error: " + err);
+      });
+
+      video.addEventListener("play", function() {
+        setInterval(function() {
+          if (!PLAYING) { return }
+
+          // Calculate width, height and offsets for best fit to INPUT_CANVAS_1
+          var ctx = INPUT_CANVAS_1.getContext("2d");
+          const ctx2 = INPUT_CANVAS_2.getContext("2d");
+
+          var aspectRatio = video.videoWidth / video.videoHeight;
+          let width, height, offsetX, offsetY;
+
+          if (aspectRatio > 1) {
+            width = video.videoWidth;
+            height = video.videoWidth / aspectRatio;
+            offsetX = 0;
+            offsetY = (video.videoHeight - height) / 2;
+          } else {
+            width = video.videoHeight * aspectRatio;
+            height = video.videoHeight;
+            offsetX = (video.videoWidth - width) / 2;
+            offsetY = 0;
           }
 
-          // Draw output firing history graph
-          function drawOutputHistory(canvas, network) {
 
-            var ctx = canvas.getContext("2d", { willReadFrequently: true });
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (RANDOM_INPUT) {
 
-            var yScale = canvas.height / network.outputNodes.length;
+            const imageData = ctx.createImageData(width, height);
+            const data = imageData.data;
 
-            for (var x = 0; x < network.outputHistory.length; x++) {
-              for (var i = 0; i < network.outputHistory[x].length; i++) {
-                //let y = canvas.height - (GRID_SIZE*network.outputHistory[x][i])
-                let y = canvas.height - (yScale * network.outputHistory[x][i]);
-                ctx.fillRect(x, y, 2, -yScale);
-              }
-            }
-
-          }
-
-
-          // Draw bar graph showing total weights of an output node
-          function drawThresholds(network, canvas) {
-
-            var ctx = canvas.getContext("2d", { willReadFrequently: true });
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw zero line
-            // ctx.beginPath();
-            // ctx.moveTo(0, canvas.height/2);
-            // ctx.lineTo(canvas.width, canvas.height/2);
-            // ctx.stroke();
-
-            // Find node with highest activation to set the graph scale
-            let max = network.outputNodes[0].threshold;
-            for (let i = 1; i < network.outputNodes.length; i++) if (network.outputNodes[i].threshold > max) { max = network.outputNodes[i].threshold };
-            if (network.defaultThreshold > max) { max = network.defaultThreshold };
-            let scaleFactor = canvas.height / (max * 1.5);
-            let xScale = canvas.width / network.outputNodes.length;
-
-            // Draw threshold bars in blue
-            for (var s = 0; s < network.outputNodes.length; s++) {
-
-              ctx.strokeStyle = "blue";
-              ctx.strokeRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].threshold * scaleFactor);
-              ctx.fillStyle = "black";
-
-            }
-
-            // Draw peak activation bars in red
-            for (s = 0; s < network.outputNodes.length; s++) {
-              ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Semi transparent red
-              ctx.fillRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].peakValue * scaleFactor);
-            }
-
-            // Draw starting threshold line
-            ctx.beginPath();
-            ctx.strokeStyle = "black";
-            ctx.moveTo(0, canvas.height - (network.defaultThreshold * scaleFactor));
-            ctx.lineTo(canvas.width, canvas.height - (network.defaultThreshold * scaleFactor));
-            ctx.stroke();
-            ctx.fillStyle = "black";
-            ctx.textAlign = "left";
-            ctx.textBaseline = "top";
-            ctx.fillText("Peak: " + max.toFixed(1), 0, 0);
-
-          }
-
-          // Hide/show the input canvas
-          function showInput(state) {
-            if (!state) {
-              document.getElementById("input_container").classList.add("none")
+            var s = new Date().getSeconds();
+            var ms =  new Date().getMilliseconds()
+            if ((s%2 == 0) && (ms < 600)) {
+              randomGenerator.seed = 0;
             } else {
-              document.getElementById("input_container").classList.remove("none")
-            }
-          }
-
-          // Reconstruct images of the feature detectors
-          function reconstruct(network, canvas) {
-
-            var ctx = canvas.getContext("2d", { willReadFrequently: true });
-            ctx.fillStyle = "#000000"
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            var frameWidth = parseInt(Math.sqrt(parseInt(network.inputNodes.length/2)));
-
-            // Draw all connections as pixels
-            for (var c = 0; c < network.connections.length; c++) {
-
-              let conn = network.connections[c];
-              var gridPosition = frameWidth * conn.toId;
-              var x = 0;
-              var y = 0;
-              var colour = "black"
-              var weight = parseInt(conn.weight * 255);
-
-
-              let section = parseInt(conn.fromId / (frameWidth * frameWidth));  // left or right image
-              colour =  `rgb(${weight}, ${weight}, ${weight})`;
-
-              x = (section * frameWidth) + (conn.fromId) % frameWidth;
-              y = (conn.toId * frameWidth) + parseInt((conn.fromId % (frameWidth*frameWidth)) / frameWidth);
-
-              ctx.fillStyle = colour;
-              ctx.lineWidth = 2;
-              ctx.fillRect(x, y, 1, 1);
-
+              randomGenerator.seed = Math.floor(Math.random() * 1000000);
             }
 
-          }
+            // Generate 5000 random data points
+            for (let i = 0; i < 5000; i++) {
 
-          // Draw the weights grid
-          function drawWeightMatrix(network, canvas) {
-
-            var ctx = canvas.getContext("2d", { willReadFrequently: true });
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            var yScale = canvas.height / network.inputNodes.length;
-
-            // For each connection
-            network.weightSums = new Array(network.outputNodes.length).fill(0);
-            for (var c = 0; c < network.connections.length; c++) {
-
-              var conn = network.connections[c];
-              var x = GRID_SIZE + (conn.toId*GRID_SIZE);
-              var y = GRID_SIZE + (conn.fromId*GRID_SIZE);
-              y = y * yScale;
-              var weight = parseInt((1-conn.weight) * 255);
-              var colour =  `rgb(${weight}, ${weight}, ${weight})`;
-              if (conn.weight < 0) {
-                weight = parseInt(Math.abs(1+conn.weight)*255);
-                colour =  `rgb(255, ${weight}, ${weight})`;
-              }
-
-              network.weightSums[conn.toId] = network.weightSums[conn.toId] + conn.weight;
-
-              ctx.fillStyle = colour;
-              ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
+              let pixelId = parseInt(randomGenerator.random(0, data.length/4));
+              let id = pixelId * 4;
+              data[id] = 255;
+              data[id+3] = 255;
 
             }
 
 
-            // For each output node
-            for (var n = 0; n < network.outputNodes.length; n++) {
 
-              var x = GRID_SIZE + (GRID_SIZE * n);
-              var y = GRID_SIZE + (network.inputNodes.length * GRID_SIZE);
+            // // Fill the ImageData with random data
+            // for (let i = 0; i < data.length; i += 4) {
+            //
+            //   //let rand = Math.floor(Math.random() * 255);
+            //   let rand = Math.floor(randomGenerator.random() * 255);
+            //   data[i] = rand;    // Red channel
+            //   data[i + 1] = rand // Green channel
+            //   data[i + 2] = rand // Blue channel
+            //   data[i + 3] = 255; // Alpha channel (fully opaque)
+            // }
 
-              var intensity = network.outputNodes[n].value / network.outputNodes[n].threshold;
-              var value = parseInt((1-intensity) * 255);
-              var colour =  `rgb(${value}, ${value}, ${value})`;
-              ctx.fillStyle = colour;
-              ctx.fillRect(x, 0, GRID_SIZE, GRID_SIZE);
+            // Draw the random pixel data onto the canvas
+            ctx.putImageData(imageData, 0, 0);
+            ctx2.putImageData(imageData, 0, 0);
 
-              if (network.outputNodes[n].isFiring) {
-                ctx.fillStyle = "red";
-                ctx.fillRect(x, 0, GRID_SIZE, GRID_SIZE);
-              }
+          } else {
 
-            }
+            // Draw the best fit video onto the INPUT_CANVAS_1 with best fit so pixels can be accessed
+            ctx.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+            ctx2.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
 
-            // For each input
-            for (let i = 0; i < network.inputNodes.length; i++) {
-              var y = GRID_SIZE + (GRID_SIZE * i);
-              y = y * yScale;
-
-              if (network.inputNodes[i].isFiring) {
-                ctx.fillStyle = "red";
-              } else {
-                ctx.fillStyle = "white";
-              }
-              ctx.fillRect(0, y, GRID_SIZE, GRID_SIZE);
-
-            }
+            applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);
+            applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);
 
           }
-
-          const inputSelectorButtons = document.querySelectorAll('input[name="INPUT_TYPE"]');
-          // Add an event listener to each radio button
-          inputSelectorButtons.forEach(function(radio) {
-            radio.addEventListener('change', function(event) {
-              RANDOM_INPUT = document.getElementById("RANDOM_INPUT").checked;
-              let type = document.querySelector('input[name="INPUT_TYPE"]:checked');
-              console.log("Input type changed: " + type.value);
-
-            });
-          });
-
-          // Add event listener for keydown event
-          document.addEventListener('keydown', function(event) {
-            if (event.key === "ArrowRight") {
-              if (PAUSE_AFTER_NEXT_FRAME) {
-                PLAYING = true;
-              }
-              PAUSE_AFTER_NEXT_FRAME = true;
-            }
-            if (event.key === " " || event.key === "Space") {
-              event.preventDefault();
-              document.getElementById("play-pause").click();
-              PAUSE_AFTER_NEXT_FRAME = false;
-            }
-            if (event.key === "L" || event.key === "l") {
-              document.getElementById("LoggingButton").click();
-            }
-            if (event.key === "A" || event.key === "a") {
-              document.getElementById("AnimationButton").click();
-            }
-
-            if (event.key === "N" || event.key === "n") {
-              snn.addOutputNode();
-              resizeCanvases();
-            }
-
-            if (event.key === "I" || event.key === "i") {
-              document.getElementById("InhibitionButton").click();
-            }
-
-          });
+          canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
+          if (PAUSE_AFTER_NEXT_FRAME) { PLAYING = false };
 
 
-          const video = document.getElementById("videoElement");
-          navigator.mediaDevices.getUserMedia({ video: true })
-          .then(function(stream) {
-            video.srcObject = stream;
-
-            // Flip the main video stream
-            const ctx = INPUT_CANVAS_1.getContext("2d");
-            ctx.scale(-1, 1);
-            ctx.translate(-INPUT_CANVAS_1.width, 0);
-
-            const ctx2 = INPUT_CANVAS_2.getContext("2d");
-            ctx2.scale(-1, 1);
-            ctx2.translate(-INPUT_CANVAS_1.width, 0);
-
-          })
-          .catch(function(err) {
-            console.log("Error: " + err);
-          });
-
-          video.addEventListener("play", function() {
-            setInterval(function() {
-              if (!PLAYING) { return }
-
-              // Calculate width, height and offsets for best fit to INPUT_CANVAS_1
-              var ctx = INPUT_CANVAS_1.getContext("2d");
-              const ctx2 = INPUT_CANVAS_2.getContext("2d");
-
-              var aspectRatio = video.videoWidth / video.videoHeight;
-              let width, height, offsetX, offsetY;
-
-              if (aspectRatio > 1) {
-                width = video.videoWidth;
-                height = video.videoWidth / aspectRatio;
-                offsetX = 0;
-                offsetY = (video.videoHeight - height) / 2;
-              } else {
-                width = video.videoHeight * aspectRatio;
-                height = video.videoHeight;
-                offsetX = (video.videoWidth - width) / 2;
-                offsetY = 0;
-              }
+        }, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate (here it's set to roughly 24 frames per second)
+      });
 
 
-              if (RANDOM_INPUT) {
+      // Apply laplacian of gaussian filter to a canvas
+      function applyLoGConvolution(canvas, kernel) {
 
-                const imageData = ctx.createImageData(width, height);
-                const data = imageData.data;
+        var ctx = canvas.getContext('2d');
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        const outputData = new Uint8ClampedArray(data);
 
-                var s = new Date().getSeconds();
-                var ms =  new Date().getMilliseconds()
-                if ((s%2 == 0) && (ms < 600)) {
-                  randomGenerator.seed = 0;
-                } else {
-                  randomGenerator.seed = Math.floor(Math.random() * 1000000);
-                }
+        const kernelSize = kernel.length;
+        const halfKernelSize = Math.floor(kernelSize / 2);
 
-                // Generate 5000 random data points
-                for (let i = 0; i < 5000; i++) {
+        for (let y = halfKernelSize; y < canvas.height - halfKernelSize; y++) {
+          for (let x = halfKernelSize; x < canvas.width - halfKernelSize; x++) {
+            const pixelIndex = (y * canvas.width + x) * 4;
 
-                  let pixelId = parseInt(randomGenerator.random(0, data.length/4));
-                  let id = pixelId * 4;
-                  data[id] = 255;
-                  data[id+3] = 255;
-
-                }
-
-
-
-                // // Fill the ImageData with random data
-                // for (let i = 0; i < data.length; i += 4) {
-                //
-                //   //let rand = Math.floor(Math.random() * 255);
-                //   let rand = Math.floor(randomGenerator.random() * 255);
-                //   data[i] = rand;    // Red channel
-                //   data[i + 1] = rand // Green channel
-                //   data[i + 2] = rand // Blue channel
-                //   data[i + 3] = 255; // Alpha channel (fully opaque)
-                // }
-
-                // Draw the random pixel data onto the canvas
-                ctx.putImageData(imageData, 0, 0);
-                ctx2.putImageData(imageData, 0, 0);
-
-              } else {
-
-                // Draw the best fit video onto the INPUT_CANVAS_1 with best fit so pixels can be accessed
-                ctx.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
-                ctx2.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
-
-                applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);
-                applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);
-
-              }
-              canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
-              if (PAUSE_AFTER_NEXT_FRAME) { PLAYING = false };
-
-
-            }, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate (here it's set to roughly 24 frames per second)
-          });
-
-
-          // Apply laplacian of gaussian filter to a canvas
-          function applyLoGConvolution(canvas, kernel) {
-
-            var ctx = canvas.getContext('2d');
-            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            const outputData = new Uint8ClampedArray(data);
-
-            const kernelSize = kernel.length;
-            const halfKernelSize = Math.floor(kernelSize / 2);
-
-            for (let y = halfKernelSize; y < canvas.height - halfKernelSize; y++) {
-              for (let x = halfKernelSize; x < canvas.width - halfKernelSize; x++) {
-                const pixelIndex = (y * canvas.width + x) * 4;
-
-                // Convolve using the LoG kernel, on one channel (grayscale image)
-                let intensity = 0;
-                for (let ky = -halfKernelSize; ky <= halfKernelSize; ky++) {
-                  for (let kx = -halfKernelSize; kx <= halfKernelSize; kx++) {
-                    const weight = kernel[ky + halfKernelSize][kx + halfKernelSize];
-                    const index = ((y + ky) * canvas.width + (x + kx)) * 4;
-                    intensity += data[index] * weight;
-                  }
-                }
-
-                // Set the new grayscale intensity, clamping between 0 and 255
-                intensity = Math.min(255, Math.max(0, intensity));
-                outputData[pixelIndex] = outputData[pixelIndex + 1] = outputData[pixelIndex + 2] = intensity;
-                outputData[pixelIndex + 3] = data[pixelIndex + 3]; // keep alpha the same
+            // Convolve using the LoG kernel, on one channel (grayscale image)
+            let intensity = 0;
+            for (let ky = -halfKernelSize; ky <= halfKernelSize; ky++) {
+              for (let kx = -halfKernelSize; kx <= halfKernelSize; kx++) {
+                const weight = kernel[ky + halfKernelSize][kx + halfKernelSize];
+                const index = ((y + ky) * canvas.width + (x + kx)) * 4;
+                intensity += data[index] * weight;
               }
             }
 
-            // Update the canvas with the new image data
-            ctx.putImageData(new ImageData(outputData, canvas.width, canvas.height), 0, 0);
+            // Set the new grayscale intensity, clamping between 0 and 255
+            intensity = Math.min(255, Math.max(0, intensity));
+            outputData[pixelIndex] = outputData[pixelIndex + 1] = outputData[pixelIndex + 2] = intensity;
+            outputData[pixelIndex + 3] = data[pixelIndex + 3]; // keep alpha the same
+          }
+        }
+
+        // Update the canvas with the new image data
+        ctx.putImageData(new ImageData(outputData, canvas.width, canvas.height), 0, 0);
+      }
+
+
+      // Convert canvas pixel data into spike train, display it and feed it into the network
+      function canvasToSpikeTrain(canvases) {
+
+        // Setup array
+        var spikeTrain = [];
+        for (var bin = 0; bin < 256; bin++) { spikeTrain[bin] = [] }
+
+        // Collect pixel data from on-center and off-center canvases and populate spikeTrain
+        for (var c = 0; c < canvases.length; c++) {
+
+          var ctx = canvases[c].getContext("2d", { willReadFrequently: true });
+          const imageData = ctx.getImageData(0, 0, canvases[c].width, canvases[c].height).data;
+          var inputNodeId = c * canvases[c].width * canvases[c].height;
+          for (let i = 0; i < imageData.length; i += 4) {
+
+            if (imageData[i] > 0) {
+              const luminance = imageData[i];
+              let bin = parseInt(255-luminance);
+              spikeTrain[bin].push(inputNodeId);
+            }
+            inputNodeId = inputNodeId + 1;
           }
 
+        }
 
-          // Convert canvas pixel data into spike train, display it and feed it into the network
-          function canvasToSpikeTrain(canvases) {
+        // Trim the spike train to the first x firing nodes
+        var trimmed = [];
+        for (var t = 0; t < 256; t++) { trimmed[t] = [] }
+        var count = 0;
+        var nodesToFire = 1000;    // Only fire the first n nodes in the queue
+        //nodesToFire = 4096*2;    // Only fire the first n nodes in the queue
 
-            // Setup array
-            var spikeTrain = [];
-            for (var bin = 0; bin < 256; bin++) { spikeTrain[bin] = [] }
-
-            // Collect pixel data from on-center and off-center canvases and populate spikeTrain
-            for (var c = 0; c < canvases.length; c++) {
-
-              var ctx = canvases[c].getContext("2d", { willReadFrequently: true });
-              const imageData = ctx.getImageData(0, 0, canvases[c].width, canvases[c].height).data;
-              var inputNodeId = c * canvases[c].width * canvases[c].height;
-              for (let i = 0; i < imageData.length; i += 4) {
-
-                if (imageData[i] > 0) {
-                  const luminance = imageData[i];
-                  let bin = parseInt(255-luminance);
-                  spikeTrain[bin].push(inputNodeId);
-                }
-                inputNodeId = inputNodeId + 1;
-              }
-
-            }
-
-            // Trim the spike train to the first x firing nodes
-            var trimmed = [];
-            for (var t = 0; t < 256; t++) { trimmed[t] = [] }
-            var count = 0;
-            var nodesToFire = 1000;    // Only fire the first n nodes in the queue
-            //nodesToFire = 4096*2;    // Only fire the first n nodes in the queue
-
-            for (var i = 0; i < spikeTrain.length; i++) {
-              for (var j = 0; j < spikeTrain[i].length; j++) {
-                if (count < nodesToFire) {
-                  trimmed[i].push(spikeTrain[i][j]);
-                  count = count + 1;
-                }
-              }
-            }
-
-            spikeTrain = trimmed;
-
-            snn.feedForward(spikeTrain, RESET);
-
-            if (ANIMATE) {
-              reconstruct(snn, RECONSTRUCTION_CANVAS);
-              if (document.getElementById("DRAW_WEIGHT_CANVAS").checked) {
-                drawWeightMatrix(snn, WEIGHT_CANVAS);
-              }
-              drawThresholds(snn, WEIGHT_SUMS_CANVAS);
-              drawOutputHistory(OUTPUT_HISTORY_CANVAS, snn);
-              if (document.getElementById("DRAW_SPIKE_TRAIN").checked) {
-                drawSpikeTrain(SPIKE_TRAIN_CANVAS, snn);
-              }
-              printStats(snn);
-            }
-
-          }
-
-          // A pseudoRandom generator class
-          class PseudoRandomGenerator {
-            constructor() {
-              this.seed = 0;
-              this.resetInterval = 2*4096;
-            }
-
-
-            random(min, max) {
-              var x = Math.sin(this.seed++) * 10000;
-              x = x - Math.floor(x);
-
-              // var s = new Date().getSeconds();
-              // var ms =  new Date().getMilliseconds()
-              // if ((s%3 == 0) && (ms < 200)) { return ms }
-
-              return Math.floor(x * (max - min + 1)) + min;
-              //if ((s%4 == 0) && (ms < 400)) { return 1000+ms }
-              //this.seed = this.seed % this.resetInterval;
+        for (var i = 0; i < spikeTrain.length; i++) {
+          for (var j = 0; j < spikeTrain[i].length; j++) {
+            if (count < nodesToFire) {
+              trimmed[i].push(spikeTrain[i][j]);
+              count = count + 1;
             }
           }
+        }
 
+        spikeTrain = trimmed;
 
-          // Resize the canvas's based on network sizew
-          function resizeCanvases() {
+        snn.feedForward(spikeTrain, RESET);
 
-            RECONSTRUCTION_CANVAS.width = document.getElementById("INPUT_CANVAS_1").width*2;
-            RECONSTRUCTION_CANVAS.height = snn.outputNodes.length * document.getElementById("INPUT_CANVAS_1").width;
-            SPIKE_TRAIN_CANVAS.height = snn.inputNodes.length * 0.05;
-            WEIGHT_CANVAS.height = 0.05 * (snn.inputNodes.length + 1);
-            WEIGHT_CANVAS.width = GRID_SIZE * (snn.outputNodes.length + 1);
-
+        if (ANIMATE) {
+          reconstruct(snn, RECONSTRUCTION_CANVAS);
+          if (document.getElementById("DRAW_WEIGHT_CANVAS").checked) {
+            drawWeightMatrix(snn, WEIGHT_CANVAS);
           }
+          drawThresholds(snn, WEIGHT_SUMS_CANVAS);
+          drawOutputHistory(OUTPUT_HISTORY_CANVAS, snn);
+          if (document.getElementById("DRAW_SPIKE_TRAIN").checked) {
+            drawSpikeTrain(SPIKE_TRAIN_CANVAS, snn);
+          }
+          printStats(snn);
+        }
 
-          // Initialise global variables that reference DOM elements here
-          window.onload = function () {
+      }
 
-            var inputSize = parseInt(document.getElementById("INPUT_CANVAS_1").width * document.getElementById("INPUT_CANVAS_1").height)*2;
-            randomGenerator = new PseudoRandomGenerator();
-            snn = new Network({
-              numInputs: inputSize,
-              numOutputs: 5,
-              LTPRate: 0.2,
-              LTDRate: 0.05,
-              startingThreshold: 1,
-              refractoryTime: 200,
-              LTPWindow: 10,
-              decayRate: document.getElementById("DecayRateSlider").value,
-              inhibition: document.getElementById("InhibitionButton").checked,
-              numWinners: 1,
-              nodeLag: document.getElementById("NodeLagButton").checked,
-              thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
-            });
-
-            resizeCanvases();
+      // A pseudoRandom generator class
+      class PseudoRandomGenerator {
+        constructor() {
+          this.seed = 0;
+          this.resetInterval = 2*4096;
+        }
 
 
-            console.log("Initialisation Complete!");
-          };
+        random(min, max) {
+          var x = Math.sin(this.seed++) * 10000;
+          x = x - Math.floor(x);
 
-    </script>
-  </body>
-</html>
+          // var s = new Date().getSeconds();
+          // var ms =  new Date().getMilliseconds()
+          // if ((s%3 == 0) && (ms < 200)) { return ms }
+
+          return Math.floor(x * (max - min + 1)) + min;
+          //if ((s%4 == 0) && (ms < 400)) { return 1000+ms }
+          //this.seed = this.seed % this.resetInterval;
+        }
+      }
+
+
+      function nextFrame() {
+        if (PAUSE_AFTER_NEXT_FRAME) {
+          PLAYING = true;
+        }
+        PAUSE_AFTER_NEXT_FRAME = true;
+      }
+
+      // Resize the canvas's based on network sizew
+      function resizeCanvases() {
+
+        RECONSTRUCTION_CANVAS.width = document.getElementById("INPUT_CANVAS_1").width*2;
+        RECONSTRUCTION_CANVAS.height = snn.outputNodes.length * document.getElementById("INPUT_CANVAS_1").width;
+        SPIKE_TRAIN_CANVAS.height = snn.inputNodes.length * 0.05;
+        WEIGHT_CANVAS.height = 0.05 * (snn.inputNodes.length + 1);
+        WEIGHT_CANVAS.width = GRID_SIZE * (snn.outputNodes.length + 1);
+
+      }
+
+      // Initialise global variables that reference DOM elements here
+      window.onload = function () {
+
+        var inputSize = parseInt(document.getElementById("INPUT_CANVAS_1").width * document.getElementById("INPUT_CANVAS_1").height)*2;
+        randomGenerator = new PseudoRandomGenerator();
+        snn = new Network({
+          numInputs: inputSize,
+          numOutputs: 5,
+          LTPRate: 0.2,
+          LTDRate: 0.05,
+          startingThreshold: 1,
+          refractoryTime: 200,
+          LTPWindow: 10,
+          decayRate: document.getElementById("DecayRateSlider").value,
+          inhibition: document.getElementById("InhibitionButton").checked,
+          numWinners: 1,
+          nodeLag: document.getElementById("NodeLagButton").checked,
+          thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
+        });
+
+        resizeCanvases();
+
+
+        console.log("Initialisation Complete!");
+      };
+
+      </script>
+    </body>
+    </html>
