@@ -72,7 +72,7 @@
 <body>
   <header class="header">
     <h1>Spiking Neural Network in JavaScript</h1>
-    <h3>Interactive demo of a SNN in vanilla JS using a simplified STDP learning rule.</h3>
+    <h3>Interactive demo of a SNN in JS using a simplified STDP learning rule.</h3>
   </header>
   <div class="container">
     <main>
@@ -90,10 +90,7 @@
           This is my amateur dive into Spiking Neural Networks.
         </p>
         <p>
-          First up let me preface this by saying I am <u>not</u> a machine learning (ML) expert or software engineer. Of all things I am a mechanical engineer with an interest in ML who dabbles in code. My ideas are half baked and perhaps somewhat misguided, this post is a bit rushed, my code is scrappy, but it does mildly interesting things. I'm not quitting my day job anytime soon, but please feel free to email me at <i>blog@spec.nz</i> if you find this interesting. I welcome any discussion this may inspire.
-        </p>
-        <p>
-          <i>This is heavily inspired by the work of <a href="https://scholar.google.com/citations?user=uR-7ex4AAAAJ&hl=en">Prof Simon Thorpe</a> for which I sincerely thank for his contributions to this field. He has several excellent lectures available on YouTube and research papers available for free.</i>
+          First up let me preface this by saying I am <u>not</u> a machine learning (ML) expert, nor software engineer. I am a mechanical engineer with an interest in ML who dabbles in code. My ideas are half baked and perhaps somewhat misguided, my code is scrappy, but it does mildly interesting things. I'm not quitting my day job anytime soon, but please feel free to email me at <i>blog@spec.nz</i> if you find this interesting. I welcome any discussion this may inspire.
         </p>
         <p>
           I love learning and experimenting with fringe topics such as SNN's <a href="https://en.wikipedia.org/wiki/Spiking_neural_network">(Spiking neural networks)</a>. Much of the world is obsessed with the transformer architecture. There doesn't seem to be anywhere near as much interest or material out there on spike based architectures. In terms of performance, SNN's seem to be outpaced by ANN's (aka transformers and the typical artificial neural networks that involve huge matrix multiplications), though I don't think we should give up on them. SNN's are fascinating to me because of their parallels with the brain and the simplicity of the <a href="https://en.wikipedia.org/wiki/Hebbian_theory">Hebbian learning</a> and <a href="https://en.wikipedia.org/wiki/Spike-timing-dependent_plasticity">spike timing dependent plasticity (STDP)</a> learning rules.
@@ -101,15 +98,18 @@
         <p>
           My gut feeling tells me the so called 'path to intelligence' involves some combination of state space models, recurrent neural networks and... spikes. I figured experimenting with SNN's is a good first principles way to understand how information can be processed by a bunch of cells. I've always wanted to build my own toy model from scratch. Something interactive that allows me to see what is happening under the hood, and to share it with others. I don't have much of a clear goal, for me this is mostly play. This is what I've created after a few months of tinkering here and there. Is it revolutionary? No. Am I reinventing the wheel? Probably, who cares... Enjoy.
         </p>
+        <p>
+          <i>This is heavily inspired by the work of <a href="https://scholar.google.com/citations?user=uR-7ex4AAAAJ&hl=en">Prof Simon Thorpe</a> for which I sincerely thank for his contributions to this field. He has several excellent lectures available on YouTube and research papers available for free.</i>
+        </p>
       </section>
       <section>
         <h2>What can a SNN do?</h2>
         <p>
-          In theory they can learn anything, just like a regular neural network. One thing in particular SNN's are good at is capturing temporal patterns in input signals. i.e. pattern matching, i.e. sound or video processing.
+          In theory, SNN's can learn patterns. In particular, spatiotemporal patterns which is great for speech/audio and vision systems. Whats more, they encode information in spikes (event based) rather than traditional neural networks that process data continuously (matrix-based). This has some unique advantages which I'll get to later.
         </p>
         <h2>How do I plan to build a SNN?</h2>
         <p>
-          As a layman entering the game late, and trying to make sense of all this AI research; one approach to SNN's I see is to simulate every millisecond of neuronal activity. Using exponential equations to calculate action potentials complex dynamics between all neurons at once. This doesn't interest me much as it is computationally very heavy, it seems like a brute force approach. Then there is a field called neuromorphic computing which takes inspiration from our own brains, using artificial neurons and synapses on a chip to process temporal information very efficiently. Within this there is an idea to <u>only perform calculations on neurons that are actually firing</u> so we don't waste computing clock cycles on idle neurons. This I think has the potential to speed things up by an order of magnitude or more. To take advantage of this the network has to be somewhat sparse.
+          As a layman entering the game late, and trying to make sense of all this AI research; one approach to SNN's I see is to simulate every millisecond of neuronal activity. Using exponential equations to calculate action potentials complex dynamics between all neurons at once. This doesn't interest me much as it is computationally very heavy, it seems like a brute force approach. Then there is a field called neuromorphic computing which takes inspiration from our own brains, using artificial neurons and synapses on a chip to process temporal information very efficiently. Within this there is an idea to <u>only perform calculations on neurons that are actually firing (event based)</u> so we don't waste computing clock cycles on idle neurons. This I think has the potential to speed things up by an order of magnitude or more. To take advantage of this the network has to be somewhat sparse.
         </p>
         <p>
           So I've tried to implement a mish mash of the ideas above here. My thinking is if I can lower the 'computational bar' enough, then perhaps I can get something interesting happening in JavaScript of all languages!</i>
@@ -178,15 +178,14 @@
             <figcaption>In terms of computing, this simplified learning rule is fast to calculate because it only requires addition and subtraction operations.</figcaption>
           </figure>
           <p>
-            The core learning method here is STDP. Usually STDP is performed using an exponential function to precisely calculate the weight change based on relative timing between spikes. Here we reduce this function to something more binary. In this version, after firing, there is a fixed weight increase (LTP - long term potentiation) if the pre-node fired within a fixed 'learning window', and then everything else is decreased (LTD - long term depression).
+            The core learning method here is STDP. Usually STDP is performed using an exponential function to precisely calculate the weight change based on relative timing between spikes. Here we reduce this function to something more binary. In this version, after firing, there is a fixed weight increase (LTP - long term potentiation) if the pre-node fired within a fixed 'learning window', and then everything else is decreased (LTD - long term depression). This causes the network to learn groups of neurons that fire together.
           </p>
           <p>
-            One limitation of this simplified rule is that by applying the same weight change to all neurons that are either "in the window", or not, we lose the ability to determine the input spike order. Though this might still be possible if we add recurrent connections to allow temporal dependencies to be encoded over time. This is something I'll have to experiment with in future.
+            One limitation of this simplified rule is that we don't have the ability to determine the input spike order. This is because we apply the same weight change to all neurons that are either "in the window", or not. Though determingin spike order might still be possible if we add recurrent connections to allow temporal dependencies to be encoded over time. This is something I'll have to experiment with in future.
           </p>
           <p>
             By depressing such a large number of connections we create network sparsity. Many of the weights tend towards zero (or near zero) meaning we could eliminate them from the calculations which further increases performance.
           </p>
-
 
           <h3>Winner Takes All & Lateral Inhibition</h3>
           <p>
@@ -213,7 +212,7 @@
         </section>
         <section id="demo">
           <h2>Interactive Demo</h2>
-          <a href="spike_v13.html">Click here to run live demo</a>
+          <a href="./src/spike_v13.html">Click here to run live demo</a>
           <p>
             I recommend sitting in front of your webcam for a few seconds, watch the network learn your 'shape'. Then move suddenly and see how a new node will start to hone in on your new 'shape'. If you are lucky, move back to your original position and the first node should fire again.
           </p>
@@ -260,7 +259,5 @@
         <img class="spec_logo" src="spec_logo.svg">
       </p>
     </footer>
-    <script src=""></script>
-
   </body>
   </html>

@@ -47,63 +47,6 @@
     font-size: small;
   }
 
-  .checkbox-container, .next-button {
-    width: 60px;
-    height: 60px;
-    font-size: 60px;
-    display: flex; /* Changed from inline-block to flex for better centering */
-    justify-content: center;
-    align-items: center;
-    user-select: none; /* Prevent text selection */
-  }
-
-  .checkbox-container input {
-    display: none;
-  }
-
-  .play-pause {
-    width: 100%;
-    height: 100%;
-    background-color: #4caf50;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  .play-pause::before {
-    content: '';
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 12px 0 12px 20px;
-    border-color: transparent transparent transparent white;
-    transition: transform 0.3s ease;
-  }
-
-  .checkbox-container input:checked + .play-pause {
-    background-color: red;
-  }
-
-  .checkbox-container input:checked + .play-pause::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    background-color: white;
-    border-radius: 2px;
-  }
-
-  .checkbox-container input:checked + .play-pause::after {
-    content: '';
-    width: 8px;
-    height: 20px;
-    background-color: white;
-    border-radius: 2px;
-    position: absolute;
-  }
 
   .controls-buttons {
     display: flex;
@@ -120,6 +63,39 @@
     display: none
   }
 
+  .pause {
+    background: #0058ff;
+    border-radius: 50%;
+  }
+
+  .play {
+    background: #4caf50;
+    border-radius: 50%;
+  }
+
+  .skip {
+    background: grey;
+  }
+
+  .control_button {
+    color: white;
+    width: 60px;
+    height: 60px;
+
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+    display: flex;
+    justify-content: center;  /* Horizontally center */
+    align-items: center;      /* Vertically center */
+    font-size: 38px;
+    line-height: 2;
+
+  }
+
+  .control_button:hover {
+    opacity: 0.5;
+  }
+
 </style>
 </head>
 <body>
@@ -129,11 +105,8 @@
   <div id="controls">
     <h3>Controls</h3>
     <div class="controls-buttons">
-      <div class="checkbox-container">
-        <input type="checkbox" id="play-pause" onclick="PLAYING = this.checked">
-        <label for="play-pause" class="play-pause"></label>
-      </div>
-      <span class="next-button" onclick="nextFrame()" aria-label="Next frame">⏭️</span>
+      <span id="play_pause_button" class="control_button play" onclick="playPause()">&#9654;</span>
+      <span class="control_button skip" onclick="nextFrame()" aria-label="Next frame">&#11122;</span>
     </div>
 
     <p>
@@ -230,7 +203,7 @@
 
       const ANIMATION_INTERVAL = 100;  // ms delay between steps
       var ANIMATE = document.getElementById("AnimationButton").checked;
-      var PLAYING = document.getElementById("play-pause").checked;
+      var PLAYING = false;
       var RESET = document.getElementById("ResetAfterFrame").checked;
       var PAUSE_AFTER_NEXT_FRAME = false;
       var GRID_SIZE = 4;           // Determines the size of the grid when drawn
@@ -495,7 +468,7 @@
         }
         if (event.key === " " || event.key === "Space") {
           event.preventDefault();
-          document.getElementById("play-pause").click();
+          playPause();
           PAUSE_AFTER_NEXT_FRAME = false;
         }
         if (event.key === "L" || event.key === "l") {
@@ -670,7 +643,15 @@
           for (let i = 0; i < imageData.length; i += 4) {
 
             if (imageData[i] > 0) {
-              const luminance = imageData[i];
+
+              const red = imageData[i];
+              const green = imageData[i + 1];
+              const blue = imageData[i + 2];
+
+              // Calculate luminance using the formula: 0.2126 * R + 0.7152 * G + 0.0722 * B
+              // Max luminance = 255
+              const luminance = parseInt((0.2126*red) + (0.7152*green) + (0.0722*blue));
+              // const luminance = imageData[i];
               let bin = parseInt(255-luminance);
               spikeTrain[bin].push(inputNodeId);
             }
@@ -742,6 +723,21 @@
           PLAYING = true;
         }
         PAUSE_AFTER_NEXT_FRAME = true;
+      }
+
+      function playPause() {
+        PLAYING = !PLAYING;
+        if (PLAYING) {
+          // pause
+          document.getElementById("play_pause_button").innerHTML = "&#9208;"  // pause button
+          document.getElementById("play_pause_button").classList.add("pause");
+          document.getElementById("play_pause_button").classList.remove("play");
+        }
+        else {
+          document.getElementById("play_pause_button").innerHTML = "&#9654;" // play button
+          document.getElementById("play_pause_button").classList.remove("pause");
+          document.getElementById("play_pause_button").classList.add("play");
+        }
       }
 
       // Resize the canvas's based on network sizew
