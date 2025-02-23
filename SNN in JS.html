@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>JS SNN</title>
+  <link rel="icon" href="favicon.drawio.png" type="image/gif" >
+  <style>
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: monospace, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+  }
+  header {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    background-image: url("snn_bg_image2.webp");
+    background-blend-mode: soft-light;
+  }
+  footer {
+    background-color: #333; /* Dark background for contrast */
+    color: #fff; /* Light text for readability */
+    padding: 10px; /* Spacing around content */
+    text-align: center; /* Center-align text */
+    font-size: small;
+  }
+  nav ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  nav ul li {
+    display: inline;
+    margin-right: 15px;
+  }
+  nav ul li a {
+    color: white;
+    text-decoration: none;
+  }
+  .container {
+    width: 100%; /* Make sure the container spans the full width of the screen */
+    max-width: 800px; /* Set the maximum width for the content */
+    margin: 0 auto; /* Center align the container */
+  }
+  .spec_logo {
+    height: 50px;
+  }
+  main {
+    padding: 0 20px; /* Add some padding on the left and right */
+    background: #f8f8f8;
+  }
+  h1 {
+    margin: 0 auto;
+    max-width: 560px;
+    padding: 10px 0;
+  }
+  figure {
+    text-align: center
+  }
+  figure img {
+    width: 100%;
+  }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>Spiking Neural Network in JavaScript</h1>
+    <h3>Interactive demo of a SNN in vanilla JS using a simplified STDP learning rule.</h3>
+  </header>
+  <div class="container">
+    <main>
+      <section>
+        <p>
+          <i>February, 2025</i>
+        </p>
+        <p>
+          <a href="#demo">Skip to the demo</a>
+        </p>
+      </section>
+      <section id="intro">
+        <h2>Introduction</h2>
+        <p>
+          This is my amateur dive into Spiking Neural Networks.
+        </p>
+        <p>
+          First up let me preface this by saying I am <u>not</u> a machine learning (ML) expert or software engineer. Of all things I am a mechanical engineer with an interest in ML who dabbles in code. My ideas are half baked and perhaps somewhat misguided, this post is a bit rushed, my code is scrappy, but it does mildly interesting things. I'm not quitting my day job anytime soon, but please feel free to email me at <i>blog@spec.nz</i> if you find this interesting. I welcome any discussion this may inspire.
+        </p>
+        <p>
+          <i>This is heavily inspired by the work of <a href="https://scholar.google.com/citations?user=uR-7ex4AAAAJ&hl=en">Prof Simon Thorpe</a> for which I sincerely thank for his contributions to this field. He has several excellent lectures available on YouTube and research papers available for free.</i>
+        </p>
+        <p>
+          I love learning and experimenting with fringe topics such as SNN's <a href="https://en.wikipedia.org/wiki/Spiking_neural_network">(Spiking neural networks)</a>. Much of the world is obsessed with the transformer architecture. There doesn't seem to be anywhere near as much interest or material out there on spike based architectures. In terms of performance, SNN's seem to be outpaced by ANN's (aka transformers and the typical artificial neural networks that involve huge matrix multiplications), though I don't think we should give up on them. SNN's are fascinating to me because of their parallels with the brain and the simplicity of the <a href="https://en.wikipedia.org/wiki/Hebbian_theory">Hebbian learning</a> and <a href="https://en.wikipedia.org/wiki/Spike-timing-dependent_plasticity">spike timing dependent plasticity (STDP)</a> learning rules.
+        </p>
+        <p>
+          My gut feeling tells me the so called 'path to intelligence' involves some combination of state space models, recurrent neural networks and... spikes. I figured experimenting with SNN's is a good first principles way to understand how information can be processed by a bunch of cells. I've always wanted to build my own toy model from scratch. Something interactive that allows me to see what is happening under the hood, and to share it with others. I don't have much of a clear goal, for me this is mostly play. This is what I've created after a few months of tinkering here and there. Is it revolutionary? No. Am I reinventing the wheel? Probably, who cares... Enjoy.
+        </p>
+      </section>
+      <section>
+        <h2>What can a SNN do?</h2>
+        <p>
+          In theory they can learn anything, just like a regular neural network. One thing in particular SNN's are good at is capturing temporal patterns in input signals. i.e. pattern matching, i.e. sound or video processing.
+        </p>
+        <h2>How do I plan to build a SNN?</h2>
+        <p>
+          As a layman entering the game late, and trying to make sense of all this AI research; one approach to SNN's I see is to simulate every millisecond of neuronal activity. Using exponential equations to calculate action potentials complex dynamics between all neurons at once. This doesn't interest me much as it is computationally very heavy, it seems like a brute force approach. Then there is a field called neuromorphic computing which takes inspiration from our own brains, using artificial neurons and synapses on a chip to process temporal information very efficiently. Within this there is an idea to <u>only perform calculations on neurons that are actually firing</u> so we don't waste computing clock cycles on idle neurons. This I think has the potential to speed things up by an order of magnitude or more. To take advantage of this the network has to be somewhat sparse.
+        </p>
+        <p>
+          So I've tried to implement a mish mash of the ideas above here. My thinking is if I can lower the 'computational bar' enough, then perhaps I can get something interesting happening in JavaScript of all languages!</i>
+        </p>
+
+      </section>
+      <section id="snn">
+        <h2>Simplified LIF SNN Model</h2>
+        <p>LIF = Leaky integrate and fire. An action potential regime for a simple neuron that integrates (accumulates) input signals, fires/spikes when above a threshold, and leaks over time to a resting value.</p>
+        <figure>
+          <img src="network_diagram.drawio.png">
+          <figcaption>Network Input Data Overview</figcaption>
+        </figure>
+        <p>
+          We start with an input image. Convert it to grayscale and down sample to 64 x 64px. Then we use a pair of 5x5 <a href="https://en.wikipedia.org/wiki/Ricker_wavelet">Mexican hat </a> convolutional filters to produce <strong>on-center</strong> and <strong>off-center</strong> contrast mappings. We do this because you often don't need entire 8-bit grayscale values for every pixel in an image to tell what the image is, just the edges can be enough, and this takes a lot less processing when you reduce it to this level. In this case the filters emphasize regions of rapid intensity change (aka edges, the parts we care are about) while suppressing uniform regions. Though, if you wanted to perform other types of processing you could, e.g. feeding in raw pixel values, only the brightest spots, orientation maps, the differences between camera frames, or all of these at once. In fact you could use any form of data making this <i>"multi-modal"</i>, but you'd still want to select an appropriate type of preprocessing/filter for the type of data you have (e.g. spectrogram for sound, letters or tokens for text).
+        </p>
+        <p>
+          With the resultant maps, we take every pixel ID and put it into one of 256 bins based on intensity. These bins become the input "spike train". The bins are fed into the network in descending order such that the high intensity pixels have the lowest latency (fire first). These high intensity/low latency bins contain the most salient information about the image, and thus the first output neuron to fire as a result of the input spike train will likely also be the most important. Actually, for most images you can discard a lot of the lower bins (i.e. pixels with low contrast) and still make sense of the image. <i>See sample below</i>. That is unless you are trying to detect a dimly lit object in the shadows of an otherwise very bright image.
+        </p>
+        <figure>
+          <img style="width:60%" src="on.png">
+          <figcaption>Contrast map of size 281x281 (78,961 total pixels)</figcaption>
+          <img style="width:60%" src="on - reduced.png">
+          <figcaption>Same image but we apply a threshold so only the first bin is shown. In this case we have reduced it to only 4,559 px/spikes <strong>(only 6% of the original)</strong></figcaption>
+          <img style="width: 60%" src="thresholding.gif">
+          <figcaption>Animation where we alter the number of spikes (bins) included in the spike train. Notice how the image is still recognizable even using just the using minimum number of spikes.</figcaption>
+        </figure>
+        <p>
+          You may be used to seeing neural networks drawn with circles and lines like below. This makes it easy to see the network structure but not so easy to see the individual weights.
+        </p>
+        <figure>
+          <img src="equivalent_diagram.drawio.png" style="width: 50%">
+          <figcaption>Single layer neural network drawn the traditional way</figcaption>
+        </figure>
+        <p>
+          For a fully connected single layer network it can be drawn in a grid like fashion as below. This allows you to see the individual weights easier. <i>Note: as a simplification this layer only shows 4 input nodes and 4 outputs</i>. To process an image we need an input size of 8192 (2x 64x64 maps) and the number of outputs can be as few or as many as we want. The idea is that each output node will become receptive to a single pattern/feature. The more outputs available the more capacity the network has to 'learn'.
+        </p>
+        <figure>
+          <img src="diagram.drawio.png">
+          <figcaption>Equivalent diagram drawn as a gate array</figcaption>
+        </figure>
+
+        <p>
+          Inside the network, we fully connect each input neuron (left most column on diagram above) to every output neuron (top row) with a weight (shown on the main grid). The weights are initialised randomly to low values. The shade of each cell in the grid indicates the strength of the connection ranging from 0-1.
+        </p>
+        <p>
+          When an input neuron spikes, it only stimulates its connected neurons according to the connection weights. The spikes accumulate in the output nodes and if any node is pushed above its threshold it fires. Additionally, after each time step all nodes will slowly decay (leak) to their resting value. That is the essence of a spiking neural network!
+        </p>
+
+      </section>
+
+      <section id="rules">
+        <h2>Learning Rules</h2>
+        <p>
+          The network described above won't do much on its own. We need some additional mechanisms to get it to learn patterns. Ideally we can get it to:
+        </p>
+        <ul>
+          <li>To automatically learn repeating patterns of any length (motifs)</li>
+          <li>Promote connection sparsity. This is the key to reducing the memory and compute requirements</li>
+          <li>Prevent multiple nodes learning the same thing</li>
+        </ul>
+
+        <h3>STDP (simplified)</h2>
+          <figure>
+            <img src="stdp.drawio.png">
+            <figcaption>In terms of computing, this simplified learning rule is fast to calculate because it only requires addition and subtraction operations.</figcaption>
+          </figure>
+          <p>
+            The core learning method here is STDP. Usually STDP is performed using an exponential function to precisely calculate the weight change based on relative timing between spikes. Here we reduce this function to something more binary. In this version, after firing, there is a fixed weight increase (LTP - long term potentiation) if the pre-node fired within a fixed 'learning window', and then everything else is decreased (LTD - long term depression).
+          </p>
+          <p>
+            One limitation of this simplified rule is that by applying the same weight change to all neurons that are either "in the window", or not, we lose the ability to determine the input spike order. Though this might still be possible if we add recurrent connections to allow temporal dependencies to be encoded over time. This is something I'll have to experiment with in future.
+          </p>
+          <p>
+            By depressing such a large number of connections we create network sparsity. Many of the weights tend towards zero (or near zero) meaning we could eliminate them from the calculations which further increases performance.
+          </p>
+
+
+          <h3>Winner Takes All & Lateral Inhibition</h3>
+          <p>
+            To prevent multiple nodes learning the same thing we use a winner takes all approach. This means only one node on the output layer is allowed to fire at each time step.
+            i.e. only one has the opportunity to do STDP. Immediately after firing, the potential of all other nodes on the layer is reset (lateral inhibition). The node that fired is not able to fire again until a set number of cycles (refractory period) have passed. This aids in learning distinct patterns by promoting specialisation among output neurons and creating sparse representations of the input data.
+          </p>
+          <h3>Spike Threshold Adaption</h3>
+          <p>
+            Using just the above rules the network <u>will</u> learn groups of spikes that fire together, however its learning capacity will be highly dependent on the input we give it and the parameters we choose. e.g. If we set the firing threshold too low then a node will fire on just a few pixels (very low level features), and because in an image there is usually huge number of these low level patterns, the neurons will constantly be pulled away from what had previously caused them to fire. Conversely, a threshold that is too high will almost never fire except under very specific (hence unlikely) input.
+          </p>
+          <p>
+            I've chosen a simple method of letting neurons decide their own threshold. For each neuron there are two different thresholds. One for firing, and one for learning. The learning threshold can be some factor (say 30%) <strong>higher</strong> than the firing threshold. To begin with all neurons start with a very low thresholds meaning they fire easily. From this poing, one of three things can happen. 1) Nothing. 2) When a node reaches its firing threshold it will spike, causing it to stimulate the nodes it is connected to and STDP takes place. 3) If the learning threshold is also reached then in addition to spiking and STDP the firing threshold itself will increase.
+          </p>
+          <p>
+            The net effect is that all nodes will fire intensely a few times in the beginning due to their high connectivity and low thresholds. But that dies off pretty quick as STDP tunes them towards a certain pattern (the pattern could be any size that fits in the learning window) while at the same time the threshold increase makes them more selective. The threshold increase only happens up to a point as you don't want it to become overly selective such that a neuron stops responding to an image due to slight changes in tilt, position or lighting.
+          </p>
+          <h3>Pre Synaptic Node Lag</h3>
+          <p>
+            <i>This is a term I pulled out of thin air, not sure about this.</i> Another way to prevent all nodes learning the same pattern is to temporarily take the input nodes out of the picture once they have been involved in STDP.
+          </p>
+          <p>
+            To explain. For STDP to work we must keep track of the times at which all nodes fire. This is how we determine which nodes fired within the learning window. So when a output node fires, all of the input nodes that fired within the learning window have their <i>lastFired</i> attribute updated so they will not be included in the learning window of any future output nodes that fire. In a way this loosely acts as an energy based rule that prevents inputs from passing on unlimited energy to downstream nodes.
+          </p>
+        </section>
+        <section id="demo">
+          <h2>Interactive Demo</h2>
+          <a href="spike_v13.html">Click here to run live demo</a>
+          <p>
+            I recommend sitting in front of your webcam for a few seconds, watch the network learn your 'shape'. Then move suddenly and see how a new node will start to hone in on your new 'shape'. If you are lucky, move back to your original position and the first node should fire again.
+          </p>
+        </section>
+        <section id="discussion">
+          <h2>Discussion</h2>
+          <p>
+            Playing with this you will notice that over time, the output nodes become receptive to repeating patterns (motifs). One node per pattern.
+            With each spike the nodes adjust their weights slightly to learn the pattern that caused them to spike.
+            If you feed in random noise, the network never actually settles on any pattern. So we effectively have a network that will detect motifs of any length in a live signal. Pretty cool right?
+          </p>
+          <p>
+            You might notice that many of the weights tend to settle at either 0 or 1. This is the sparsity trait we talked about. We can prune (delete) the connections close to zero. And, we can round up the weights that are close to 1, effectively quantizing to binary weights which reduces the memory requirements of the application (that is if it weren't written in JavaScript).
+          </p>
+          <p>
+            Eventually the network runs out of available of output nodes that are able to learn new patterns. But because the network is theoretically cheap to run due to its sparsity and binary weights, we can just add a heap more nodes.
+          </p>
+        </section>
+        <section id="next_steps">
+          <h2>Next Steps</h2>
+          <p>
+            Some further idea's I'd like to test are:
+          </p>
+          <ul>
+            <li>Implement a similar network with audio or text</li>
+            <li>Add more layers, recurrent connections, or go structureless (deep random neural network)</li>
+            <li>Implement a kind of reinforcement learning step to solve a simple task (e.g. inverted pendulum or play pong)</li>
+            <li>Investigate using a non trainable, hidden liquid layer (aka <a href="https://en.wikipedia.org/wiki/Reservoir_computing">reservoir computing</a>, <a href="https://en.wikipedia.org/wiki/Liquid_state_machine">liquid state machine</a>, <a href="https://en.wikipedia.org/wiki/Echo_state_network">echo state network</a> or liquid neural networks)</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Reach out</h2>
+          <p>
+            Email me at <i>blog@spec.nz</i>
+          </p>
+        </section>
+      </main>
+    </div>
+    <footer>
+      <p>
+        This page content and code is 100% free to use anywhere, by anyone for anything.<br>
+      </p>
+      <p>
+        <img class="spec_logo" src="spec_logo.svg">
+      </p>
+    </footer>
+    <script src=""></script>
+
+  </body>
+  </html>
