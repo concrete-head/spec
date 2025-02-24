@@ -63,33 +63,11 @@
     display: none
   }
 
-  .pause {
-    background: #0058ff;
-    border-radius: 50%;
-  }
-
-  .play {
-    background: #4caf50;
-    border-radius: 50%;
-  }
-
-  .skip {
-    background: grey;
-  }
-
   .control_button {
-    color: white;
     width: 60px;
     height: 60px;
-
     cursor: pointer;
     user-select: none; /* Prevent text selection */
-    display: flex;
-    justify-content: center;  /* Horizontally center */
-    align-items: center;      /* Vertically center */
-    font-size: 38px;
-    line-height: 2;
-
   }
 
   .control_button:hover {
@@ -105,8 +83,8 @@
   <div id="controls">
     <h3>Controls</h3>
     <div class="controls-buttons">
-      <span id="play_pause_button" class="control_button play" onclick="playPause()">&#9654;</span>
-      <span class="control_button skip" onclick="nextFrame()" aria-label="Next frame">&#11122;</span>
+      <img id="play_pause_button" class="control_button play" onclick="playPause()" src="play.svg">
+      <img class="control_button skip" onclick="nextFrame()" aria-label="Next frame" src="next_frame.svg">
     </div>
 
     <p>
@@ -729,14 +707,11 @@
         PLAYING = !PLAYING;
         if (PLAYING) {
           // pause
-          document.getElementById("play_pause_button").innerHTML = "&#9208;"  // pause button
-          document.getElementById("play_pause_button").classList.add("pause");
-          document.getElementById("play_pause_button").classList.remove("play");
+          document.getElementById("play_pause_button").src = "pause.svg";
         }
         else {
-          document.getElementById("play_pause_button").innerHTML = "&#9654;" // play button
-          document.getElementById("play_pause_button").classList.remove("pause");
-          document.getElementById("play_pause_button").classList.add("play");
+          // play
+          document.getElementById("play_pause_button").src = "play.svg";
         }
       }
 
