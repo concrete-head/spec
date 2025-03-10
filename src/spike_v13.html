@@ -129,8 +129,12 @@
 
       <input type="radio" id="CAMERA_INPUT" name="INPUT_TYPE" value="Camera input" checked>
       <label for="CAMERA_INPUT">Camera input</label><br>
+
       <input type="radio" id="RANDOM_INPUT" name="INPUT_TYPE" value="Pseudo random input">
       <label for="RANDOM_INPUT">Pseudo random noise input (includes a repeating pattern every 2 seconds)</label><br>
+
+      <input type="radio" id="IMAGE_INPUT" name="INPUT_TYPE" value="Image input">
+      <label for="IMAGE_INPUT">Random image input (see image reel at bottom)</label><br>
 
       <input type="checkbox" id="DRAW_INPUT_CANVAS" onclick="showInput(this.checked)">
       <label for="DRAW_INPUT_CANVAS">Show Input </label><br>
@@ -177,6 +181,11 @@
         <canvas id="reconstruction_canvas"></canvas>
       </div>
 
+      <div class="grid_item">
+        <h3>Random Image Reel</h3>
+        <canvas id="imageReel" width="1000" height="200"></canvas>
+      </div>
+
       <script src="spike_v13.js"></script>
       <script>
 
@@ -188,6 +197,8 @@
       var GRID_SIZE = 4;           // Determines the size of the grid when drawn
       var LOGGING = document.getElementById("LoggingButton").checked;
       var RANDOM_INPUT = false;   // Use random (noise) input data
+      var IMAGE_INPUT = false;
+      var CAMERA_INPUT = true;
       var randomGenerator;
       var snn;                    // The global spiking neural network
 
@@ -215,6 +226,7 @@
         [0,  1,  2,  1,  0],
         [0,  0,  1,  0,  0]
       ];
+
 
       // const kernel = [
       //   // [-1, -1, -1],
@@ -434,6 +446,9 @@
       inputSelectorButtons.forEach(function(radio) {
         radio.addEventListener('change', function(event) {
           RANDOM_INPUT = document.getElementById("RANDOM_INPUT").checked;
+          IMAGE_INPUT = document.getElementById("IMAGE_INPUT").checked;
+          CAMERA_INPUT = document.getElementById("CAMERA_INPUT").checked;
+
           let type = document.querySelector('input[name="INPUT_TYPE"]:checked');
           console.log("Input type changed: " + type.value);
 
@@ -511,6 +526,24 @@
             offsetY = 0;
           }
 
+          if (IMAGE_INPUT) {
+
+            var imageIndex = Math.floor(Math.random() * imageReel.length);
+
+            const canvas = document.getElementById("imageCanvas");
+
+
+            ctx.clearRect(0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+            ctx2.clearRect(0, 0, INPUT_CANVAS_2.width, INPUT_CANVAS_2.height);
+
+            ctx.drawImage(imageReel[imageIndex], 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+            ctx2.drawImage(imageReel[imageIndex], 0, 0, INPUT_CANVAS_2.width, INPUT_CANVAS_2.height);
+
+            applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);    // On-center
+            applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);   // Off-center
+
+
+          }
 
           if (RANDOM_INPUT) {
 
@@ -530,36 +563,31 @@
 
               let pixelId = parseInt(randomGenerator.random(0, data.length/4));
               let id = pixelId * 4;
-              data[id] = 255;
-              data[id+3] = 255;
+              data[id] = 255;     // Red channel
+              data[id+1] = 255;   // Green channel
+              data[id+2] = 255;   // Blue channel
+              data[id+3] = 255;   // Alpha channel
 
             }
 
-
-
-            // // Fill the ImageData with random data
-            // for (let i = 0; i < data.length; i += 4) {
-            //
-            //   //let rand = Math.floor(Math.random() * 255);
-            //   let rand = Math.floor(randomGenerator.random() * 255);
-            //   data[i] = rand;    // Red channel
-            //   data[i + 1] = rand // Green channel
-            //   data[i + 2] = rand // Blue channel
-            //   data[i + 3] = 255; // Alpha channel (fully opaque)
-            // }
+            // Clear canvases
+            ctx.clearRect(0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+            ctx2.clearRect(0, 0, INPUT_CANVAS_2.width, INPUT_CANVAS_2.height);
 
             // Draw the random pixel data onto the canvas
             ctx.putImageData(imageData, 0, 0);
             ctx2.putImageData(imageData, 0, 0);
 
-          } else {
+          }
 
-            // Draw the best fit video onto the INPUT_CANVAS_1 with best fit so pixels can be accessed
+          if (CAMERA_INPUT) {
+
+            // Draw the best fit video onto both canvases so pixels can be accessed
             ctx.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
             ctx2.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
 
-            applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);
-            applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);
+            applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);    // On-center
+            applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);   // Off-center
 
           }
           canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
@@ -749,9 +777,71 @@
 
         resizeCanvases();
 
-
         console.log("Initialisation Complete!");
       };
+
+
+      var imageReel = []
+
+
+      function getUniqueRandomNumbers(count, min, max) {
+        let numbers = new Set();
+        while (numbers.size < count) {
+          let randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+          numbers.add(randomNum);
+        }
+        return Array.from(numbers);
+      }
+
+
+
+      function prefetchImages(callback) {
+          var loadedImages = [];
+          var imagesToLoad = 5;
+
+          let randomNumbers = getUniqueRandomNumbers(imagesToLoad, 1, 500);
+
+          function checkIfAllLoaded() {
+              if (loadedImages.length === imagesToLoad) {
+                console.log("All images loaded");
+                imageReel = loadedImages;
+                callback(loadedImages);
+              }
+          }
+
+          for (var i = 0; i < randomNumbers.length; i++) {
+              var url = "./random_images/" + randomNumbers[i].toString() + ".jpg";
+              var img = new Image();
+              img.crossOrigin = "anonymous";  // Allows cross-origin access
+
+              img.onload = function() {
+                  loadedImages.push(this);
+                  checkIfAllLoaded();
+              };
+
+              img.onerror = function() {
+                  console.error("Failed to load image: " + this.src);
+                  checkIfAllLoaded();
+              };
+
+              img.src = url;
+          }
+      }
+
+
+      prefetchImages(function(images) {
+
+          console.log("All images prefetched!", images);
+          var canvas = document.getElementById("imageReel");
+          var ctx = canvas.getContext("2d");
+
+          for (var i = 0; i < images.length; i++) {
+            if (images[i]) {
+              ctx.drawImage(images[i], images[i].width*i, 0);
+            }
+          }
+      });
+
 
       </script>
     </body>
