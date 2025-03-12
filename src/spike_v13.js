@@ -29,13 +29,14 @@ class Connection {
 
 // Network class
 class Network {
-  constructor({numInputs, numOutputs, LTPRate, LTDRate, startingThreshold, LTPWindow, refractoryTime, decayRate, inhibition, numWinners, nodeLag, thresholdIncrease}) {
+  constructor({numInputs, numOutputs, LTPRate, LTDRate, startingThreshold, LTPWindow, refractoryTime, decayRate, inhibition, numWinners, preSynapticReset, thresholdIncrease}) {
 
     this.inputNodes = [];
     this.outputNodes = [];
     this.connections = [];
     this.numWinners = numWinners; // number of winners allowd in winner-takes-all
     this.cycle = 0;
+    this.frames = 0;            // Count the total number of feed forward steps
     this.LTPRate = LTPRate;     // weight change for LTP
     this.LTDRate = LTDRate;     // weight change for LTD
     this.LTPWindow = LTPWindow;   // how far to look back for LTP
@@ -45,7 +46,7 @@ class Network {
     this.spikeTrain = [];
     this.refractoryTime = refractoryTime;
     this.startingThreshold = startingThreshold;
-    this.nodeLag = nodeLag;                     // When enabled, if an output node spikes, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from being involved in LTP until they fire again.
+    this.preSynapticReset = preSynapticReset;                     // When enabled, if an output node spikes, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from being involved in LTP until they fire again.
     this.thresholdIncrease = thresholdIncrease;     // When enabled, nodes that fire with strong intensity have their thresholds increased
 
     // Create input and output nodes
@@ -163,6 +164,8 @@ class Network {
 
     }
 
+    this.frames = this.frames + 1;
+
   }
 
   // Run a single forward step
@@ -270,7 +273,8 @@ class Network {
     //Increase threshold if spikeIntensity is above 130%
     if (this.thresholdIncrease) {
       if (spikeIntensity > 1.3) {
-        outputNode.threshold = outputNode.threshold + (5);
+        outputNode.threshold = outputNode.value*0.75;
+        //outputNode.threshold = outputNode.threshold + (1);
       }
     }
 
@@ -291,7 +295,7 @@ class Network {
 
           // LTP this connection
           conn.setWeight(conn.weight + this.LTPRate);
-          if (this.nodeLag) {
+          if (this.preSynapticReset) {
             fromNode.lastFired = -1000;
           }
 
