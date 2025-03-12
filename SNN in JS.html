@@ -9,6 +9,7 @@
   html {
     scroll-behavior: smooth;
   }
+
   body {
     font-family: monospace, sans-serif;
     background-color: #f0f0f0;
@@ -16,14 +17,11 @@
     margin: 0;
     padding: 0;
     line-height: 1.5;
-
     background-image: url('icon.svg'); /* Path to your image */
     background-size: 40%;  /* Scales the image to cover the entire viewport */
     background-position: center; /* Centers the image */
     background-repeat: no-repeat; /* Prevents repeating */
     background-attachment: fixed; /* Keeps the background still */
-
-
   }
   header {
     background-color: #333;
@@ -140,7 +138,7 @@
           <img style="width:60%" src="on.png">
           <figcaption>Contrast map of size 281x281 (78,961 total pixels)</figcaption>
           <img style="width:60%" src="on - reduced.png">
-          <figcaption>Same image but we apply a threshold so only the first bin is shown. In this case we have reduced it to only 4,559 px/spikes <strong>(only 6% of the original)</strong></figcaption>
+          <figcaption>Same image but we apply a threshold so only the first bin is shown. In this case we have reduced it to only 4,559 px (spikes) <strong>(only 6% of the original)</strong></figcaption>
           <img style="width: 60%" src="thresholding.gif">
           <figcaption>Animation where we alter the number of spikes (bins) included in the spike train. Notice how the image is still recognizable even using just the using minimum number of spikes.</figcaption>
         </figure>
@@ -222,7 +220,7 @@
           <h2>Interactive Demo</h2>
           <a href="./src/spike_v13.html">Click here to run live demo</a>
           <p>
-            I recommend sitting in front of your webcam for a few seconds, watch the network learn your 'shape'. Then move suddenly and see how a new node will start to hone in on your new 'shape'. If you are lucky, move back to your original position and the first node should fire again.
+            Choosing the webcam as the network input is the best way to see the networks learning behaviour. Watch the network 'learn' your shape'. Then move suddenly and see how a new node will learn your new position.
           </p>
         </section>
         <section id="discussion">
@@ -230,13 +228,13 @@
           <p>
             Playing with this you will notice that over time, the output nodes become receptive to repeating patterns (motifs). One node per pattern.
             With each spike the nodes adjust their weights slightly to learn the pattern that caused them to spike.
-            If you feed in random noise, the network never actually settles on any pattern. So we effectively have a network that will detect motifs of any length in a live signal. Pretty cool right?
+            If you feed in random noise, the network learns very low level features. If you then inject a repeating motif once in a while, with sufficient neurons, one of the neurons will pick up on this motif and you will see its threshold climb.
           </p>
           <p>
-            You might notice that many of the weights tend to settle at either 0 or 1. This is the sparsity trait we talked about. We can prune (delete) the connections close to zero. And, we can round up the weights that are close to 1, effectively quantizing to binary weights which reduces the memory requirements of the application (that is if it weren't written in JavaScript).
+            You might notice that many of the weights tend to settle at either 0 or 1. We can eliminate the connections that are close to zero which significantly improves performance. And we can round up the ones close to 1 which effectively quanintizes the weights to be uniary (they either exist or they dont) which reduces the memory requirements of the application (that is if it weren't written in JavaScript).
           </p>
           <p>
-            Eventually the network runs out of available of output nodes that are able to learn new patterns. But because the network is theoretically cheap to run due to its sparsity and binary weights, we can just add a heap more nodes.
+            Eventually the network runs out of available of output nodes that are able to learn new patterns. But because the network is theoretically cheap to run due to its sparsity and uniary weights, we can just add a heap more nodes.
           </p>
         </section>
         <section id="next_steps">
@@ -268,4 +266,4 @@
       </p>
     </footer>
   </body>
-  </html>
+</html>
