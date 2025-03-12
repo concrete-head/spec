@@ -502,137 +502,111 @@
       console.log("Error: " + err);
     });
 
-    video.addEventListener("play", function() {
-      setInterval(function() {
-        if (!PLAYING) { return }
+    // Animation loop
+    function loop() {
 
-        // Calculate width, height and offsets for best fit to INPUT_CANVAS_1
-        var ctx = INPUT_CANVAS_1.getContext("2d");
-        const ctx2 = INPUT_CANVAS_2.getContext("2d");
+      if (!PLAYING) { return }
 
-        var aspectRatio = video.videoWidth / video.videoHeight;
-        let width, height, offsetX, offsetY;
+      // Calculate width, height and offsets for best fit to INPUT_CANVAS_1
+      var ctx = INPUT_CANVAS_1.getContext("2d");
+      const ctx2 = INPUT_CANVAS_2.getContext("2d");
 
-        if (aspectRatio > 1) {
-          width = video.videoWidth;
-          height = video.videoWidth / aspectRatio;
-          offsetX = 0;
-          offsetY = (video.videoHeight - height) / 2;
-        } else {
-          width = video.videoHeight * aspectRatio;
-          height = video.videoHeight;
-          offsetX = (video.videoWidth - width) / 2;
-          offsetY = 0;
+      var aspectRatio = video.videoWidth / video.videoHeight;
+      let width, height, offsetX, offsetY;
+
+      if (aspectRatio > 1) {
+        width = video.videoWidth;
+        height = video.videoWidth / aspectRatio;
+        offsetX = 0;
+        offsetY = (video.videoHeight - height) / 2;
+      } else {
+        width = video.videoHeight * aspectRatio;
+        height = video.videoHeight;
+        offsetX = (video.videoWidth - width) / 2;
+        offsetY = 0;
+      }
+
+      ctx.clearRect(0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+      ctx2.clearRect(0, 0, INPUT_CANVAS_2.width, INPUT_CANVAS_2.height);
+
+      if (SEQUENCE_INPUT) {
+
+        const imageData = ctx.createImageData(INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+        const data = imageData.data;
+
+        // Generate a strip of white pixels
+        let index = 4*10 * (snn.frames % 8);
+        for (var i = 0; i < 6*4; i++) {
+          data[index + i] = 255;
         }
 
-        ctx.clearRect(0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
-        ctx2.clearRect(0, 0, INPUT_CANVAS_2.width, INPUT_CANVAS_2.height);
+        // Draw the pixel data onto the canvas
+        ctx.putImageData(imageData, 0, 0);
+        ctx2.putImageData(imageData, 0, 0);
 
-        if (SEQUENCE_INPUT) {
+      }
 
-          const imageData = ctx.createImageData(INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
-          const data = imageData.data;
+      if (IMAGE_INPUT) {
 
-          let index = 4*10 * (snn.frames % 8);
+        var imageIndex = Math.floor(Math.random() * imageReel.length);
 
+        const canvas = document.getElementById("imageCanvas");
+
+        ctx.drawImage(imageReel[imageIndex], 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+        ctx2.drawImage(imageReel[imageIndex], 0, 0, INPUT_CANVAS_2.width, INPUT_CANVAS_2.height);
+
+        applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);    // On-center
+        applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);   // Off-center
+
+      }
+
+      if (RANDOM_INPUT) {
+
+        const imageData = ctx.createImageData(INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+        const data = imageData.data;
+
+        var s = new Date().getSeconds();
+        var ms =  new Date().getMilliseconds()
+
+        // Generate random input but inject a repeating motif every 2 seconds
+        if ((s%2 == 0) && (ms < 300)) {
+          randomGenerator.seed = 0;
+        } else {
+          randomGenerator.seed = Math.floor(Math.random() * 1000000);
+        }
+
+        // Generate random uniqye data points as input
+        var pixelIds = randomGenerator.uniqueRandom(100, 0, data.length/4);
+        pixelIds.forEach(function(id) {
+          var index = id*4;
           data[index] = 255;     // Red channel
           data[index+1] = 255;   // Green channel
           data[index+2] = 255;   // Blue channel
           data[index+3] = 255;   // Alpha channel
 
-          data[index+4] = 255;
-          data[index+5] = 255;
-          data[index+6] = 255;
-          data[index+7] = 255;
+        });
 
-          data[index+8] = 255;
-          data[index+9] = 255;
-          data[index+10] = 255;
-          data[index+11] = 255;
+        // Draw the random pixel data onto the canvas
+        ctx.putImageData(imageData, 0, 0);
+        ctx2.putImageData(imageData, 0, 0);
 
-          data[index+12] = 255;
-          data[index+13] = 255;
-          data[index+14] = 255;
-          data[index+15] = 255;
+      }
 
-          data[index+16] = 255;
-          data[index+17] = 255;
-          data[index+18] = 255;
-          data[index+19] = 255;
+      if (CAMERA_INPUT) {
 
-          data[index+20] = 255;
-          data[index+21] = 255;
-          data[index+22] = 255;
-          data[index+23] = 255;
+        // Draw the best fit video onto both canvases so pixels can be accessed
+        ctx.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
+        ctx2.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
 
-          // Draw the random pixel data onto the canvas
-          ctx.putImageData(imageData, 0, 0);
-          ctx2.putImageData(imageData, 0, 0);
+        applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);    // On-center
+        applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);   // Off-center
 
-        }
+      }
 
-        if (IMAGE_INPUT) {
+      canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
+      if (PAUSE_AFTER_NEXT_FRAME) { PLAYING = false };
 
-          var imageIndex = Math.floor(Math.random() * imageReel.length);
-
-          const canvas = document.getElementById("imageCanvas");
-
-          ctx.drawImage(imageReel[imageIndex], 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
-          ctx2.drawImage(imageReel[imageIndex], 0, 0, INPUT_CANVAS_2.width, INPUT_CANVAS_2.height);
-
-          applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);    // On-center
-          applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);   // Off-center
-
-        }
-
-        if (RANDOM_INPUT) {
-
-          const imageData = ctx.createImageData(INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
-          const data = imageData.data;
-
-          var s = new Date().getSeconds();
-          var ms =  new Date().getMilliseconds()
-
-          // Generate random input but inject a repeating motif every 2 seconds
-          if ((s%2 == 0) && (ms < 300)) {
-            randomGenerator.seed = 0;
-          } else {
-            randomGenerator.seed = Math.floor(Math.random() * 1000000);
-          }
-
-          // Generate random uniqye data points as input
-          var pixelIds = randomGenerator.uniqueRandom(100, 0, data.length/4);
-          pixelIds.forEach(function(id) {
-            var index = id*4;
-            data[index] = 255;     // Red channel
-            data[index+1] = 255;   // Green channel
-            data[index+2] = 255;   // Blue channel
-            data[index+3] = 255;   // Alpha channel
-
-          });
-
-          // Draw the random pixel data onto the canvas
-          ctx.putImageData(imageData, 0, 0);
-          ctx2.putImageData(imageData, 0, 0);
-
-        }
-
-        if (CAMERA_INPUT) {
-
-          // Draw the best fit video onto both canvases so pixels can be accessed
-          ctx.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
-          ctx2.drawImage(video, offsetX, offsetY, width, height, 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
-
-          applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);    // On-center
-          applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);   // Off-center
-
-        }
-
-        canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
-        if (PAUSE_AFTER_NEXT_FRAME) { PLAYING = false };
-
-      }, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate (here it's set to roughly 24 frames per second)
-    });
+    }
 
     // Apply laplacian of gaussian filter to a canvas
     function applyLoGConvolution(canvas, kernel) {
@@ -813,6 +787,7 @@
       resizeCanvases();
 
       console.log("Initialisation Complete!");
+      setInterval(loop, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate (here it's set to roughly 24 frames per second)
     };
 
     // Preload random images
