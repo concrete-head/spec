@@ -3,7 +3,7 @@ class Node {
   constructor(threshold) {
     this.value = 0;
     this.peakValue = 0;           // Peak activation for this cycle
-    this.connectionIds = [];
+    this.connectionIds = new Set();
     this.isFiring = false;
     this.lastFired = -10000;
     this.threshold = threshold;
@@ -61,14 +61,12 @@ class Network {
     for (i = 0; i < numOutputs; i++) {
       for (var j = 0; j < numInputs; j++) {
         this.connections.push(new Connection(j, i));
-        this.inputNodes[j].connectionIds.push(this.connections.length-1);
-        this.outputNodes[i].connectionIds.push(this.connections.length-1);
+        this.inputNodes[j].connectionIds.add(this.connections.length-1);
+        this.outputNodes[i].connectionIds.add(this.connections.length-1);
       }
     }
 
   }
-
-
 
   // Create a new output node
   addOutputNode() {
@@ -79,12 +77,11 @@ class Network {
       // Connect it to all input nodes
     for (var i = 0; i < this.inputNodes.length; i++) {
       this.connections.push(new Connection(i, newNodeId));
-      this.inputNodes[i].connectionIds.push(this.connections.length-1);
-      this.outputNodes[newNodeId].connectionIds.push(this.connections.length-1);
+      this.inputNodes[i].connectionIds.add(this.connections.length-1);
+      this.outputNodes[newNodeId].connectionIds.add(this.connections.length-1);
     }
 
   }
-
 
   // Delete a connection
   removeConnection(id) {
@@ -96,30 +93,47 @@ class Network {
     });
   }
 
-  // Rebuild master connection array from those that occur in node connectionId lists
+  // Consolidate master connection array, reducing to only those that occur in node connectionId lists
+  // Then rebuild the input and output node connection lists
   rebuildConnections() {
 
-    usedConnectionIds = new Set();
+    // Find connections that are used in node connectionLists
+    var usedConnectionIds = new Set();
+    var initialSize = this.connections.length;
 
     this.inputNodes.forEach(function(inputNode) {
-      inputNode.connectionIds.forEach(id) {
+      inputNode.connectionIds.forEach(function(id) {
         usedConnectionIds.add(id);
-      };
+      });
     });
 
     this.outputNodes.forEach(function(outputNode) {
-      outputNodes.connectionIds.forEach(id) {
+      outputNode.connectionIds.forEach(function(id) {
         usedConnectionIds.add(id);
+      });
     });
 
-    var rebuilt = [];
+    // Consolidate master connection array
+    var consolidated = [];
     this.connections.forEach(function(connection, id) {
       if (usedConnectionIds.has(id)) {
-        rebuild.push(connection);
+        consolidated.push(connection);
       }
     });
 
-    this.connections = rebuilt;
+    this.connections = consolidated;
+
+    // Rebuild input and output connection lists
+    this.inputNodes.forEach(function(inputNode) { inputNode.connectionIds.clear() });
+    this.outputNodes.forEach(function(outputNode) { outputNode.connectionIds.clear() });
+    for (var i = 0; i < this.connections.length; i++) {
+      var conn = this.connections[i];
+      this.inputNodes[conn.fromId].connectionIds.add(i);
+      this.outputNodes[conn.toId].connectionIds.add(i);
+    }
+
+    var finalSize = this.connections.length;
+    console.log(initialSize - finalSize + " connections removed during rebuild")
   }
 
   // Remove connections with weights below a threshold
@@ -192,18 +206,17 @@ class Network {
       var inputNode = this.inputNodes[fireId];
       inputNode.lastFired = this.cycle;
 
+      const self = this;
       // Integrate firing signal to each connected node
-      for (var c = 0; c < inputNode.connectionIds.length; c++) {
+      inputNode.connectionIds.forEach(function(connectionId) {
 
-        let connectionId = inputNode.connectionIds[c];
-        let conn = this.connections[connectionId];
-        let fromNode = this.inputNodes[conn.fromId];
-        let toNode = this.outputNodes[conn.toId];
+        let conn = self.connections[connectionId];
+        let fromNode = self.inputNodes[conn.fromId];
+        let toNode = self.outputNodes[conn.toId];
 
         // Integrate only if the output is not already firing
         if (!toNode.isFiring) { toNode.value = toNode.value + conn.weight; toNode.peakValue = toNode.value };
-
-      }
+      });
 
     }
 
@@ -293,36 +306,39 @@ class Network {
       }
     }
 
-    // For each connection in outputNode.connectionIds
-    for (var c = 0; c < outputNode.connectionIds.length; c++) {
+    const self = this;
 
-      let connectionId = outputNode.connectionIds[c];
-      let conn = this.connections[connectionId];
-      let toNode = this.outputNodes[conn.toId];
-      let fromNode = this.inputNodes[conn.fromId];
+    // For each connection in outputNode.connectionIds
+    outputNode.connectionIds.forEach(function(connectionId) {
+
+      let conn = self.connections[connectionId];
+      let toNode = self.outputNodes[conn.toId];
+      let fromNode = self.inputNodes[conn.fromId];
 
       // Determine if fromNode fired before toNode - LTP
       var deltaT = fromNode.lastFired - toNode.lastFired;   // Negative number if fromNode was before toNode
-      let withinLTPRange = (deltaT <= 0) && (-deltaT < this.LTPWindow)
+      let withinLTPRange = (deltaT <= 0) && (-deltaT < self.LTPWindow)
       if (toNode.value > toNode.threshold) {
 
         if (withinLTPRange) {
 
           // LTP this connection
-          conn.setWeight(conn.weight + this.LTPRate);
-          if (this.preSynapticReset) {
+          conn.setWeight(conn.weight + self.LTPRate);
+          if (self.preSynapticReset) {
             fromNode.lastFired = -1000;
           }
 
 
         } else {
           // LTD this connection
-          conn.setWeight(conn.weight - this.LTDRate);
+          conn.setWeight(conn.weight - self.LTDRate);
 
         }
 
       }
-    }
+
+    });
+
 
     // Reset node to resting value
     outputNode.value = 0;
