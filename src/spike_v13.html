@@ -190,7 +190,7 @@
       <canvas id="imageReel" width="1000" height="200"></canvas>
     </div>
 
-    <script src="spike_v13.js"></script>
+    <script src="spike_v13_2.js"></script>
     <script>
 
     var ANIMATION_INTERVAL = 10;  // ms delay between steps
@@ -547,10 +547,10 @@
 
       if (IMAGE_INPUT) {
 
+        // Select a random image from the reel
         var imageIndex = Math.floor(Math.random() * imageReel.length);
 
         const canvas = document.getElementById("imageCanvas");
-
         ctx.drawImage(imageReel[imageIndex], 0, 0, INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
         ctx2.drawImage(imageReel[imageIndex], 0, 0, INPUT_CANVAS_2.width, INPUT_CANVAS_2.height);
 
@@ -571,7 +571,7 @@
         if ((s%2 == 0) && (ms < 300)) {
           randomGenerator.seed = 0;
         } else {
-          randomGenerator.seed = Math.floor(Math.random() * 1000000);
+          randomGenerator.seed = Math.floor(Math.random() * 10000);
         }
 
         // Generate random uniqye data points as input
@@ -713,7 +713,7 @@
     // A pseudoRandom generator class
     class PseudoRandomGenerator {
       constructor() {
-        this.seed = Math.floor(Math.random()*10000);
+        this.seed = Math.floor(Math.random() * 10000);
         this.resetInterval = 2*4096;
       }
 
@@ -729,7 +729,6 @@
         let numbers = new Set();
         while (numbers.size < count) {
           let randomNum = this.random(min, max);
-          // let randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
           numbers.add(randomNum);
         }
         return Array.from(numbers);
