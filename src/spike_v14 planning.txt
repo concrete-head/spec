@@ -8,13 +8,9 @@ Go structureless
 	- Inputs occupy the first x elements
 	- Outputs occupy the last y elements
 	- Introduce inhibitory connections that reset target node to zero
-	- nodes have a value and a value_next
+	- nodes have a value and a value_next property
 	- connections generated randomly with different LTPWindows and decays
 	- Function that checks for orphaned nodes and resets them
 
 
-	- Output nodes send some kind of back-pulse to their inputs, stilmulating them slightly.
-
-
-Code Improvements
-	- Use SETS for connectionIds because its faster and can add and remove easier
+	- Output nodes send some kind of back-pulse to their inputs, stimulating them slightly.

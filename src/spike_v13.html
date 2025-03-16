@@ -158,7 +158,7 @@
       <h3>Weights</h3>
       <div>
         Total Connections: <span id="total_connections"></span><br>
-        <button onclick="snn.pruneNetwork(0.8)">Prune Connections</button><br>
+        <button onclick="snn.pruneNetwork(0.05)">Prune Connections</button><br>
         <button onclick="snn.addOutputNode(); resizeCanvases()">New node (n)</button><br>
       </div>
       <div id="weights">
@@ -187,7 +187,7 @@
     </div>
     <div class="grid_item">
       <h3>Random Image Reel</h3>
-      <canvas id="imageReel" width="1000" height="200"></canvas>
+      <div id="imageReel"></div>
     </div>
 
     <script src="spike_v13.js"></script>
@@ -533,8 +533,8 @@
         const imageData = ctx.createImageData(INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
         const data = imageData.data;
 
-        // Generate a strip of white pixels
         let index = 4*10 * (snn.frames % 8);
+        // Generate a strip of white pixels
         for (var i = 0; i < 6*4; i++) {
           data[index + i] = 255;
         }
@@ -559,6 +559,7 @@
 
       }
 
+      // Random input
       if (RANDOM_INPUT) {
 
         const imageData = ctx.createImageData(INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
@@ -789,9 +790,9 @@
     };
 
     // Preload random images
-    function prefetchImages(callback) {
+    function prefetchImages() {
       var loadedImages = [];
-      var imagesToLoad = 5;
+      var imagesToLoad = 10;
 
       let gen = new PseudoRandomGenerator()
       let randomNumbers = gen.uniqueRandom(imagesToLoad, 1, 500);
@@ -799,7 +800,9 @@
       function checkIfAllLoaded() {
         if (loadedImages.length === imagesToLoad) {
           imageReel = loadedImages;
-          callback(loadedImages);
+          loadedImages.forEach(function(img) {
+            document.getElementById("imageReel").appendChild(img);
+          })
         }
       }
 
@@ -822,17 +825,7 @@
       }
     }
 
-    // Load images to reel
-    prefetchImages(function(images) {
-      var canvas = document.getElementById("imageReel");
-      var ctx = canvas.getContext("2d");
-
-      for (var i = 0; i < images.length; i++) {
-        if (images[i]) {
-          ctx.drawImage(images[i], images[i].width*i, 0);
-        }
-      }
-    });
+    prefetchImages();
 
     </script>
   </body>

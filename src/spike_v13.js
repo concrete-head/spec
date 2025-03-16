@@ -15,15 +15,17 @@ class Connection {
   constructor(fromId, toId) {
     this.fromId = fromId;
     this.toId = toId;
-    this.locked = false;
     this.weight = 0.1;
   }
 
   // Set a connection weight to range [0 - 1]
+  // Return false if it is zero - indicating this weight could be removed
   setWeight(x) {
-    if (!this.locked) {
-      this.weight = Math.max(0, Math.min(1, x));
+    this.weight = Math.max(0, Math.min(1, x));
+    if (this.weight == 0) {
+      return false;
     }
+    return true;
   }
 }
 
@@ -142,21 +144,18 @@ class Network {
     var prunedConnections = [];
 
     // Clear connectionId lists
-    for (var i = 0; i < this.inputNodes.length; i++) {
-      this.inputNodes[i].connectionIds = [];
-    }
-    for (i = 0; i < this.outputNodes.length; i++) {
-      this.outputNodes[i].connectionIds = [];
-    }
+    this.inputNodes.forEach(function(inputNode) { inputNode.connectionIds.clear() });
+    this.outputNodes.forEach(function(outputNode) { outputNode.connectionIds.clear() });
+
 
     // Clip weights and create new connectionId lists
-    for (i = 0; i < this.connections.length; i++) {
+    for (var i = 0; i < this.connections.length; i++) {
       var conn = this.connections[i];
       if (conn.weight > threshold) {
         let newConnectionId = prunedConnections.length;
         prunedConnections.push(conn);
-        this.inputNodes[conn.fromId].connectionIds.push(newConnectionId);
-        this.outputNodes[conn.toId].connectionIds.push(newConnectionId);
+        this.inputNodes[conn.fromId].connectionIds.add(newConnectionId);
+        this.outputNodes[conn.toId].connectionIds.add(newConnectionId);
       }
     }
 
@@ -331,7 +330,8 @@ class Network {
 
         } else {
           // LTD this connection
-          conn.setWeight(conn.weight - self.LTDRate);
+          var stillActive = conn.setWeight(conn.weight - self.LTDRate);
+          //if (!stillActive) { self.removeConnection(connectionId) }
 
         }
 
