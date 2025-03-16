@@ -34,7 +34,7 @@ class Network {
     this.inputNodes = [];
     this.outputNodes = [];
     this.connections = [];
-    this.numWinners = numWinners; // number of winners allowd in winner-takes-all
+    this.numWinners = numWinners; // number of winners allowed in winner-takes-all
     this.cycle = 0;
     this.frames = 0;            // Count the total number of feed forward steps
     this.LTPRate = LTPRate;     // weight change for LTP
@@ -42,12 +42,12 @@ class Network {
     this.LTPWindow = LTPWindow;   // how far to look back for LTP
     this.inhibition = inhibition;
     this.decayRate = decayRate;
-    this.outputHistory = [];
-    this.spikeTrain = [];
     this.refractoryTime = refractoryTime;
     this.startingThreshold = startingThreshold;
     this.preSynapticReset = preSynapticReset;                     // When enabled, if an output node spikes, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from being involved in LTP until they fire again.
     this.thresholdIncrease = thresholdIncrease;     // When enabled, nodes that fire with strong intensity have their thresholds increased
+    this.spikeTrain = [];
+    this.outputHistory = [];
 
     // Create input and output nodes
     for (var i = 0; i < numInputs; i++) {
@@ -112,32 +112,10 @@ class Network {
     this.connections = prunedConnections;
   }
 
-
-  // Make it so the sum of weights to an output node is 1
-  normaliseWeights() {
-
-    for (var j = 0; j < this.outputNodes.length; j++) {
-      let node = this.outputNodes[j];
-      var sum = 0;
-      for (var c = 0; c < node.connectionIds.length; c++) {
-        let connectionId = node.connectionIds[c];
-        let conn = this.connections[connectionId];
-        sum = sum + conn.weight;
-      }
-
-      console.log("Neuron: " + j + " sum = " + sum)
-      var k = 10 / sum;
-      for (c = 0; c < node.connectionIds.length; c++) {
-        let connectionId = node.connectionIds[c];
-        this.connections[connectionId].weight = this.connections[connectionId].weight * k;
-      }
-    }
-  }
-
   // Run a feed forward pass on the network
-  feedForward(inputData, reset) {
+  feedForward(spikeTrain, reset) {
 
-    this.spikeTrain = inputData;
+    this.spikeTrain = spikeTrain;
 
     // Set previous activations to zero
     if (reset) {
@@ -149,9 +127,9 @@ class Network {
       }
     }
 
-    for (var i = 0; i < inputData.length; i++) {
+    for (var i = 0; i < this.spikeTrain.length; i++) {
 
-      var winnerIds = this.step(inputData[i]);
+      var winnerIds = this.step(this.spikeTrain[i]);
 
       if (winnerIds.length > 0) {
 

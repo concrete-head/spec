@@ -713,7 +713,7 @@
     // A pseudoRandom generator class
     class PseudoRandomGenerator {
       constructor() {
-        this.seed = 0;
+        this.seed = Math.floor(Math.random()*10000);
         this.resetInterval = 2*4096;
       }
 
