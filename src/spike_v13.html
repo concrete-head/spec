@@ -3,16 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SNN Demo</title>
+  <title>Vision Based SNN</title>
   <style>
   body {
     font-family: monospace;
     background: #f2f4f4;
     margin: 0;
-  }
-
-  .input_canvas {
-    width: 320px;
   }
 
   #weights canvas {
@@ -25,28 +21,18 @@
     background: black;
   }
 
-  .none {
-    display: none;
-  }
-
   .grid_container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-
   }
 
-  .grid_item {
-    padding: 10px;
-  }
-
-  #controls {
-    padding: 10px;
-  }
-
-  .small {
-    font-size: small;
-  }
-
+  video { display: none}
+  .none { display: none }
+  .input_canvas { width: 320px }
+  .grid_item { padding: 10px }
+  .small { font-size: small }
+  #controls { padding: 10px }
+  .control_button:hover { opacity: 0.5 }
 
   .controls-buttons {
     display: flex;
@@ -59,10 +45,6 @@
     transition: background-color 0.3s ease;
   }
 
-  video {
-    display: none
-  }
-
   .control_button {
     width: 60px;
     height: 60px;
@@ -70,14 +52,12 @@
     user-select: none; /* Prevent text selection */
   }
 
-  .control_button:hover {
-    opacity: 0.5;
-  }
-
 </style>
 <link rel="preload" as="image" href="pause.svg">
 </head>
 <body>
+
+<div id="tooltip" class="tooltip-box"></div>
 
   <h1>Spiking Neural Network v13</h1>
 
@@ -112,6 +92,9 @@
 
         <label for="DecayRateSlider">Decay rate</label>
         <input type="number" min="0" max="1" value="0" step="0.01" id="DecayRateSlider" onchange="snn.decayRate = this.value"><br>
+
+        <label for="NumWinnersSlider">Number of Winners</label>
+        <input type="number" min="0" max="100" value="1" step="1" id="NumWinnersSlider" onchange="snn.numWinners = this.value"><br>
       </fieldset>
     </p>
 
@@ -187,6 +170,7 @@
     </div>
     <div class="grid_item">
       <h3>Random Image Reel</h3>
+      <button type="button" onclick="prefetchImages()">Load more images</button>
       <div id="imageReel"></div>
     </div>
 
@@ -437,50 +421,6 @@
       }
 
     }
-
-    const inputSelectorButtons = document.querySelectorAll('input[name="INPUT_TYPE"]');
-    // Add an event listener to each radio button
-    inputSelectorButtons.forEach(function(radio) {
-      radio.addEventListener('change', function(event) {
-        RANDOM_INPUT = document.getElementById("RANDOM_INPUT").checked;
-        IMAGE_INPUT = document.getElementById("IMAGE_INPUT").checked;
-        CAMERA_INPUT = document.getElementById("CAMERA_INPUT").checked;
-        SEQUENCE_INPUT = document.getElementById("SEQUENCE_INPUT").checked;
-
-        let type = document.querySelector('input[name="INPUT_TYPE"]:checked');
-        console.log("Input type changed: " + type.value);
-
-      });
-    });
-
-    // Add event listener for keydown event
-    document.addEventListener('keydown', function(event) {
-      if (event.key === "ArrowRight") {
-        nextFrame();
-      }
-      if (event.key === " " || event.key === "Space") {
-        event.preventDefault();
-        playPause();
-        PAUSE_AFTER_NEXT_FRAME = false;
-      }
-      if (event.key === "L" || event.key === "l") {
-        document.getElementById("LoggingButton").click();
-      }
-      if (event.key === "A" || event.key === "a") {
-        document.getElementById("AnimationButton").click();
-      }
-
-      if (event.key === "N" || event.key === "n") {
-        snn.addOutputNode();
-        resizeCanvases();
-      }
-
-      if (event.key === "I" || event.key === "i") {
-        document.getElementById("InhibitionButton").click();
-      }
-
-    });
-
 
     const video = document.getElementById("videoElement");
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -763,8 +703,67 @@
 
     }
 
+
+    // Initialise radio buttons
+    function initialiseButtons() {
+
+      const inputSelectorButtons = document.querySelectorAll('input[name="INPUT_TYPE"]');
+      // Add an event listener to each radio button
+      inputSelectorButtons.forEach(function(radio) {
+        radio.addEventListener('change', function(event) {
+          RANDOM_INPUT = document.getElementById("RANDOM_INPUT").checked;
+          IMAGE_INPUT = document.getElementById("IMAGE_INPUT").checked;
+          CAMERA_INPUT = document.getElementById("CAMERA_INPUT").checked;
+          SEQUENCE_INPUT = document.getElementById("SEQUENCE_INPUT").checked;
+
+          let type = document.querySelector('input[name="INPUT_TYPE"]:checked');
+          console.log("Input type changed: " + type.value);
+
+        });
+      });
+    }
+
+    // Add event listeners for keydown event
+    function initialiseKeyEvents() {
+
+      document.addEventListener('keydown', function(event) {
+        if (event.key === "ArrowRight") {
+          nextFrame();
+        }
+        if (event.key === " " || event.key === "Space") {
+          event.preventDefault();
+          playPause();
+          PAUSE_AFTER_NEXT_FRAME = false;
+        }
+        if (event.key === "L" || event.key === "l") {
+          document.getElementById("LoggingButton").click();
+        }
+        if (event.key === "A" || event.key === "a") {
+          document.getElementById("AnimationButton").click();
+        }
+
+        if (event.key === "N" || event.key === "n") {
+          snn.addOutputNode();
+          resizeCanvases();
+        }
+
+        if (event.key === "I" || event.key === "i") {
+          document.getElementById("InhibitionButton").click();
+        }
+
+      });
+
+    }
+
+
+
+
     // Initialise global variables that reference DOM elements here
     window.onload = function () {
+
+      prefetchImages();
+      initialiseKeyEvents();
+      initialiseButtons();
 
       var inputSize = parseInt(document.getElementById("INPUT_CANVAS_1").width * document.getElementById("INPUT_CANVAS_1").height)*2;
       randomGenerator = new PseudoRandomGenerator();
@@ -778,7 +777,7 @@
         LTPWindow: 10,
         decayRate: document.getElementById("DecayRateSlider").value,
         inhibition: document.getElementById("InhibitionButton").checked,
-        numWinners: 1,
+        numWinners: document.getElementById("NumWinnersSlider").value,
         preSynapticReset: document.getElementById("PreSynapticResetButton").checked,
         thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
       });
@@ -791,6 +790,8 @@
 
     // Preload random images
     function prefetchImages() {
+
+      //document.getElementById("imageReel").innerHTML = "";  // Clear any previous images
       var loadedImages = [];
       var imagesToLoad = 10;
 
@@ -799,7 +800,7 @@
 
       function checkIfAllLoaded() {
         if (loadedImages.length === imagesToLoad) {
-          imageReel = loadedImages;
+          imageReel = imageReel.concat(loadedImages);
           loadedImages.forEach(function(img) {
             document.getElementById("imageReel").appendChild(img);
           })
@@ -825,7 +826,7 @@
       }
     }
 
-    prefetchImages();
+
 
     </script>
   </body>

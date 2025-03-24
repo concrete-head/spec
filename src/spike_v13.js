@@ -219,7 +219,6 @@ class Network {
 
     }
 
-
     // Determine winning and losing nodes based on activation value and threshold
     var winnerIds = [];
     var loserIds = [];
@@ -283,7 +282,6 @@ class Network {
       }
 
     }
-
     return winnerIds;
   }
 
@@ -327,7 +325,6 @@ class Network {
             fromNode.lastFired = -1000;
           }
 
-
         } else {
           // LTD this connection
           var stillActive = conn.setWeight(conn.weight - self.LTDRate);
@@ -338,7 +335,6 @@ class Network {
       }
 
     });
-
 
     // Reset node to resting value
     outputNode.value = 0;

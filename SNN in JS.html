@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>JS SNN</title>
+  <title>Vision Based SNN</title>
   <style>
   html {
     scroll-behavior: smooth;
@@ -76,14 +76,14 @@
 </head>
 <body>
   <header class="header">
-    <h1>Spiking Neural Network in JavaScript</h1>
-    <h3>Interactive demo of a SNN in JS using a simplified STDP learning rule.</h3>
+    <h1>Vision Based Spiking Neural Network</h1>
+    <h3>Interactive demo of a vision based SNN in JS using a simplified STDP learning rule.</h3>
   </header>
   <div class="container">
     <main>
       <section>
         <p>
-          <i>February, 2025</i>
+          <i>March, 2025</i>
         </p>
         <p>
           <a href="#demo">Skip to the demo</a>
@@ -95,13 +95,17 @@
           This is my amateur dive into Spiking Neural Networks.
         </p>
         <p>
-          First up let me preface this by saying I am <u>not</u> a machine learning (ML) expert, nor software engineer. I am a mechanical engineer with an interest in ML who dabbles in code. My ideas are half baked and perhaps somewhat misguided, my code is scrappy, but it does mildly interesting things. I'm not quitting my day job anytime soon, but please feel free to email me at <i>blog@spec.nz</i> if you find this interesting. I welcome any discussion this may inspire.
+          First up let me preface this by saying I am <u>not</u> a machine learning (ML) expert, nor software engineer. I am a mechanical engineer with an interest in ML who dabbles in code. My ideas are half baked and perhaps somewhat misguided, my code is scrappy, but it does mildly interesting things. Please feel free to email me at <i>blog@spec.nz</i> if you'd like to reach out.
         </p>
         <p>
-          I love learning and experimenting with fringe topics such as SNN's <a href="https://en.wikipedia.org/wiki/Spiking_neural_network">(Spiking neural networks)</a>. Much of the world is obsessed with the transformer architecture. There doesn't seem to be anywhere near as much interest or material out there on spike based architectures. In terms of performance, SNN's seem to be outpaced by ANN's (aka transformers and the typical artificial neural networks that involve huge matrix multiplications), though I don't think we should give up on them. SNN's are fascinating to me because of their parallels with the brain and the simplicity of the <a href="https://en.wikipedia.org/wiki/Hebbian_theory">Hebbian learning</a> and <a href="https://en.wikipedia.org/wiki/Spike-timing-dependent_plasticity">spike timing dependent plasticity (STDP)</a> learning rules.
+          I love learning and experimenting with alternative AI architectures such as SNN's <a href="https://en.wikipedia.org/wiki/Spiking_neural_network">(Spiking neural networks)</a>. The world is obsessed with transformer models. There doesn't seem to be anywhere near as much interest or material out there on spike based networks. In terms of performance, today, SNN's are well behind other models. Though I don't think we should give up on them just yet.
         </p>
         <p>
-          My gut feeling tells me the so called 'path to intelligence' involves some combination of state space models, recurrent neural networks and... spikes. I figured experimenting with SNN's is a good first principles way to understand how information can be processed by a bunch of cells. I've always wanted to build my own toy model from scratch. Something interactive that allows me to see what is happening under the hood, and to share it with others. I don't have much of a clear goal, for me this is mostly play. This is what I've created after a few months of tinkering here and there. Is it revolutionary? No. Am I reinventing the wheel? Probably, who cares... Enjoy.
+          SNN's are fascinating to me because of their parallels with the brain and the simplicity of the <a href="https://en.wikipedia.org/wiki/Hebbian_theory">Hebbian learning</a> and <a href="https://en.wikipedia.org/wiki/Spike-timing-dependent_plasticity">spike timing dependent plasticity (STDP)</a> learning rules. My gut feeling tells me the so called 'path to more general intelligence' could involve some combination of state space models, recurrent neural networks and... spikes.
+          I figured experimenting with SNN's is a good way to gauge their potential. Others have built tools, but I've always wanted to build my own toy model from scratch. Something interactive that allows me to see what is happening under the hood, and to share it with others.
+        </p>
+        <p>
+          This is what I've created after a few months of tinkering here and there. Is it revolutionary? No. Am I reinventing the wheel? Probably, who cares... Enjoy.
         </p>
         <p>
           <i>This is heavily inspired by the work of <a href="https://scholar.google.com/citations?user=uR-7ex4AAAAJ&hl=en">Prof Simon Thorpe</a> for which I sincerely thank for his contributions to this field. He has several excellent lectures available on YouTube and research papers available for free.</i>
@@ -110,7 +114,7 @@
       <section>
         <h2>What can a SNN do?</h2>
         <p>
-          In theory, SNN's can learn patterns. In particular, spatiotemporal patterns which is great for speech/audio and vision systems. Whats more, they encode information in spikes (event based) rather than traditional neural networks that process data continuously (matrix-based). This has some unique advantages which I'll get to later.
+          In theory, SNN's can learn patterns. In particular, spatiotemporal patterns which is great for speech/audio and vision systems. What's more, they encode information in spikes (event based) rather than traditional neural networks that process data continuously (matrix-based). This has some unique advantages which I'll get to later.
         </p>
         <h2>How do I plan to build a SNN?</h2>
         <p>
@@ -186,7 +190,7 @@
             The core learning method here is STDP. Usually STDP is performed using an exponential function to precisely calculate the weight change based on relative timing between spikes. Here we reduce this function to something more binary. In this version, after firing, there is a fixed weight increase (LTP - long term potentiation) if the pre-node fired within a fixed 'learning window', and then everything else is decreased (LTD - long term depression). This causes the network to learn groups of neurons that fire together.
           </p>
           <p>
-            One limitation of this simplified rule is that we don't have the ability to determine the input spike order. This is because we apply the same weight change to all neurons that are either "in the window", or not. Though determingin spike order might still be possible if we add recurrent connections to allow temporal dependencies to be encoded over time. This is something I'll have to experiment with in future.
+            One limitation of this simplified rule is that we don't have the ability to determine the input spike order. This is because we apply the same weight change to all neurons that are either "in the window", or not. Though determining spike order might still be possible if we add recurrent connections to allow temporal dependencies to be encoded over time. This is something I'll have to experiment with in future.
           </p>
           <p>
             By depressing such a large number of connections we create network sparsity. Many of the weights tend towards zero (or near zero) meaning we could eliminate them from the calculations which further increases performance.
@@ -226,15 +230,15 @@
         <section id="discussion">
           <h2>Discussion</h2>
           <p>
-            Playing with this you will notice that over time, the output nodes become receptive to repeating patterns (motifs). One node per pattern.
+            Playing with this you will notice that over time, the output nodes become receptive to repeating patterns (motifs / images). One node per pattern.
             With each spike the nodes adjust their weights slightly to learn the pattern that caused them to spike.
-            If you feed in random noise, the network learns very low level features. If you then inject a repeating motif once in a while, with sufficient neurons, one of the neurons will pick up on this motif and you will see its threshold climb.
+            If you feed in random noise and then inject a repeating motif once in a while, with sufficient neurons, one of the neurons will pick up on this motif and you will see its threshold climb.
           </p>
           <p>
-            You might notice that many of the weights tend to settle at either 0 or 1. We can eliminate the connections that are close to zero which significantly improves performance. And we can round up the ones close to 1 which effectively quanintizes the weights to be uniary (they either exist or they dont) which reduces the memory requirements of the application (that is if it weren't written in JavaScript).
+            You might notice that many of the weights tend to settle at either 0 or 1. We can eliminate the connections that are close to zero which significantly improves performance. And we can round up the ones close to 1 which effectively quanintizes the weights to be unitary (they either exist or they don't) which reduces the memory requirements of the application (that is if it weren't written in JavaScript).
           </p>
           <p>
-            Eventually the network runs out of available of output nodes that are able to learn new patterns. But because the network is theoretically cheap to run due to its sparsity and uniary weights, we can just add a heap more nodes.
+            Eventually the network runs out of available of output nodes that are able to learn new patterns. But because the network is theoretically cheap to run due to its sparsity and unitary weights, we can just add a heap more nodes.
           </p>
         </section>
         <section id="next_steps">
