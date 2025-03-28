@@ -7,7 +7,7 @@
   <style>
   body {
     font-family: monospace;
-    background: #f2f4f4;
+    background: #fafafa;
     margin: 0;
   }
 
@@ -19,6 +19,20 @@
   canvas {
     image-rendering: pixelated;
     background: black;
+    width: 100%;
+  }
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border: none;
+    background: #ddd;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  button img {
+    height: 1em;
   }
 
   .grid_container {
@@ -30,6 +44,7 @@
   .none { display: none }
   .input_canvas { width: 320px }
   .grid_item { padding: 10px }
+  .grid_item:nth-child(even) { background-color: white; }
   .small { font-size: small }
   #controls { padding: 10px }
   .control_button:hover { opacity: 0.5 }
@@ -106,7 +121,7 @@
 
   <div class="grid_container">
 
-    <div style="background: #eafaf1" class="grid_item">
+    <div class="grid_item">
 
       <h3>Input</h3>
 
@@ -137,12 +152,12 @@
       <canvas id="spike_train_canvas" width="256" height="100"></canvas><br>
     </div>
 
-    <div style="background: #ebf5fb" class="grid_item">
+    <div class="grid_item">
       <h3>Weights</h3>
       <div>
         Total Connections: <span id="total_connections"></span><br>
-        <button onclick="snn.pruneNetwork(0.05)">Prune Connections</button><br>
-        <button onclick="snn.addOutputNode(); resizeCanvases()">New node (n)</button><br>
+        <button onclick="snn.pruneNetwork(0.05)">Prune Connections<img src="cut.svg"></button><br>
+        <button onclick="snn.addOutputNode(); resizeCanvases()">New node (n)<img src="add.svg"></button><br>
       </div>
       <div id="weights">
 
@@ -153,7 +168,7 @@
       </div>
     </div>
 
-    <div style="background: #fbeee6" class="grid_item">
+    <div class="grid_item">
       <h3>Outputs</h3>
       <div class="small" style="color: red">&#9632; Activation</div>
       <div class="small" style="color: blue">&#9632; Threshold</div>
@@ -162,7 +177,7 @@
       <h3>Output Spike Train<h3>
         <canvas id="output_history_canvas" width="256" height="100"></canvas>
       </div>
-      <div style="background: #f4ecf7" class="grid_item">
+      <div class="grid_item">
         <h3>Reconstruction</h3>
         <canvas id="reconstruction_canvas"></canvas>
       </div>
@@ -499,6 +514,7 @@
 
       }
 
+
       // Random input
       if (RANDOM_INPUT) {
 
@@ -698,7 +714,7 @@
       RECONSTRUCTION_CANVAS.width = document.getElementById("INPUT_CANVAS_1").width*2;
       RECONSTRUCTION_CANVAS.height = snn.outputNodes.length * document.getElementById("INPUT_CANVAS_1").width;
       SPIKE_TRAIN_CANVAS.height = snn.inputNodes.length * 0.05;
-      WEIGHT_CANVAS.height = 0.05 * (snn.inputNodes.length + 1);
+      WEIGHT_CANVAS.height = 0.007 * (snn.inputNodes.length + 1);
       WEIGHT_CANVAS.width = GRID_SIZE * (snn.outputNodes.length + 1);
 
     }
