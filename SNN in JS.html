@@ -217,7 +217,7 @@
           <h2>Interactive Demo</h2>
           <a href="./src/spike_v13.html">Click here to run live demo</a>
           <p>
-            Choosing the webcam as the network input is the best way to see the networks learning behaviour. Watch the network 'learn' your shape'. Then move suddenly and see how a new node will learn your new position.
+            Choosing the webcam as the network input is the best way to see the networks learning behavior. Watch the network 'learn' your shape'. Then move suddenly and see how a new node will learn your new position.
           </p>
         </section>
         <section id="discussion">
@@ -228,10 +228,10 @@
             If you feed in random noise and then inject a repeating motif once in a while, with sufficient neurons, one of the neurons will pick up on this motif and you will see its threshold climb.
           </p>
           <p>
-            You might notice that many of the weights tend to settle at either 0 or 1. We can eliminate the connections that are close to zero which significantly improves performance. And we can round up the ones close to 1 which effectively quanintizes the weights to be unitary (they either exist or they don't) which reduces the memory requirements of the application (that is if it weren't written in JavaScript).
+            You might notice that many of the weights tend to settle at either 0 or 1. We can eliminate the connections that are close to zero which significantly improves performance. And we can round up the ones close to 1 which effectively quantizes the weights to be unitary (they either exist or they don't) which reduces the memory requirements of the application (that is if it weren't written in JavaScript).
           </p>
           <p>
-            Eventually the network runs out of available of output nodes that are able to learn new patterns. With this type of network you would need an INSANE amount of neurons to learn common objects because it is <strong>not</strong> spatially invariant. This is where convolutional neural networks (CNN's) have a huge advantage, achieving better abstraction using less neurons. But on the other hand, because this network is theoretically cheap to run due to its sparsity and unitary weights, we could overcome this by just adding a heap more nodes. I may experiment with CNN's later.
+            Eventually the network runs out of available of output nodes that are able to learn new patterns. With this type of network you would need an INSANE amount of neurons to learn common objects, and at different positions, scales and poses because it is <strong>not</strong> spatially invariant. This is where convolutional neural networks (CNN's) have an advantage, achieving better recognition regardless of position. But on the other hand, humans aren't able to see details other than in the center of our visual field, which of course, we can move using our eyeballs. So maybe depending on the application, spatial invariance may not be needed. This network here is <i>theoretically cheap</i> to run due to its sparsity and unitary weights so perhaps simply adding more nodes is a practical solution after all.
           </p>
         </section>
         <section id="next_steps">
