@@ -6,9 +6,8 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Vision Based SNN</title>
   <style>
-  html {
-    scroll-behavior: smooth;
-  }
+
+  html { scroll-behavior: smooth }
 
   body {
     font-family: monospace, sans-serif;
@@ -54,9 +53,7 @@
     max-width: 800px; /* Set the maximum width for the content */
     margin: 0 auto; /* Center align the container */
   }
-  .spec_logo {
-    height: 50px;
-  }
+  .spec_logo { height: 50px }
   main {
     padding: 0 20px; /* Add some padding on the left and right */
     background: #f8f8f8fa;
@@ -66,12 +63,8 @@
     max-width: 560px;
     padding: 10px 0;
   }
-  figure {
-    text-align: center
-  }
-  figure img {
-    width: 100%;
-  }
+  figure { text-align: center }
+  figure img { width: 100% }
   </style>
 </head>
 <body>
@@ -116,7 +109,7 @@
         <p>
           In theory, SNN's can learn patterns. In particular, spatiotemporal patterns which is great for speech/audio and vision systems. What's more, they encode information in spikes (event based) rather than traditional neural networks that process data at fixed intervals. This has some unique advantages which I'll get to later.
         </p>
-        <h2>How do I plan to build a SNN?</h2>
+        <h2>My approach?</h2>
         <p>
           As a layman entering the ML game late, and trying to make sense of all this AI research; one approach to SNN's I see is to simulate every millisecond of neuronal activity. Using exponential equations to calculate action potentials complex dynamics between all neurons at once. This doesn't interest me much as it is computationally very heavy, you have to perform a lot of calculations to get any signal. Then there is a field called neuromorphic computing which takes inspiration from our own brains, using artificial neurons and synapses on a chip to process temporal information very efficiently. Within this there is an idea to <u>only perform calculations on neurons that are actually firing (event based)</u> so we don't waste computing clock cycles on idle neurons. This I think has the potential to speed things up by an order of magnitude or more. To take advantage of this the network has to be somewhat sparse.
         </p>
@@ -238,7 +231,7 @@
             You might notice that many of the weights tend to settle at either 0 or 1. We can eliminate the connections that are close to zero which significantly improves performance. And we can round up the ones close to 1 which effectively quanintizes the weights to be unitary (they either exist or they don't) which reduces the memory requirements of the application (that is if it weren't written in JavaScript).
           </p>
           <p>
-            Eventually the network runs out of available of output nodes that are able to learn new patterns. But because the network is theoretically cheap to run due to its sparsity and unitary weights, we can just add a heap more nodes.
+            Eventually the network runs out of available of output nodes that are able to learn new patterns. With this type of network you would need an INSANE amount of neurons to learn common objects because it is <strong>not</strong> spatially invariant. This is where convolutional neural networks (CNN's) have a huge advantage, achieving better abstraction using less neurons. But on the other hand, because this network is theoretically cheap to run due to its sparsity and unitary weights, we could overcome this by just adding a heap more nodes. I may experiment with CNN's later.
           </p>
         </section>
         <section id="next_steps">
@@ -247,6 +240,7 @@
             Some further idea's I'd like to test are:
           </p>
           <ul>
+            <li>Reconfigure the network as a convolutional neural net</li>
             <li>Implement a similar network with audio or text</li>
             <li>Add more layers, recurrent connections, or go structureless (deep random neural network)</li>
             <li>Implement a kind of reinforcement learning step to solve a simple task (e.g. inverted pendulum or play pong)</li>
