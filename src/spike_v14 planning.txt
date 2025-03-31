@@ -14,3 +14,10 @@ Go structureless
 
 
 	- Output nodes send some kind of back-pulse to their inputs, stimulating them slightly.
+
+
+
+Make CNN
+
+	Why?
+	- Just to see how quickly this type of network can learn patterns. e.g. NMIST
