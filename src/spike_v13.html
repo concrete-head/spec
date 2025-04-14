@@ -141,7 +141,10 @@
       <input type="radio" id="IMAGE_INPUT" name="INPUT_TYPE" value="Image input">
       <label for="IMAGE_INPUT">Random image input (see image reel at bottom)</label><br>
 
-      <input type="checkbox" id="DRAW_INPUT_CANVAS" onclick="showInput(this.checked) checked">
+      <input type="radio" id="TEXT_INPUT" name="INPUT_TYPE" value="Text input">
+      <label for="TEXT_INPUT">Text input (wikipedia article on the telephone)</label><br>
+
+      <input type="checkbox" id="DRAW_INPUT_CANVAS" onclick="showInput(this.checked)" checked>
       <label for="DRAW_INPUT_CANVAS">Show Input </label><br>
 
       <div id="input_container">
@@ -184,6 +187,7 @@
       <div class="grid_item">
         <h3>Reconstruction</h3>
         <canvas id="reconstruction_canvas"></canvas>
+        <div id="reconstruction_container"></div>
       </div>
 
     </div>
@@ -207,9 +211,11 @@
     var IMAGE_INPUT = false;
     var CAMERA_INPUT = true;
     var SEQUENCE_INPUT = false;
+    var TEXT_INPUT = false;
     var randomGenerator;
     var snn;                    // The global spiking neural network
     var imageReel = [];         // Stores random images
+    var trainingText = "";
 
     // Get the canvas element
     const RECONSTRUCTION_CANVAS = document.getElementById("reconstruction_canvas");
@@ -337,6 +343,28 @@
       }
     }
 
+
+    function reconstructText(network, element) {
+
+      element.textContent = ""
+      network.outputNodes.forEach(function(outputNode) {
+
+        outputNode.connectionIds.forEach(function(connectionId) {
+
+          let connection = network.connections[connectionId];
+          if (connection.weight > 0.5) {
+            const map = "~ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%&-_,.?()[]{}+=";
+            element.textContent += map[connection.fromId]
+          }
+
+
+        })
+        element.texdtContent += "\n"
+
+      })
+
+    }
+
     // Reconstruct images of the feature detectors
     function reconstruct(network, canvas) {
 
@@ -405,7 +433,6 @@
 
       }
 
-
       // For each output node
       for (var n = 0; n < network.outputNodes.length; n++) {
 
@@ -468,6 +495,7 @@
       // Calculate width, height and offsets for best fit to INPUT_CANVAS_1
       var ctx = INPUT_CANVAS_1.getContext("2d");
       const ctx2 = INPUT_CANVAS_2.getContext("2d");
+      var spikeTrain = [];
 
       var aspectRatio = video.videoWidth / video.videoHeight;
       let width, height, offsetX, offsetY;
@@ -502,6 +530,8 @@
         ctx.putImageData(imageData, 0, 0);
         ctx2.putImageData(imageData, 0, 0);
 
+        spikeTrain = canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
+
       }
 
       if (IMAGE_INPUT) {
@@ -516,6 +546,7 @@
         applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);    // On-center
         applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);   // Off-center
 
+        spikeTrain = canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
       }
 
 
@@ -549,6 +580,7 @@
         // Draw the random pixel data onto the canvas
         ctx.putImageData(imageData, 0, 0);
         ctx2.putImageData(imageData, 0, 0);
+        spikeTrain = canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
 
       }
 
@@ -560,10 +592,35 @@
 
         applyLoGConvolution(INPUT_CANVAS_1, KERNEL_ON_CENTER);    // On-center
         applyLoGConvolution(INPUT_CANVAS_2, KERNEL_OFF_CENTER);   // Off-center
+        spikeTrain = canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
 
       }
 
-      canvasToSpikeTrain([INPUT_CANVAS_1, INPUT_CANVAS_2]);
+      if (TEXT_INPUT) {
+        spikeTrain = textToSpikeTrain(trainingText)
+      }
+
+      snn.feedForward(spikeTrain, RESET);
+
+      if (ANIMATE) {
+        if (!TEXT_INPUT) {
+          reconstruct(snn, RECONSTRUCTION_CANVAS);
+        } else {
+          reconstructText(snn, document.getElementById("reconstruction_container"))
+        }
+
+        if (document.getElementById("DRAW_WEIGHT_CANVAS").checked) {
+          drawWeightMatrix(snn, WEIGHT_CANVAS);
+        }
+        drawThresholds(snn, WEIGHT_SUMS_CANVAS);
+        drawOutputHistory(OUTPUT_HISTORY_CANVAS, snn);
+        if (document.getElementById("DRAW_SPIKE_TRAIN").checked) {
+          drawSpikeTrain(SPIKE_TRAIN_CANVAS, snn);
+        }
+        printStats(snn);
+      }
+
+
       if (PAUSE_AFTER_NEXT_FRAME) { PLAYING = false };
 
     }
@@ -601,6 +658,25 @@
 
       // Update the canvas with the new image data
       ctx.putImageData(new ImageData(outputData, canvas.width, canvas.height), 0, 0);
+    }
+
+
+    // Convert text to a spike train.
+    // There is an input node for each character.
+    // The spike train length is the number of characters in the input text
+    function textToSpikeTrain(text) {
+      const map = "~ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%&-_,.?()[]{}+=";
+      const upperMap = map.toUpperCase();
+      return Array.from(text.toUpperCase()).map(char => {
+        const index = upperMap.indexOf(char);
+        let result
+        if (index !== -1) {
+          result = index
+        } else {
+          result = 0
+        }
+        return [result];
+      });
     }
 
     // Convert canvas pixel data into spike train, display it and feed it into the network
@@ -652,22 +728,7 @@
         }
       }
 
-      spikeTrain = trimmed;
-
-      snn.feedForward(spikeTrain, RESET);
-
-      if (ANIMATE) {
-        reconstruct(snn, RECONSTRUCTION_CANVAS);
-        if (document.getElementById("DRAW_WEIGHT_CANVAS").checked) {
-          drawWeightMatrix(snn, WEIGHT_CANVAS);
-        }
-        drawThresholds(snn, WEIGHT_SUMS_CANVAS);
-        drawOutputHistory(OUTPUT_HISTORY_CANVAS, snn);
-        if (document.getElementById("DRAW_SPIKE_TRAIN").checked) {
-          drawSpikeTrain(SPIKE_TRAIN_CANVAS, snn);
-        }
-        printStats(snn);
-      }
+      return trimmed;
 
     }
 
@@ -735,6 +796,7 @@
           IMAGE_INPUT = document.getElementById("IMAGE_INPUT").checked;
           CAMERA_INPUT = document.getElementById("CAMERA_INPUT").checked;
           SEQUENCE_INPUT = document.getElementById("SEQUENCE_INPUT").checked;
+          TEXT_INPUT = document.getElementById("TEXT_INPUT").checked;
 
           let type = document.querySelector('input[name="INPUT_TYPE"]:checked');
           console.log("Input type changed: " + type.value);
@@ -775,6 +837,20 @@
 
     }
 
+    async function loadTrainingText() {
+      try {
+        const response = await fetch('telephone.txt');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const text = await response.text();
+        console.log("File contents loaded:");
+        return text;
+      } catch (error) {
+        console.error("Failed to load telephone.txt:", error);
+        return null;
+      }
+    }
 
 
 
@@ -784,6 +860,13 @@
       prefetchImages();
       initialiseKeyEvents();
       initialiseButtons();
+
+      loadTrainingText().then(content => {
+        if (content !== null) {
+          // Do something with `content`
+          trainingText = content;
+        }
+      });
 
       var inputSize = parseInt(document.getElementById("INPUT_CANVAS_1").width * document.getElementById("INPUT_CANVAS_1").height)*2;
       randomGenerator = new PseudoRandomGenerator();
@@ -845,7 +928,6 @@
         img.src = url;
       }
     }
-
 
 
     </script>

@@ -21,3 +21,9 @@ Make CNN
 
 	Why?
 	- Just to see how quickly this type of network can learn patterns. e.g. NMIST
+
+
+
+Build connections from scratch
+	- Faster.
+	- When a output node fires, it will build new connections with the pre synaptic nodes if they don't already exist

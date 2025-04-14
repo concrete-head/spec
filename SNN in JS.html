@@ -196,7 +196,7 @@
           </p>
           <h3>Spike Threshold Adaption</h3>
           <p>
-            Using just the above rules the network <u>will</u> learn groups of spikes that fire together, however its learning capacity will be highly dependent on the input we give it and the parameters we choose. e.g. If we set the firing threshold too low then a node will fire on just a few pixels (very low level features), and because in an image there is usually huge number of these low level patterns, the neurons will constantly be pulled away from what had previously caused them to fire. Conversely, a threshold that is too high will almost never fire except under very specific (hence unlikely to repeat) input.
+            Using just the above rules the network <u>will</u> learn groups of spikes that fire together, however its learning capacity will be highly dependent on the input we give it and the parameters we choose. e.g. If we set the firing threshold too low then a node will fire on just a few pixels (very low level features), and because in an image there is usually huge number of these low level patterns, the neurons will constantly be pulled away from what had previously caused them to fire. Conversely, a threshold that is too high it will overfit the data, meaning it will almost never fire except under very specific (hence unlikely to repeat) input.
           </p>
 
           <p>

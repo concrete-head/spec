@@ -41,7 +41,7 @@ class Network {
     this.frames = 0;            // Count the total number of feed forward steps
     this.LTPRate = LTPRate;     // weight change for LTP
     this.LTDRate = LTDRate;     // weight change for LTD
-    this.LTPWindow = LTPWindow;   // how far to look back for LTP
+    this.LTPWindow = LTPWindow;   // Integration window, how far to look back for LTP
     this.inhibition = inhibition;
     this.decayRate = decayRate;
     this.refractoryTime = refractoryTime;
