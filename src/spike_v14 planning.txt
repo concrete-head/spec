@@ -12,7 +12,6 @@ Go structureless
 	- connections generated randomly with different LTPWindows and decays
 	- Function that checks for orphaned nodes and resets them
 
-
 	- Output nodes send some kind of back-pulse to their inputs, stimulating them slightly.
 
 

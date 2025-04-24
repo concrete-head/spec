@@ -35,6 +35,14 @@
     height: 1em;
   }
 
+  #reconstruction_container {
+    line-height: 1.5
+  }
+
+  #reconstruction_container span {
+    background: grey;
+    margin: 5px
+  }
   .grid_container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -117,7 +125,7 @@
       </fieldset>
     </p>
 
-    <span>Cycle: </span><span id="cycle_count"></span><br>
+    <span>Timestep: </span><span id="timestep"></span><br>
 
   </div>
 
@@ -217,7 +225,7 @@
     var imageReel = [];         // Stores random images
     var trainingText = "";
 
-    // Get the canvas element
+    // Get the canvas elements
     const RECONSTRUCTION_CANVAS = document.getElementById("reconstruction_canvas");
     const WEIGHT_CANVAS = document.getElementById("weight_canvas");
     const OUTPUT_HISTORY_CANVAS = document.getElementById("output_history_canvas");
@@ -226,6 +234,8 @@
     const INPUT_CANVAS_2 = document.getElementById("INPUT_CANVAS_2");
     const WEIGHT_SUMS_CANVAS = document.getElementById("WEIGHT_SUMS_CANVAS");
 
+
+    const TEXT_MAP = "~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%&-_,.?()[]{}+=";
     const KERNEL_ON_CENTER = [
       [0,  0, -1,  0,  0],    // On center
       [0, -1, -2, -1,  0],
@@ -278,7 +288,7 @@
     // Draw stats
     function printStats(network) {
 
-      document.getElementById("cycle_count").innerText = network.cycle.toLocaleString();
+      document.getElementById("timestep").innerText = network.timestep.toLocaleString();
       document.getElementById("total_connections").innerText = network.connections.length;
 
     }
@@ -346,23 +356,17 @@
 
     function reconstructText(network, element) {
 
-      element.textContent = ""
+      element.innerHTML = "";
       network.outputNodes.forEach(function(outputNode) {
-
+        var el = document.createElement("span");
         outputNode.connectionIds.forEach(function(connectionId) {
-
           let connection = network.connections[connectionId];
-          if (connection.weight > 0.5) {
-            const map = "~ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%&-_,.?()[]{}+=";
-            element.textContent += map[connection.fromId]
+          if (connection.weight > 0.8) {
+            el.innerText += TEXT_MAP[connection.fromId]
           }
-
-
-        })
-        element.texdtContent += "\n"
-
+        });
+        element.appendChild(el)
       })
-
     }
 
     // Reconstruct images of the feature detectors
@@ -665,10 +669,8 @@
     // There is an input node for each character.
     // The spike train length is the number of characters in the input text
     function textToSpikeTrain(text) {
-      const map = "~ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !@#$%&-_,.?()[]{}+=";
-      const upperMap = map.toUpperCase();
-      return Array.from(text.toUpperCase()).map(char => {
-        const index = upperMap.indexOf(char);
+      return Array.from(text).map(char => {
+        const index = TEXT_MAP.indexOf(char);
         let result
         if (index !== -1) {
           result = index
@@ -717,7 +719,7 @@
       for (var t = 0; t < 256; t++) { trimmed[t] = [] }
       var count = 0;
       var nodesToFire = 1000;    // Only fire the first n nodes in the queue
-      //nodesToFire = 4096*2;    // Only fire the first n nodes in the queue
+      nodesToFire = 4096*2;    // Only fire the first n nodes in the queue
 
       for (var i = 0; i < spikeTrain.length; i++) {
         for (var j = 0; j < spikeTrain[i].length; j++) {
@@ -876,8 +878,8 @@
         LTPRate: 0.2,
         LTDRate: 0.05,
         startingThreshold: 1,
-        refractoryTime: 200,
-        LTPWindow: 10,
+        refractoryTime: 100,
+        learningWindow: 5,
         decayRate: document.getElementById("DecayRateSlider").value,
         inhibition: document.getElementById("InhibitionButton").checked,
         numWinners: document.getElementById("NumWinnersSlider").value,
