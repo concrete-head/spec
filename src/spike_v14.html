@@ -304,7 +304,8 @@
       for (var x = 0; x < network.outputHistory.length; x++) {
         for (var i = 0; i < network.outputHistory[x].length; i++) {
           //let y = canvas.height - (GRID_SIZE*network.outputHistory[x][i])
-          let y = canvas.height - (yScale * network.outputHistory[x][i]);
+          let index = network.outputHistory[x][i] - network.numInputs;
+          let y = canvas.height - (yScale * index);
           ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(x, y, 2, -yScale);
         }
@@ -331,7 +332,7 @@
 
       for (var s = network.nodes.length - network.numOutputs; s < network.nodes.length; s++) {
 
-        let index = s - network.numInputs;
+        let index = s - (network.nodes.length-network.numOutputs);
         // Draw peak activation bars in red
         ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Semi transparent red
         ctx.fillRect(index * xScale, canvas.height, xScale, -network.nodes[s].peakValue * scaleFactor);
@@ -670,7 +671,7 @@
       for (var t = 0; t < 256; t++) { trimmed[t] = [] }
       var count = 0;
       var nodesToFire = 1000;    // Only fire the first n nodes in the queue
-      nodesToFire = 4096*2;    // Only fire the first n nodes in the queue
+      //nodesToFire = 4096*2;    // Only fire the first n nodes in the queue
 
       for (var i = 0; i < spikeTrain.length; i++) {
         for (var j = 0; j < spikeTrain[i].length; j++) {
@@ -823,12 +824,12 @@
       randomGenerator = new PseudoRandomGenerator();
       snn = new Network({
         numInputs: inputSize,
-        numHidden: 5,
-        numOutputs: 5,
+        numHidden: 50,
+        numOutputs: 40,
         LTPRate: 0.2,
         LTDRate: 0.05,
         startingThreshold: 1,
-        learningWindow: 1,
+        learningWindow: 2,
         refractoryTime: 100,
         decayRate: parseFloat(document.getElementById("DecayRateSlider").value),
       });

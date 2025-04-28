@@ -6,8 +6,9 @@ function randomChance(p) {
 
 // Node class
 class Node {
-  constructor(threshold, learningWindow, id) {
-    this.id = id
+  constructor(threshold, learningWindow, id, isInput) {
+    this.id = id;
+    this.isInput = isInput
     this.value = 0;               // Current value
     this.value_next = 0;          // Value at next time step
     this.peakValue = 0;           // Peak activation for this timestep
@@ -59,9 +60,12 @@ class Network {
     this.spikeTrain = [];
     this.outputHistory = [];
 
-    // Create input and output nodes
-    for (var i = 0; i < numInputs + numHidden; i++) {
-      this.nodes.push(new Node(startingThreshold, this.learningWindow, this.nodes.length));
+    // Create input nodes
+    for (var i = 0; i < numInputs; i++) {
+      this.nodes.push(new Node(startingThreshold, this.learningWindow, this.nodes.length, true));
+    }
+    for (i = numInputs; i < numInputs + numHidden; i++) {
+      this.nodes.push(new Node(startingThreshold, this.learningWindow, this.nodes.length, false));
     };
 
     // Connect input nodes
@@ -81,13 +85,12 @@ class Network {
     // For each pool node connect it to every other pool node with probability p2
     for (var nodeId1 = this.numInputs; nodeId1 < (this.numInputs + this.numHidden); nodeId1++) {
       for (var nodeId2 = this.numInputs; nodeId2 < (this.numInputs + this.numHidden); nodeId2++) {
-        if (nodeId1 !== nodeId2) {
-          if (randomChance(0.5)) {
-            var conn = new Connection(nodeId1, nodeId2);
-            this.connections.push(conn);
-            this.nodes[nodeId1].connectionIds.add(this.connections.length-1);
-            this.nodes[nodeId2].connectionIds.add(this.connections.length-1);
-          }
+        if (nodeId1 === nodeId2) { continue }
+        if (randomChance(0.5)) {
+          var conn = new Connection(nodeId1, nodeId2);
+          this.connections.push(conn);
+          this.nodes[nodeId1].connectionIds.add(this.connections.length-1);
+          this.nodes[nodeId2].connectionIds.add(this.connections.length-1);
         }
       }
     }
@@ -107,11 +110,11 @@ class Network {
   fireNode(node) {
 
     let spikeIntensity = node.value / node.threshold;
-    if (LOGGING && (node.id >= this.numInputs)) { console.log("Node fired: " + node.id + " at " + this.timestep + " with spikeIntensity: " + spikeIntensity.toFixed(2)) }
+    if (LOGGING && !node.isInput) { console.log("Node fired: " + node.id + " at " + this.timestep + " with spikeIntensity: " + spikeIntensity.toFixed(2)) }
 
     // Adjust threshold if spikeIntensity is above 130%
-    if (spikeIntensity > 1.1) {
-      node.threshold = node.value*0.95;
+    if (spikeIntensity > 1.3) {
+      node.threshold = node.value+1//*0.75;
     }
 
     node.isFiring = true;
@@ -128,11 +131,10 @@ class Network {
       // Integrate only if the "toNode" is not already firing
       if (!toNode.isFiring) {
         if (fromNode.inhibitory) {
-          toNode.value_next = toNode.value - conn.weight;
-          toNode.peakValue = toNode.value_next;
+          toNode.value_next = toNode.value_next - conn.weight;
           console.log("inhibitory")
         } else {
-          toNode.value_next = toNode.value + conn.weight;
+          toNode.value_next = toNode.value_next + conn.weight;
           toNode.peakValue = toNode.value_next
         }
       }
@@ -144,12 +146,21 @@ class Network {
   // Run a feed forward pass on the network (aka process one complete frame)
   feedForward(spikeTrain) {
 
+    for (var j = 0; j < this.nodes.length; j++) {
+      this.nodes[j].value = 0;
+      this.nodes[j].value_next = 0;
+      this.nodes[j].peakValue = 0;
+      this.nodes[j].lastFired = -1000;
+      this.nodes[j].isFiring = false;
+    }
+
     this.spikeTrain = spikeTrain;
     this.outputHistory = []
 
     // Process each time step within spikeTrain
     for (var i = 0; i < this.spikeTrain.length; i++) {
       var winnerIds = this.step(this.spikeTrain[i]);
+      // if (winnerIds.length > 0) { console.log(winnerIds) }
       this.outputHistory.push(winnerIds);
       this.timestep = this.timestep + 1;
     }
@@ -165,7 +176,7 @@ class Network {
     // Fire coresponding nodes
     for (var i = 0; i < inputData.length; i++) {
       var nodeId = inputData[i];
-      this.nodes[nodeId].value = this.nodes[nodeId].threshold;
+      this.nodes[nodeId].value = this.nodes[nodeId].threshold * 2;
     }
 
     // Loop through each node
@@ -173,7 +184,10 @@ class Network {
     for (var nodeId = 0; nodeId < this.nodes.length; nodeId++) {
       if (this.nodes[nodeId].value >= this.nodes[nodeId].threshold) {
         this.fireNode(this.nodes[nodeId]);      // Fire
-        winnerIds.push(nodeId);
+
+        if (!this.nodes[nodeId].isInput) {
+          winnerIds.push(nodeId);
+        }
       }
     }
 
@@ -184,9 +198,8 @@ class Network {
 
       // Learn if it just fired
       // Only hidden and output nodes are learnable
-      if (nodeId >= this.numInputs) {
+      if (!nodeId.isInput) {
         if (node.lastFired == this.timestep) { this.learn(node) };
-
       }
 
       // Rotate value, apply decay
@@ -226,8 +239,7 @@ class Network {
 
       } else {
         // LTD this connection
-        var stillActive = conn.setWeight(conn.weight - self.LTDRate);
-
+        conn.setWeight(conn.weight - self.LTDRate);
       }
 
     });
