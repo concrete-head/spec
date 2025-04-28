@@ -1,20 +1,16 @@
 Go structureless
 
 	Why?
-	-
+	- So the network can learn firing order rather than just groupings
 
 	How?
-	- Nodes in a single array
-	- Inputs occupy the first x elements
-	- Outputs occupy the last y elements
-	- Introduce inhibitory connections that reset target node to zero
+	- All nodes held in a single array where the first (i) nodes are inputs, the last (n) nodes are outputs (read out nodes)
+	- Introduce inhibitory nodes that have negative weights
 	- nodes have a value and a value_next property
-	- connections generated randomly with different LTPWindows and decays
+	- connections generated randomly with different learningWindow and decayRate
+	Optional
 	- Function that checks for orphaned nodes and resets them
-
 	- Output nodes send some kind of back-pulse to their inputs, stimulating them slightly.
-
-
 
 Make CNN
 
@@ -22,7 +18,6 @@ Make CNN
 	- Just to see how quickly this type of network can learn patterns. e.g. NMIST
 
 
-
-Build connections from scratch
-	- Faster.
+Optimisation Idea - Build connections from scratch
+	How?
 	- When a output node fires, it will build new connections with the pre synaptic nodes if they don't already exist

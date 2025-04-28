@@ -9,7 +9,6 @@ class Node {
     this.threshold = threshold;
     this.learningWindow = learningWindow;
   }
-
 }
 
 // Connection class
@@ -39,7 +38,7 @@ class Network {
     this.outputNodes = [];
     this.connections = [];
     this.numWinners = numWinners; // number of winners allowed in winner-takes-all
-    this.timestep = 0;
+    this.timestep = 0;          // Timestep, counts to infinity
     this.frames = 0;            // Count the total number of feed forward steps
     this.LTPRate = LTPRate;     // weight change for LTP
     this.LTDRate = LTDRate;     // weight change for LTD
@@ -61,12 +60,12 @@ class Network {
       this.outputNodes.push(new Node(startingThreshold, this.learningWindow));
     };
 
-    // Create connections
-    for (i = 0; i < numOutputs; i++) {
-      for (var j = 0; j < numInputs; j++) {
-        this.connections.push(new Connection(j, i));
-        this.inputNodes[j].connectionIds.add(this.connections.length-1);
-        this.outputNodes[i].connectionIds.add(this.connections.length-1);
+    // Fully connect all inputs to all outputs
+    for (var outputNodeId = 0; outputNodeId < numOutputs; outputNodeId++) {
+      for (var inputNodeId = 0; inputNodeId < numInputs; inputNodeId++) {
+        this.connections.push(new Connection(inputNodeId, outputNodeId));
+        this.inputNodes[inputNodeId].connectionIds.add(this.connections.length-1);
+        this.outputNodes[outputNodeId].connectionIds.add(this.connections.length-1);
       }
     }
 
@@ -339,7 +338,6 @@ class Network {
 
   // NEW LEARNING METHOD
   // ADD CONNECTIONS AS WE GO
-
   learn2(outputNodeId, inputNodes) {
 
     let outputNode = this.outputNodes[outputnodeId];

@@ -86,7 +86,7 @@
 
 <div id="tooltip" class="tooltip-box"></div>
 
-  <h1>Spiking Neural Network v13</h1>
+  <h1>Spiking Neural Network v14</h1>
 
   <div id="controls">
     <h3>Controls</h3>
@@ -205,7 +205,7 @@
       <div id="imageReel"></div>
     </div>
 
-    <script src="spike_v13.js"></script>
+    <script src="spike_v14.js"></script>
     <script>
 
     var ANIMATION_INTERVAL = 10;  // ms delay between steps
@@ -272,7 +272,7 @@
     // Draw the input spike train
     function drawSpikeTrain(canvas, network) {
 
-      var yScale = canvas.height / network.inputNodes.length;
+      var yScale = canvas.height / network.numInputs;
       var ctx = canvas.getContext("2d", { willReadFrequently: true });
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "red";
@@ -299,7 +299,7 @@
       var ctx = canvas.getContext("2d", { willReadFrequently: true });
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      var yScale = canvas.height / network.outputNodes.length;
+      var yScale = canvas.height / network.numOutputs;
 
       for (var x = 0; x < network.outputHistory.length; x++) {
         for (var i = 0; i < network.outputHistory[x].length; i++) {
@@ -319,21 +319,26 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Find node with highest activation to set the graph scale
-      let max = network.outputNodes[0].threshold;
-      for (let i = 1; i < network.outputNodes.length; i++) if (network.outputNodes[i].threshold > max) { max = network.outputNodes[i].threshold };
-      if (network.defaultThreshold > max) { max = network.defaultThreshold };
+      let max = network.nodes[network.nodes.length - network.numOutputs].threshold;
+      for (let i = network.nodes.length - network.numOutputs; i < network.nodes.length; i++) {
+        if (network.nodes[i].threshold > max) {
+          max = network.nodes[i].threshold;
+        }
+      }
+
       let scaleFactor = canvas.height / (max * 1.5);
-      let xScale = canvas.width / network.outputNodes.length;
+      let xScale = canvas.width / network.numOutputs;
 
-      for (var s = 0; s < network.outputNodes.length; s++) {
+      for (var s = network.nodes.length - network.numOutputs; s < network.nodes.length; s++) {
 
+        let index = s - network.numInputs;
         // Draw peak activation bars in red
         ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Semi transparent red
-        ctx.fillRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].peakValue * scaleFactor);
+        ctx.fillRect(index * xScale, canvas.height, xScale, -network.nodes[s].peakValue * scaleFactor);
 
         // Draw threshold bars in blue
         ctx.strokeStyle = "blue";
-        ctx.strokeRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].threshold * scaleFactor);
+        ctx.strokeRect(index * xScale, canvas.height, xScale, -network.nodes[s].threshold * scaleFactor);
       }
 
       // Draw peak value
@@ -354,60 +359,6 @@
     }
 
 
-    // Show the character groupings that each output neuron is selective to
-    function reconstructText(network, element) {
-      element.innerHTML = "";
-      network.outputNodes.forEach(function(outputNode) {
-        var el = document.createElement("span");
-        outputNode.connectionIds.forEach(function(connectionId) {
-          let connection = network.connections[connectionId];
-          if (connection.weight > 0.8) {
-            el.innerText += TEXT_MAP[connection.fromId]
-          }
-        });
-        element.appendChild(el)
-      })
-    }
-
-    // Reconstruct images of the feature detectors
-    function reconstructImage(network, canvas) {
-
-      var ctx = canvas.getContext("2d", { willReadFrequently: true });
-      ctx.fillStyle = "#000000"
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      var frameWidth = parseInt(Math.sqrt(parseInt(network.inputNodes.length/2)));
-
-      // Draw all connections as pixels
-      for (var c = 0; c < network.connections.length; c++) {
-
-        let conn = network.connections[c];
-        var gridPosition = frameWidth * conn.toId;
-        var x = 0;
-        var y = 0;
-        var colour = "black"
-        var weight = parseInt(conn.weight * 255);
-
-        let section = parseInt(conn.fromId / (frameWidth * frameWidth));  // left or right image
-        colour =  `rgb(${weight}, ${weight}, ${weight})`;
-
-        x = (section * frameWidth) + (conn.fromId) % frameWidth;
-        y = (conn.toId * frameWidth) + parseInt((conn.fromId % (frameWidth*frameWidth)) / frameWidth);
-
-        ctx.fillStyle = colour;
-        ctx.lineWidth = 2;
-        ctx.fillRect(x, y, 1, 1);
-
-      }
-
-      for (var  n = 0; n < network.outputNodes.length; n++) {
-
-        var y = frameWidth*n;
-        ctx.fillStyle = "white";
-        ctx.textBaseline = "top";
-        ctx.fillText(n.toString(), 0, y);
-      }
-
-    }
 
     // Draw the weights grid
     function drawWeightMatrix(network, canvas) {
@@ -417,7 +368,7 @@
       var yScale = canvas.height / network.inputNodes.length;
 
       // For each connection
-      network.weightSums = new Array(network.outputNodes.length).fill(0);
+      network.weightSums = new Array(network.nodes.length).fill(0);
       for (var c = 0; c < network.connections.length; c++) {
 
         var conn = network.connections[c];
@@ -604,17 +555,17 @@
         spikeTrain = textToSpikeTrain(trainingText)
       }
 
-      snn.feedForward(spikeTrain, RESET);
+      snn.feedForward(spikeTrain);
 
       if (ANIMATE) {
         if (!TEXT_INPUT) {
-          reconstructImage(snn, RECONSTRUCTION_CANVAS);
+          //reconstructImage(snn, RECONSTRUCTION_CANVAS);
         } else {
-          reconstructText(snn, document.getElementById("reconstruction_container"))
+          //reconstructText(snn, document.getElementById("reconstruction_container"))
         }
 
         if (document.getElementById("DRAW_WEIGHT_CANVAS").checked) {
-          drawWeightMatrix(snn, WEIGHT_CANVAS);
+          //drawWeightMatrix(snn, WEIGHT_CANVAS);
         }
         drawThresholds(snn, WEIGHT_SUMS_CANVAS);
         drawOutputHistory(OUTPUT_HISTORY_CANVAS, snn);
@@ -778,11 +729,9 @@
     // Resize the canvas's based on network sizew
     function resizeCanvases() {
 
-      RECONSTRUCTION_CANVAS.width = document.getElementById("INPUT_CANVAS_1").width*2;
-      RECONSTRUCTION_CANVAS.height = snn.outputNodes.length * document.getElementById("INPUT_CANVAS_1").width;
-      SPIKE_TRAIN_CANVAS.height = snn.inputNodes.length * 0.05;
-      WEIGHT_CANVAS.height = 0.007 * (snn.inputNodes.length + 1);
-      WEIGHT_CANVAS.width = GRID_SIZE * (snn.outputNodes.length + 1);
+      SPIKE_TRAIN_CANVAS.height = snn.nodes.length * 0.05;
+      WEIGHT_CANVAS.height = 0.007 * (snn.nodes.length + 1);
+      WEIGHT_CANVAS.width = GRID_SIZE * (snn.nodes.length + 1);
 
     }
 
@@ -874,17 +823,14 @@
       randomGenerator = new PseudoRandomGenerator();
       snn = new Network({
         numInputs: inputSize,
+        numHidden: 5,
         numOutputs: 5,
         LTPRate: 0.2,
         LTDRate: 0.05,
         startingThreshold: 1,
+        learningWindow: 1,
         refractoryTime: 100,
-        learningWindow: 5,
-        decayRate: document.getElementById("DecayRateSlider").value,
-        inhibition: document.getElementById("InhibitionButton").checked,
-        numWinners: document.getElementById("NumWinnersSlider").value,
-        preSynapticReset: document.getElementById("PreSynapticResetButton").checked,
-        thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
+        decayRate: parseFloat(document.getElementById("DecayRateSlider").value),
       });
 
       resizeCanvases();
