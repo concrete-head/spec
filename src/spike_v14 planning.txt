@@ -4,10 +4,10 @@ Go structureless
 	- So the network can learn firing order rather than just groupings
 
 	How?
-	- All nodes held in a single array where the first (i) nodes are inputs, the last (n) nodes are outputs (read out nodes)
+	- [x] All nodes held in a single array where the first (i) nodes are inputs, the last (n) nodes are outputs (read out nodes)
+	- [x] Nodes have a value and a value_next property
 	- Introduce inhibitory nodes that have negative weights
-	- nodes have a value and a value_next property
-	- connections generated randomly with different learningWindow and decayRate
+	- Connections generated randomly with different learningWindow and decayRate
 	Optional
 	- Function that checks for orphaned nodes and resets them
 	- Output nodes send some kind of back-pulse to their inputs, stimulating them slightly.

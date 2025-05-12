@@ -1,8 +1,3 @@
-function randomChance(p) {
-  return Math.random() < p;
-}
-
-
 
 // Node class
 class Node {
@@ -15,7 +10,7 @@ class Node {
     this.connectionIds = new Set();
     this.isFiring = false;
     this.inhibitory = false;
-    this.lastFired = -10000;      // Timestep when this node last fired
+    this.lastFired = -1000;      // Timestep when this node last fired
     this.lastProcessed = 0;       // Timestep when this node was last calculated
     this.threshold = threshold;
     this.learningWindow = learningWindow;
@@ -43,12 +38,11 @@ class Connection {
 
 // Network class
 class Network {
-  constructor({numInputs, numHidden, numOutputs, LTPRate, LTDRate, startingThreshold, learningWindow, refractoryTime, decayRate}) {
+  constructor({numInputs, numHidden, LTPRate, LTDRate, startingThreshold, learningWindow, refractoryTime, decayRate, randomGenerator}) {
 
     this.nodes = [];
     this.numInputs = numInputs;
-    this.numHidden = numHidden;     // Includes output nodes
-    this.numOutputs = numOutputs;   // Must be less than number of hidden Nodes
+    this.numHidden = numHidden;
     this.connections = [];
     this.timestep = 0;          // Timestep, counts to infinity
     this.frames = 0;            // Count the total number of feed forward steps
@@ -59,19 +53,24 @@ class Network {
     this.refractoryTime = refractoryTime;
     this.spikeTrain = [];
     this.outputHistory = [];
+    this.randomGenerator = randomGenerator
 
     // Create input nodes
     for (var i = 0; i < numInputs; i++) {
       this.nodes.push(new Node(startingThreshold, this.learningWindow, this.nodes.length, true));
     }
-    for (i = numInputs; i < numInputs + numHidden; i++) {
-      this.nodes.push(new Node(startingThreshold, this.learningWindow, this.nodes.length, false));
+
+    // Create hidden nodes
+    for (i = numInputs; i < this.numInputs + this.numHidden; i++) {
+      var hidden = new Node(startingThreshold, this.learningWindow, this.nodes.length, false)
+      hidden.inhibitory = this.randomGenerator.randomChance(0.1)
+      this.nodes.push(hidden);
     };
 
     // Connect input nodes
     for (var inputNodeId = 0; inputNodeId < this.numInputs; inputNodeId++) {
-      for (var hiddenNodeId = this.numInputs; hiddenNodeId < (this.numInputs + this.numHidden); hiddenNodeId++) {
-        if (randomChance(0.95)) {
+      for (var hiddenNodeId = this.numInputs; hiddenNodeId < this.nodes.length; hiddenNodeId++) {
+        if (this.randomGenerator.randomChance(1)) {
           var conn = new Connection(inputNodeId, hiddenNodeId);
           this.connections.push(conn);
           this.nodes[inputNodeId].connectionIds.add(this.connections.length-1);
@@ -83,11 +82,12 @@ class Network {
     // Create random recurrent connections
     // Form connection between each input node each pool node with probabilty p1
     // For each pool node connect it to every other pool node with probability p2
-    for (var nodeId1 = this.numInputs; nodeId1 < (this.numInputs + this.numHidden); nodeId1++) {
-      for (var nodeId2 = this.numInputs; nodeId2 < (this.numInputs + this.numHidden); nodeId2++) {
+    for (var nodeId1 = this.numInputs; nodeId1 < this.nodes.length; nodeId1++) {
+      for (var nodeId2 = this.numInputs; nodeId2 < this.nodes.length; nodeId2++) {
         if (nodeId1 === nodeId2) { continue }
-        if (randomChance(0.5)) {
+        if (this.randomGenerator.randomChance(0.9)) {
           var conn = new Connection(nodeId1, nodeId2);
+          console.log("New recurrent connection " + nodeId1 + ":" + nodeId2 + ":")
           this.connections.push(conn);
           this.nodes[nodeId1].connectionIds.add(this.connections.length-1);
           this.nodes[nodeId2].connectionIds.add(this.connections.length-1);
@@ -110,11 +110,11 @@ class Network {
   fireNode(node) {
 
     let spikeIntensity = node.value / node.threshold;
-    if (LOGGING && !node.isInput) { console.log("Node fired: " + node.id + " at " + this.timestep + " with spikeIntensity: " + spikeIntensity.toFixed(2)) }
+    if (LOGGING && !node.isInput) { console.log("Node " + node.id + " fired at time step " + this.timestep + " with intensity: " + spikeIntensity.toFixed(2)) }
 
     // Adjust threshold if spikeIntensity is above 130%
-    if (spikeIntensity > 1.3) {
-      node.threshold = node.value+1//*0.75;
+    if (spikeIntensity > 1.5) {
+      node.threshold = node.value *0.75;
     }
 
     node.isFiring = true;
@@ -131,7 +131,7 @@ class Network {
       // Integrate only if the "toNode" is not already firing
       if (!toNode.isFiring) {
         if (fromNode.inhibitory) {
-          toNode.value_next = toNode.value_next - conn.weight;
+          toNode.value_next = toNode.value_next - 5//conn.weight;
           console.log("inhibitory")
         } else {
           toNode.value_next = toNode.value_next + conn.weight;
@@ -146,22 +146,27 @@ class Network {
   // Run a feed forward pass on the network (aka process one complete frame)
   feedForward(spikeTrain) {
 
-    for (var j = 0; j < this.nodes.length; j++) {
-      this.nodes[j].value = 0;
-      this.nodes[j].value_next = 0;
-      this.nodes[j].peakValue = 0;
-      this.nodes[j].lastFired = -1000;
-      this.nodes[j].isFiring = false;
-    }
+    // Reset everything at each presentation
+    // for (var j = 0; j < this.nodes.length; j++) {
+    //   this.nodes[j].value = 0;
+    //   this.nodes[j].value_next = 0;
+    //   this.nodes[j].peakValue = 0;
+    //   this.nodes[j].lastFired = -1000;
+    //   this.nodes[j].isFiring = false;
+    // }
 
     this.spikeTrain = spikeTrain;
-    this.outputHistory = []
+    // this.outputHistory = []
 
     // Process each time step within spikeTrain
     for (var i = 0; i < this.spikeTrain.length; i++) {
       var winnerIds = this.step(this.spikeTrain[i]);
-      // if (winnerIds.length > 0) { console.log(winnerIds) }
-      this.outputHistory.push(winnerIds);
+      if (winnerIds.length > 0) {
+        this.outputHistory.push(winnerIds);
+        if (this.outputHistory.length > 256) { this.outputHistory.shift() };
+      }
+
+      // this.outputHistory.push(winnerIds);
       this.timestep = this.timestep + 1;
     }
     this.frames = this.frames + 1;
@@ -169,40 +174,42 @@ class Network {
   }
 
   // Run a single forward step
+  // Input data is an array of active input node ids
   step(inputData) {
 
     var winnerIds = [];
 
-    // Fire coresponding nodes
+    // Fire active input nodes
     for (var i = 0; i < inputData.length; i++) {
       var nodeId = inputData[i];
-      this.nodes[nodeId].value = this.nodes[nodeId].threshold * 2;
+      this.nodes[nodeId].value = this.nodes[nodeId].threshold * 2;  // Push the nodes threshold high so it fires
     }
 
     // Loop through each node
     // If its value is above the threshold then fire it
     for (var nodeId = 0; nodeId < this.nodes.length; nodeId++) {
-      if (this.nodes[nodeId].value >= this.nodes[nodeId].threshold) {
-        this.fireNode(this.nodes[nodeId]);      // Fire
+      var node = this.nodes[nodeId];
+      if ((node.value >= node.threshold) && !node.isFiring) {
+        this.fireNode(node);      // Fire
 
-        if (!this.nodes[nodeId].isInput) {
+        if (!node.isInput) {
           winnerIds.push(nodeId);
         }
       }
     }
 
-    // Apply learning, set value, reset nodes with refractory timeout
+    // Apply learning, bake value, reset nodes with refractory timeout
     for (nodeId = 0; nodeId < this.nodes.length; nodeId++) {
 
       var node = this.nodes[nodeId];
 
       // Learn if it just fired
-      // Only hidden and output nodes are learnable
-      if (!nodeId.isInput) {
+      // Only hidden nodes are able to learn
+      if (!node.isInput) {
         if (node.lastFired == this.timestep) { this.learn(node) };
       }
 
-      // Rotate value, apply decay
+      // Bake in node values, apply decay
       node.value = node.value_next * (1 - this.decayRate);
 
       // Reset nodes that have reached refractoryTime
@@ -218,6 +225,7 @@ class Network {
 
   // Perform learning step (make output node more receptive to recently fired inputs)
   learn(node) {
+
     const self = this;
 
     // For each connection in node.connectionIds
@@ -235,7 +243,7 @@ class Network {
 
         // LTP this connection
         conn.setWeight(conn.weight + self.LTPRate);
-        fromNode.lastFired = -1000;
+        //fromNode.lastFired = -1000;
 
       } else {
         // LTD this connection
