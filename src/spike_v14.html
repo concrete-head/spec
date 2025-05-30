@@ -437,7 +437,18 @@
 
         let node = network.nodes[n];
 
-        node.connectionIds.forEach(function(connectionId) {
+        node.incomingConnectionIds.forEach(function(connectionId) {
+
+          let conn = snn.connections[connectionId];
+          let y = conn.fromId * yScale;
+          let value = conn.weight*255;
+          var colour =  `rgb(${value}, ${value}, ${value})`
+          ctx.fillStyle = colour;
+          ctx.fillRect(x, y, GRID_SIZE, GRID_SIZE);
+
+        });
+
+        node.outgoingConnectionIds.forEach(function(connectionId) {
 
           let conn = snn.connections[connectionId];
           let y = conn.fromId * yScale;
@@ -504,9 +515,9 @@
         const imageData = ctx.createImageData(INPUT_CANVAS_1.width, INPUT_CANVAS_1.height);
         const data = imageData.data;
 
-        let index = 4*10 * (snn.frames % 8);
+        let index = 4*167 * (snn.frames % 8);
         // Generate a strip of white pixels
-        for (var i = 0; i < 6*4; i++) {
+        for (var i = 0; i < 20*4; i++) {
           data[index + i] = 255;
         }
 
@@ -784,7 +795,7 @@
     function resizeCanvases() {
 
       SPIKE_TRAIN_CANVAS.height = snn.nodes.length * 0.05;
-      WEIGHT_CANVAS.height = 0.01 * (snn.nodes.length + 1);
+      WEIGHT_CANVAS.height = 0.02 * (snn.nodes.length + 1);
       WEIGHT_CANVAS.width = GRID_SIZE * snn.numHidden;
 
       OUTPUT_HISTORY_CANVAS.height = snn.numHidden * 2* GRID_SIZE;
@@ -841,6 +852,16 @@
           document.getElementById("InhibitionButton").click();
         }
 
+        if (event.key === "1" || event.key === "1") {
+          snn.fireNode(snn.nodes[8192])
+        }
+        if (event.key === "2" || event.key === "2") {
+          snn.fireNode(snn.nodes[8193])
+        }
+        if (event.key === "3" || event.key === "3") {
+          snn.fireNode(snn.nodes[8194])
+        }
+
       });
 
     }
@@ -880,12 +901,12 @@
       rand = new PseudoRandomGenerator();
       snn = new Network({
         numInputs: inputSize,
-        numHidden: 20,
+        numHidden: 5,
         LTPRate: 0.2,
         LTDRate: 0.005,
         startingThreshold: 1,
-        learningWindow: 2,
-        refractoryTime: 100,
+        learningWindow: 1,
+        refractoryTime: 254,
         decayRate: parseFloat(document.getElementById("DecayRateSlider").value),
         randomGenerator: rand,
       });

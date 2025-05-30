@@ -1,0 +1,13 @@
+v14 was a failed experiment.
+Strutureless is too difficult to interpret what is happening (if anything)
+
+
+New plan
+
+Add recurrent timesteps
+i.e. add more inputs and group them into t, t+1, t+2, t+3 etc
+why?
+- So the network can learn the order of firings
+Details:
+- Go back to v13 and adapt it to work with characters and sequence (throw out images). Instead of 8192 inputs use say 50 (where each input represents a character) for each group
+- Possibly also feed the outputs back into the inputs, but test above method first
