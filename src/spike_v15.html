@@ -20,7 +20,7 @@
     image-rendering: pixelated;
     background: black;
     width: 100%;
-    aspect-ratio: 1
+    height: 300px;
   }
   button {
     display: flex;
@@ -36,7 +36,7 @@
     height: 1em;
   }
 
-  #reconstruction_container {
+  #reconstruction_container, #input_container {
     line-height: 1.5;
     overflow-wrap: anywhere;
     min-height: 200px;
@@ -138,6 +138,7 @@
     <div class="grid_item">
 
       <h3>Input</h3>
+      <div id="input_count"></div>
 
       <input type="radio" id="RANDOM_INPUT" name="INPUT_TYPE" value="Pseudo random input">
       <label for="RANDOM_INPUT">Pseudo random noise input (includes a repeating pattern every 2 seconds)</label><br>
@@ -148,6 +149,8 @@
       <input type="checkbox" id="DRAW_SPIKE_TRAIN" checked>
       <label for="DRAW_SPIKE_TRAIN">Draw spike train: </label><br>
       <canvas id="spike_train_canvas" width="256" height="100"></canvas><br>
+      <div>Input buffer</div>
+      <canvas id="input_buffer_history_canvas" width="256" height="100"></canvas><br>
     </div>
 
     <div class="grid_item">
@@ -167,6 +170,7 @@
 
     <div class="grid_item">
       <h3>Outputs</h3>
+      <div id="output_count"></div>
       <div class="small" style="color: red">&#9632; Activation</div>
       <div class="small" style="color: blue">&#9632; Threshold</div>
       <canvas id="WEIGHT_SUMS_CANVAS" width="256" height="200"></canvas>
@@ -177,9 +181,15 @@
 
   </div>
 
-  <div style="background: antiquewhite">
+  <div>
+    <h3>Input</h3>
+    <div style="background: antiquewhite" id="input_container"></div>
     <h3>Reconstruction</h3>
-    <div id="reconstruction_container"></div>
+    <label for="reconstruction_threshold">Reconstruction threshold (0-1):</label>
+    <input type="number" id="reconstruction_threshold" min="0" max="1" step="0.1" value="0.1"/>
+    <div style="background: cornsilk" id="reconstruction_container">
+
+    </div>
   </div>
 
   <script src="spike_v15.js"></script>
@@ -202,20 +212,40 @@
   const OUTPUT_HISTORY_CANVAS = document.getElementById("output_history_canvas");
   const SPIKE_TRAIN_CANVAS = document.getElementById("spike_train_canvas");
   const WEIGHT_SUMS_CANVAS = document.getElementById("WEIGHT_SUMS_CANVAS");
-  const CHAR_MAP = "~ abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&-_,.?()[]{}+=\n\t\"\'";
+  // const CHAR_MAP = "~ abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&-_,.?()[]{}+=\n\t\"\'";
+  const CHAR_MAP = "01";
 
 
-  // Draw the input spike train
-  function drawSpikeTrain(canvas, network) {
-
-    var yScale = 1;
+  function drawInputBufferHistory(canvas, network) {
     var ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "red";
+    var even = false;
+    for (var x = 0; x < network.inputBufferHistory.length; x++) {
+      if (even) {
+        ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+      } else {
+        ctx.fillStyle = "rgba(255, 0, 0, 1)";
+      }
+      even = !even;
+      network.inputBufferHistory[x].forEach(function(id) {
+        ctx.fillRect(x, id, 1, 1)
+      });
+    }
+
+  }
+
+  // Draw the input spike train
+  function drawInputSpikeTrain(canvas, network) {
+
+    var yScale = 1;
+    var xScale = canvas.width / network.spikeTrain.length;
+    var ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
 
     for (var bin = 0; bin < network.spikeTrain.length; bin++) {
       for (var i = 0; i < network.spikeTrain[bin].length; i++) {
-        ctx.fillRect(255-bin, canvas.height - (yScale * network.spikeTrain[bin][i]), 1, 1);
+        ctx.fillRect(bin*xScale, canvas.height - (yScale * network.spikeTrain[bin][i]), xScale, 1);
       }
     }
 
@@ -223,10 +253,10 @@
 
   // Draw stats
   function printStats(network) {
-
     document.getElementById("timestep").innerText = network.timestep.toLocaleString();
     document.getElementById("total_connections").innerText = network.connections.length;
-
+    document.getElementById("output_count").innerText = "Total outputs: " + network.outputNodes.length;
+    document.getElementById("input_count").innerText = "Total inputs: " + network.inputNodes.length + "\nBlock size:" + network.blockSize + "\nTotal blocks :" + network.inputNodes.length/network.blockSize;
   }
 
   // Draw output firing history graph
@@ -235,13 +265,11 @@
     var ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    var yScale = canvas.height / network.outputNodes.length;
-
     for (var x = 0; x < network.outputHistory.length; x++) {
       for (var i = 0; i < network.outputHistory[x].length; i++) {
-        let y = canvas.height - (yScale * network.outputHistory[x][i]);
+        let y = canvas.height - network.outputHistory[x][i];
         ctx.fillStyle = "#FFFFFF";
-        ctx.fillRect(x, y, 1, -yScale);
+        ctx.fillRect(x, y, 1, -1);
       }
     }
 
@@ -290,7 +318,7 @@
 
 
   // Show the character groupings that each output neuron is selective to
-  function reconstructText(network, element) {
+  function reconstructText(network, element, threshold) {
     element.innerHTML = "";
     network.outputNodes.forEach(function(outputNode, nodeId) {
       var el = document.createElement("span");
@@ -299,23 +327,19 @@
       var ids = [];
       outputNode.connectionIds.forEach(function(connectionId) {
         let connection = network.connections[connectionId];
-        if (connection.weight > 0.95) {
+        if (connection.weight >= threshold) {
           ids.push(connection.fromId)
         }
       })
 
       // Convert connection ids to string
       var str = "";
-      var chunkSize = network.chunkSize;
+      var blockSize = network.blockSize;
       ids.forEach(function(id) {
-        let charMapIndex = id%chunkSize;
-        let position = parseInt(id / chunkSize);
-
+        let charMapIndex = id%blockSize;
+        let position = parseInt(id / blockSize);
         str = CHAR_MAP[charMapIndex] + str;
       })
-
-      //let position = parseInt(connection.fromId / network.chunkSize)
-      //str = str.slice(0, position) + CHAR_MAP[charMapIndex] + str.slice(position);
 
       el.innerText = str;
       el.style.backgroundColor = intToColor(snn.outputStats[nodeId]*20)
@@ -370,7 +394,7 @@
     snn.feedForward(spikeTrain, RESET);
 
     if (ANIMATE) {
-      reconstructText(snn, document.getElementById("reconstruction_container"))
+      reconstructText(snn, document.getElementById("reconstruction_container"), parseFloat(document.getElementById("reconstruction_threshold").value))
 
       if (document.getElementById("DRAW_WEIGHT_CANVAS").checked) {
         drawWeightMatrix(snn, WEIGHT_CANVAS);
@@ -378,8 +402,9 @@
       drawThresholds(snn, WEIGHT_SUMS_CANVAS);
       drawOutputHistory(OUTPUT_HISTORY_CANVAS, snn);
       if (document.getElementById("DRAW_SPIKE_TRAIN").checked) {
-        drawSpikeTrain(SPIKE_TRAIN_CANVAS, snn);
+        drawInputSpikeTrain(SPIKE_TRAIN_CANVAS, snn);
       }
+      drawInputBufferHistory(input_buffer_history_canvas, snn);
       printStats(snn);
     }
 
@@ -394,10 +419,11 @@
     return Array.from(text).map(char => {
       const index = CHAR_MAP.indexOf(char);
       let result
-      if (index !== -1) {
-        result = index
+      if (index == -1) {
+        result = 0;
+        console.log(char + " not found in CHAR_MAP")
       } else {
-        result = 0
+        result = index
       }
       return [result];
     });
@@ -467,9 +493,13 @@
 
   // Resize the canvas's based on network sizew
   function resizeCanvases() {
-    SPIKE_TRAIN_CANVAS.height = snn.chunkSize;
+    SPIKE_TRAIN_CANVAS.height = snn.blockSize;
     WEIGHT_CANVAS.height = snn.inputNodes.length + 1;
     WEIGHT_CANVAS.width = snn.outputNodes.length;
+    OUTPUT_HISTORY_CANVAS.height = snn.outputNodes.length;
+    OUTPUT_HISTORY_CANVAS.width = trainingText.length;
+    document.getElementById("input_buffer_history_canvas").height = snn.inputNodes.length;
+    document.getElementById("input_buffer_history_canvas").width = trainingText.length;
   }
 
   // Convert a number between 0-255 to a CSS colour
@@ -552,7 +582,7 @@
       }
       const text = await response.text();
       console.log("File contents loaded:");
-      return text.replaceAll("\r", "");
+      return text.trim().replaceAll("\r", "");
     } catch (error) {
       console.error("Failed to load training data:", error);
       return null;
@@ -568,33 +598,37 @@
     loadTrainingText().then(content => {
       if (content !== null) {
         // Do something with `content`
+        document.getElementById("input_container").innerText = content;
         trainingText = content;
+
+
+        randomGenerator = new PseudoRandomGenerator();
+        snn = new Network({
+          numInputs: CHAR_MAP.length*2,
+          numOutputs: 10,
+          blockSize: CHAR_MAP.length,
+          LTPRate: 0.2,
+          LTDRate: 0.05,
+          startingThreshold: 1,
+          refractoryTime: 3,
+          learningWindow: 1,
+          decayRate: document.getElementById("DecayRateSlider").value,
+          inhibition: document.getElementById("InhibitionButton").checked,
+          numWinners: document.getElementById("NumWinnersSlider").value,
+          preSynapticReset: document.getElementById("PreSynapticResetButton").checked,
+          thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
+        });
+
+        printStats(snn);
+        resizeCanvases();
+
+        console.log("Initialisation Complete!");
+        setInterval(loop, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate (here it's set to roughly 24 frames per second)
+
+
       }
     });
 
-
-
-    randomGenerator = new PseudoRandomGenerator();
-    snn = new Network({
-      numInputs: CHAR_MAP.length*5,
-      numOutputs: 100,
-      chunkSize: CHAR_MAP.length,
-      LTPRate: 0.2,
-      LTDRate: 0.05,
-      startingThreshold: 1,
-      refractoryTime: 100,
-      learningWindow: 1,
-      decayRate: document.getElementById("DecayRateSlider").value,
-      inhibition: document.getElementById("InhibitionButton").checked,
-      numWinners: document.getElementById("NumWinnersSlider").value,
-      preSynapticReset: document.getElementById("PreSynapticResetButton").checked,
-      thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
-    });
-
-    resizeCanvases();
-
-    console.log("Initialisation Complete!");
-    setInterval(loop, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate (here it's set to roughly 24 frames per second)
   };
 
 

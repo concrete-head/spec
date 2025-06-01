@@ -9,6 +9,7 @@ class Node {
     this.threshold = threshold;
     this.learningWindow = learningWindow;
   }
+
 }
 
 // Connection class
@@ -29,11 +30,11 @@ class Connection {
 
 // Network class
 class Network {
-  constructor({numInputs, numOutputs, chunkSize, LTPRate, LTDRate, startingThreshold, learningWindow, refractoryTime, decayRate, inhibition, numWinners, preSynapticReset, thresholdIncrease}) {
+  constructor({numInputs, numOutputs, blockSize, LTPRate, LTDRate, startingThreshold, learningWindow, refractoryTime, decayRate, inhibition, numWinners, preSynapticReset, thresholdIncrease}) {
 
     this.inputNodes = [];
     this.outputNodes = [];
-    this.chunkSize = chunkSize;
+    this.blockSize = blockSize;
     this.connections = [];
     this.numWinners = numWinners; // number of winners allowed in winner-takes-all
     this.timestep = 0;          // Timestep, counts to infinity
@@ -48,6 +49,7 @@ class Network {
     this.preSynapticReset = preSynapticReset;                     // When enabled, if an output node spikes, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from being involved in LTP until they fire again.
     this.thresholdIncrease = thresholdIncrease;     // When enabled, nodes that fire with strong intensity have their thresholds increased
     this.spikeTrain = [];
+    this.inputBufferHistory = [];
     this.outputHistory = [];
     this.outputStats = [];
 
@@ -83,6 +85,15 @@ class Network {
       this.outputNodes[newNodeId].connectionIds.add(this.connections.length-1);
     }
 
+  }
+
+  printConnections(outputNodeId) {
+
+    var self = this
+    this.outputNodes[outputNodeId].connectionIds.forEach(function(connectionId) {
+      var conn = self.connections[connectionId];
+      console.log(conn.fromId, conn.weight);
+    })
   }
 
   // Delete a connection
@@ -166,6 +177,7 @@ class Network {
 
     this.spikeTrain = spikeTrain;
     this.outputHistory = [];
+    this.inputBufferHistory = [];
     this.outputStats = new Array(this.outputNodes.length).fill(0);
 
     // Set previous activations to zero
@@ -179,21 +191,23 @@ class Network {
     }
 
     // Process each time step within spikeTrain
-    var shortTermMemory = []
-    var chunkSize = this.chunkSize;
+    var inputBuffer = []
+    var blockSize = this.blockSize;
     for (var i = 0; i < this.spikeTrain.length; i++) {
 
-      // Time shift short term memory
-      shortTermMemory = shortTermMemory.map(function(x) { return x + chunkSize })
+      // Time shift input buffer
+      inputBuffer = inputBuffer.map(function(x) { return x + blockSize })
 
       // Filter out values that overflow
-      shortTermMemory = shortTermMemory.filter(function(x) { return x < snn.inputNodes.length });
+      inputBuffer = inputBuffer.filter(function(x) { return x < snn.inputNodes.length });
 
       // Add new input
-      shortTermMemory = shortTermMemory.concat(this.spikeTrain[i]);
+      inputBuffer = inputBuffer.concat(this.spikeTrain[i]);
+
+      this.inputBufferHistory.push(inputBuffer);
 
       // Run single step
-      var winnerIds = this.step(shortTermMemory);
+      var winnerIds = this.step(inputBuffer);
 
       //if (winnerIds.length > 0) {
         this.outputHistory.push(winnerIds);
@@ -311,10 +325,14 @@ class Network {
 
     var spikeIntensity = outputNode.value / outputNode.threshold;
 
-    //Increase threshold if spikeIntensity is above 130%
-    if (this.thresholdIncrease && (spikeIntensity > 1.3)) {
-      outputNode.threshold = outputNode.value*0.75;
+    if (outputNode.value >= (outputNode.threshold + 1)) {
+      outputNode.threshold = outputNode.threshold+1;
     }
+    // //Increase threshold if spikeIntensity is above 130%
+    // if (this.thresholdIncrease && (spikeIntensity > 1.3)) {
+    //   outputNode.threshold = outputNode.value*0.75;
+    //   outputNode.threshold = outputNode.value+1;
+    // }
 
     const self = this;
 
