@@ -8,6 +8,7 @@ class Node {
     this.lastFired = -10000;      // Timestep when this node last fired
     this.threshold = threshold;
     this.learningWindow = learningWindow;
+    this.label = "";
   }
 
 }
@@ -17,7 +18,7 @@ class Connection {
   constructor(fromId, toId) {
     this.fromId = fromId;
     this.toId = toId;
-    this.weight = 0.1;
+    this.weight = 0.5;
   }
 
   // Set a connection weight to range [0 - 1]
@@ -34,7 +35,7 @@ class Network {
 
     this.inputNodes = [];
     this.outputNodes = [];
-    this.blockSize = blockSize;
+    this.blockSize = blockSize; // Number of nodes in an input block
     this.connections = [];
     this.numWinners = numWinners; // number of winners allowed in winner-takes-all
     this.timestep = 0;          // Timestep, counts to infinity
@@ -49,13 +50,14 @@ class Network {
     this.preSynapticReset = preSynapticReset;                     // When enabled, if an output node spikes, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from being involved in LTP until they fire again.
     this.thresholdIncrease = thresholdIncrease;     // When enabled, nodes that fire with strong intensity have their thresholds increased
     this.spikeTrain = [];
-    this.inputBufferHistory = [];
+    this.postActivationHistory = [];
     this.outputHistory = [];
     this.outputStats = [];
 
     // Create input and output nodes
     for (var i = 0; i < numInputs; i++) {
       this.inputNodes.push(new Node(startingThreshold, this.learningWindow));
+      this.inputNodes[this.inputNodes.length-1].label = CHAR_MAP[i%this.blockSize]
     };
     for (i = 0; i < numOutputs; i++) {
       this.outputNodes.push(new Node(startingThreshold, this.learningWindow));
@@ -177,7 +179,7 @@ class Network {
 
     this.spikeTrain = spikeTrain;
     this.outputHistory = [];
-    this.inputBufferHistory = [];
+    this.postActivationHistory = [];
     this.outputStats = new Array(this.outputNodes.length).fill(0);
 
     // Set previous activations to zero
@@ -191,23 +193,23 @@ class Network {
     }
 
     // Process each time step within spikeTrain
-    var inputBuffer = []
+    var postActivations = []
     var blockSize = this.blockSize;
     for (var i = 0; i < this.spikeTrain.length; i++) {
 
-      // Time shift input buffer
-      inputBuffer = inputBuffer.map(function(x) { return x + blockSize })
+      // Time shift post activations
+      postActivations = postActivations.map(function(x) { return x + blockSize })
 
-      // Filter out values that overflow
-      inputBuffer = inputBuffer.filter(function(x) { return x < snn.inputNodes.length });
+      // Filter out values that overflow number of inputs
+      postActivations = postActivations.filter(function(x) { return x < snn.inputNodes.length });
 
-      // Add new input
-      inputBuffer = inputBuffer.concat(this.spikeTrain[i]);
+      // Concatenate current activations
+      postActivations = postActivations.concat(this.spikeTrain[i]);
 
-      this.inputBufferHistory.push(inputBuffer);
+      this.postActivationHistory.push(postActivations);
 
       // Run single step
-      var winnerIds = this.step(inputBuffer);
+      var winnerIds = this.step(postActivations);
 
       //if (winnerIds.length > 0) {
         this.outputHistory.push(winnerIds);
@@ -275,6 +277,15 @@ class Network {
       }
     }
 
+    // // Select the highest activated node as an output regardless if it is above threshold
+    // for (var j = 0; j < activations.length; j++) {
+    //   if (j == 0) {
+    //     winnerIds.push(activations[j][0]);
+    //   } else {
+    //     loserIds.push(activations[j][0]);
+    //   }
+    // }
+
     // Process winning output nodes
     for (var w = 0; w < winnerIds.length; w++) {
 
@@ -282,13 +293,13 @@ class Network {
       var outputNode = this.outputNodes[nodeId];
 
       var spikeIntensity = outputNode.value / outputNode.threshold;
-      if (LOGGING) { console.log("Node fired: " + nodeId + " on " + this.timestep%256 + " with spikeIntensity: " + spikeIntensity.toFixed(2)) }
+      if (LOGGING) { console.log("Node fired: " + nodeId + " at t=" + this.timestep + " with spikeIntensity: " + spikeIntensity.toFixed(2)) }
 
       // Spike the winner
       outputNode.isFiring = true;
       outputNode.lastFired = this.timestep;
 
-      this.outputStats[nodeId] = this.outputStats[nodeId] + 1
+      this.outputStats[nodeId] = this.outputStats[nodeId] + 1;
 
       // Perform learning
       this.learn(outputNode);
@@ -310,7 +321,7 @@ class Network {
       outputNode.value = outputNode.value * (1 - this.decayRate);
 
       // Reset nodes that have reached refractoryTime
-      if (outputNode.isFiring && ((this.timestep - outputNode.lastFired) > this.refractoryTime)) {
+      if (outputNode.isFiring && ((this.timestep - outputNode.lastFired) >= this.refractoryTime)) {
         outputNode.isFiring = false;
         //if (LOGGING) { console.log("Node reset: " + k) }
       }
@@ -328,7 +339,7 @@ class Network {
     if (outputNode.value >= (outputNode.threshold + 1)) {
       outputNode.threshold = outputNode.threshold+1;
     }
-    // //Increase threshold if spikeIntensity is above 130%
+    // Increase threshold if spikeIntensity is above 130%
     // if (this.thresholdIncrease && (spikeIntensity > 1.3)) {
     //   outputNode.threshold = outputNode.value*0.75;
     //   outputNode.threshold = outputNode.value+1;
@@ -346,24 +357,28 @@ class Network {
       // Determine if fromNode fired before toNode - LTP
       var deltaT = fromNode.lastFired - toNode.lastFired;   // Negative number if fromNode was before toNode
       let withinLTPRange = (deltaT <= 0) && (-deltaT < toNode.learningWindow)
-      if (toNode.value > toNode.threshold) {
+      //if (toNode.value > toNode.threshold) {
 
         if (withinLTPRange) {
 
           // LTP this connection
           conn.setWeight(conn.weight + self.LTPRate);
+          // if (LOGGING) { console.log("Reinforcing\t\t" + conn.fromId + "-->" + conn.toId + " '" + self.inputNodes[conn.fromId].label + "'") }
           if (self.preSynapticReset) {
-            fromNode.lastFired = -1000;
+            fromNode.lastFired = -5;
           }
 
         } else {
           // LTD this connection
           var stillActive = conn.setWeight(conn.weight - self.LTDRate);
+          // if (LOGGING) { console.log("Discouraging\t" + conn.fromId + "-->" + conn.toId + " '" + self.inputNodes[conn.fromId].label + "'") }
+
+
           //if (!stillActive) { self.removeConnection(connectionId) }
 
         }
 
-      }
+      //} else { console.log("something wrong") }
 
     });
 

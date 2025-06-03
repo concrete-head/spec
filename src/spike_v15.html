@@ -39,7 +39,7 @@
   #reconstruction_container, #input_container {
     line-height: 1.5;
     overflow-wrap: anywhere;
-    min-height: 200px;
+    min-height: 250px;
   }
 
   #reconstruction_container span {
@@ -149,8 +149,8 @@
       <input type="checkbox" id="DRAW_SPIKE_TRAIN" checked>
       <label for="DRAW_SPIKE_TRAIN">Draw spike train: </label><br>
       <canvas id="spike_train_canvas" width="256" height="100"></canvas><br>
-      <div>Input buffer</div>
-      <canvas id="input_buffer_history_canvas" width="256" height="100"></canvas><br>
+      <div>Input Post Activations</div>
+      <canvas id="input_activations_history_canvas" width="256" height="100"></canvas><br>
     </div>
 
     <div class="grid_item">
@@ -184,9 +184,11 @@
   <div>
     <h3>Input</h3>
     <div style="background: antiquewhite" id="input_container"></div>
+    <h3>Character Set</h3>
+    <div id="character_set"></div>
     <h3>Reconstruction</h3>
     <label for="reconstruction_threshold">Reconstruction threshold (0-1):</label>
-    <input type="number" id="reconstruction_threshold" min="0" max="1" step="0.1" value="0.1"/>
+    <input type="number" id="reconstruction_threshold" min="0" max="1" step="0.1" value="0.3"/>
     <div style="background: cornsilk" id="reconstruction_container">
 
     </div>
@@ -213,21 +215,21 @@
   const SPIKE_TRAIN_CANVAS = document.getElementById("spike_train_canvas");
   const WEIGHT_SUMS_CANVAS = document.getElementById("WEIGHT_SUMS_CANVAS");
   // const CHAR_MAP = "~ abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&-_,.?()[]{}+=\n\t\"\'";
-  const CHAR_MAP = "01";
+  var CHAR_MAP = "";
 
 
-  function drawInputBufferHistory(canvas, network) {
+  function drawPostActivationHistory(canvas, network) {
     var ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     var even = false;
-    for (var x = 0; x < network.inputBufferHistory.length; x++) {
+    for (var x = 0; x < network.postActivationHistory.length; x++) {
       if (even) {
         ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
       } else {
         ctx.fillStyle = "rgba(255, 0, 0, 1)";
       }
       even = !even;
-      network.inputBufferHistory[x].forEach(function(id) {
+      network.postActivationHistory[x].forEach(function(id) {
         ctx.fillRect(x, id, 1, 1)
       });
     }
@@ -256,7 +258,7 @@
     document.getElementById("timestep").innerText = network.timestep.toLocaleString();
     document.getElementById("total_connections").innerText = network.connections.length;
     document.getElementById("output_count").innerText = "Total outputs: " + network.outputNodes.length;
-    document.getElementById("input_count").innerText = "Total inputs: " + network.inputNodes.length + "\nBlock size:" + network.blockSize + "\nTotal blocks :" + network.inputNodes.length/network.blockSize;
+    document.getElementById("input_count").innerText = "Block size: " + network.blockSize + "\nTotal blocks: " + network.inputNodes.length/network.blockSize + "\nTotal inputs: " + network.inputNodes.length;
   }
 
   // Draw output firing history graph
@@ -342,7 +344,9 @@
       })
 
       el.innerText = str;
-      el.style.backgroundColor = intToColor(snn.outputStats[nodeId]*20)
+
+      let max = Math.max(...snn.outputStats);
+      el.style.backgroundColor = intToColor(snn.outputStats[nodeId]*255/max)
       element.appendChild(el)
     })
   }
@@ -404,7 +408,7 @@
       if (document.getElementById("DRAW_SPIKE_TRAIN").checked) {
         drawInputSpikeTrain(SPIKE_TRAIN_CANVAS, snn);
       }
-      drawInputBufferHistory(input_buffer_history_canvas, snn);
+      drawPostActivationHistory(input_activations_history_canvas, snn);
       printStats(snn);
     }
 
@@ -498,8 +502,8 @@
     WEIGHT_CANVAS.width = snn.outputNodes.length;
     OUTPUT_HISTORY_CANVAS.height = snn.outputNodes.length;
     OUTPUT_HISTORY_CANVAS.width = trainingText.length;
-    document.getElementById("input_buffer_history_canvas").height = snn.inputNodes.length;
-    document.getElementById("input_buffer_history_canvas").width = trainingText.length;
+    document.getElementById("input_activations_history_canvas").height = snn.inputNodes.length;
+    document.getElementById("input_activations_history_canvas").width = trainingText.length;
   }
 
   // Convert a number between 0-255 to a CSS colour
@@ -589,8 +593,17 @@
     }
   }
 
+  function getUniqueCharacters(input) {
+    const uniqueChars = new Set(input); // Automatically removes duplicates
+    return [...uniqueChars].sort().join('');
+  }
+
   // Initialise global variables that reference DOM elements here
   window.onload = function () {
+
+    // Use preloaded resources to prevent warning
+    document.getElementById("play_pause_button").src = "pause.svg";
+    document.getElementById("play_pause_button").src = "play.svg";
 
     initialiseKeyEvents();
     initialiseButtons();
@@ -598,19 +611,21 @@
     loadTrainingText().then(content => {
       if (content !== null) {
         // Do something with `content`
+
+        CHAR_MAP = getUniqueCharacters(content);
+        document.getElementById("character_set").innerText = CHAR_MAP;
         document.getElementById("input_container").innerText = content;
         trainingText = content;
 
-
         randomGenerator = new PseudoRandomGenerator();
         snn = new Network({
-          numInputs: CHAR_MAP.length*2,
-          numOutputs: 10,
+          numInputs: CHAR_MAP.length*12,
+          numOutputs: 700,
           blockSize: CHAR_MAP.length,
-          LTPRate: 0.2,
-          LTDRate: 0.05,
+          LTPRate: 1,
+          LTDRate: 1,
           startingThreshold: 1,
-          refractoryTime: 3,
+          refractoryTime: 0,
           learningWindow: 1,
           decayRate: document.getElementById("DecayRateSlider").value,
           inhibition: document.getElementById("InhibitionButton").checked,
