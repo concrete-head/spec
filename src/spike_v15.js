@@ -1,8 +1,8 @@
 // Node class
 class Node {
   constructor(threshold, learningWindow) {
-    this.value = 0;
-    this.peakValue = 0;           // Peak activation for this timestep
+    this.activation = 0;
+    this.peakActivation = 0;           // Peak activation for this timestep
     this.connectionIds = new Set();
     this.isFiring = false;
     this.lastFired = -10000;      // Timestep when this node last fired
@@ -39,7 +39,7 @@ class Network {
     this.connections = [];
     this.numWinners = numWinners; // number of winners allowed in winner-takes-all
     this.timestep = 0;          // Timestep, counts to infinity
-    this.frames = 0;            // Count the total number of feed forward steps
+    this.epoch = 0;            // Count the total number of feed forward steps
     this.LTPRate = LTPRate;     // weight change for LTP
     this.LTDRate = LTDRate;     // weight change for LTD
     this.learningWindow = learningWindow;   // Integration window, how far to look back for LTP
@@ -47,7 +47,7 @@ class Network {
     this.decayRate = decayRate;
     this.refractoryTime = refractoryTime;
     this.startingThreshold = startingThreshold;
-    this.preSynapticReset = preSynapticReset;                     // When enabled, if an output node spikes, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from being involved in LTP until they fire again.
+    this.preSynapticReset = preSynapticReset;       // When enabled, if an output node fires, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from participating in LTP.
     this.thresholdIncrease = thresholdIncrease;     // When enabled, nodes that fire with strong intensity have their thresholds increased
     this.spikeTrain = [];
     this.postActivationHistory = [];
@@ -89,23 +89,13 @@ class Network {
 
   }
 
+  // Print the incomming connections to a node
   printConnections(outputNodeId) {
-
-    var self = this
+    var self = this;
     this.outputNodes[outputNodeId].connectionIds.forEach(function(connectionId) {
       var conn = self.connections[connectionId];
       console.log(conn.fromId, conn.weight);
     })
-  }
-
-  // Delete a connection
-  removeConnection(id) {
-    this.inputNodes.forEach(function(inputNode) {
-      inputNode.connectionIds.delete(id);
-    });
-    this.outputNodes.forEach(function(outputNode) {
-      outputNode.connectionIds.delete(id);
-    });
   }
 
   // Consolidate master connection array, reducing to only those that occur in node connectionId lists
@@ -185,8 +175,8 @@ class Network {
     // Set previous activations to zero
     if (reset) {
       for (var j = 0; j < this.outputNodes.length; j++) {
-        this.outputNodes[j].value = 0;
-        this.outputNodes[j].peakValue = 0;
+        this.outputNodes[j].activation = 0;
+        this.outputNodes[j].peakActivation = 0;
         this.outputNodes[j].lastFired = -1000;
         this.outputNodes[j].isFiring = false;
       }
@@ -217,7 +207,7 @@ class Network {
       //};
       this.timestep = this.timestep + 1;
     }
-    this.frames = this.frames + 1;
+    this.epoch = this.epoch + 1;
 
   }
 
@@ -240,14 +230,14 @@ class Network {
 
         // Integrate only if the output is not already firing
         if (!toNode.isFiring) {
-          toNode.value = toNode.value + conn.weight;
-          toNode.peakValue = toNode.value
+          toNode.activation = toNode.activation + conn.weight;
+          toNode.peakActivation = toNode.activation
         };
       });
 
     }
 
-    // Determine winning and losing nodes based on activation value and threshold
+    // Determine winning and losing nodes based on activation and threshold
     var winnerIds = [];
     var loserIds = [];
 
@@ -255,9 +245,9 @@ class Network {
     for (var nodeId = 0; nodeId < this.outputNodes.length; nodeId++) {
       activations.push([
         nodeId,
-        this.outputNodes[nodeId].value,
+        this.outputNodes[nodeId].activation,
         this.outputNodes[nodeId].threshold,
-        this.outputNodes[nodeId].value / this.outputNodes[nodeId].threshold
+        this.outputNodes[nodeId].activation / this.outputNodes[nodeId].threshold
       ]);
     }
 
@@ -277,22 +267,13 @@ class Network {
       }
     }
 
-    // // Select the highest activated node as an output regardless if it is above threshold
-    // for (var j = 0; j < activations.length; j++) {
-    //   if (j == 0) {
-    //     winnerIds.push(activations[j][0]);
-    //   } else {
-    //     loserIds.push(activations[j][0]);
-    //   }
-    // }
-
     // Process winning output nodes
     for (var w = 0; w < winnerIds.length; w++) {
 
       var nodeId = winnerIds[w];
       var outputNode = this.outputNodes[nodeId];
 
-      var spikeIntensity = outputNode.value / outputNode.threshold;
+      var spikeIntensity = outputNode.activation / outputNode.threshold;
       if (LOGGING) { console.log("Node fired: " + nodeId + " at t=" + this.timestep + " with spikeIntensity: " + spikeIntensity.toFixed(2)) }
 
       // Spike the winner
@@ -311,14 +292,14 @@ class Network {
       for (var l = 0; l < loserIds.length; l++) {
         var nodeId = loserIds[l];
         var outputNode = this.outputNodes[nodeId];
-        outputNode.value = 0;
+        outputNode.activation = 0;
       }
     }
 
     // Decay all outputNodes
     for (var k = 0; k < this.outputNodes.length; k++) {
       let outputNode = this.outputNodes[k];
-      outputNode.value = outputNode.value * (1 - this.decayRate);
+      outputNode.activation = outputNode.activation * (1 - this.decayRate);
 
       // Reset nodes that have reached refractoryTime
       if (outputNode.isFiring && ((this.timestep - outputNode.lastFired) >= this.refractoryTime)) {
@@ -334,15 +315,18 @@ class Network {
   // Perform learning step (make output node more receptive to recently fired inputs)
   learn(outputNode) {
 
-    var spikeIntensity = outputNode.value / outputNode.threshold;
+    var spikeIntensity = outputNode.activation / outputNode.threshold;
 
-    if (outputNode.value >= (outputNode.threshold + 1)) {
+    // Apply adaptive threshold
+    if (outputNode.activation > outputNode.threshold) {
       outputNode.threshold = outputNode.threshold+1;
+      console.log("Threshold increased")
     }
-    // Increase threshold if spikeIntensity is above 130%
+
+    // Alternate adaptive threshold method
     // if (this.thresholdIncrease && (spikeIntensity > 1.3)) {
-    //   outputNode.threshold = outputNode.value*0.75;
-    //   outputNode.threshold = outputNode.value+1;
+    //   outputNode.threshold = outputNode.activation*0.75;
+    //   outputNode.threshold = outputNode.activation+1;
     // }
 
     const self = this;
@@ -357,33 +341,24 @@ class Network {
       // Determine if fromNode fired before toNode - LTP
       var deltaT = fromNode.lastFired - toNode.lastFired;   // Negative number if fromNode was before toNode
       let withinLTPRange = (deltaT <= 0) && (-deltaT < toNode.learningWindow)
-      //if (toNode.value > toNode.threshold) {
 
-        if (withinLTPRange) {
-
-          // LTP this connection
-          conn.setWeight(conn.weight + self.LTPRate);
-          // if (LOGGING) { console.log("Reinforcing\t\t" + conn.fromId + "-->" + conn.toId + " '" + self.inputNodes[conn.fromId].label + "'") }
-          if (self.preSynapticReset) {
-            fromNode.lastFired = -5;
-          }
-
-        } else {
-          // LTD this connection
-          var stillActive = conn.setWeight(conn.weight - self.LTDRate);
-          // if (LOGGING) { console.log("Discouraging\t" + conn.fromId + "-->" + conn.toId + " '" + self.inputNodes[conn.fromId].label + "'") }
-
-
-          //if (!stillActive) { self.removeConnection(connectionId) }
-
+      if (withinLTPRange) {
+        // Reinforce this connection
+        conn.setWeight(conn.weight + self.LTPRate);
+        // if (LOGGING) { console.log("Reinforcing\t\t" + conn.fromId + "-->" + conn.toId + " '" + self.inputNodes[conn.fromId].label + "'") }
+        if (self.preSynapticReset) {
+          fromNode.lastFired = -5;
         }
-
-      //} else { console.log("something wrong") }
+      } else {
+        // Discourage this connection
+        var stillActive = conn.setWeight(conn.weight - self.LTDRate);
+        // if (LOGGING) { console.log("Discouraging\t" + conn.fromId + "-->" + conn.toId + " '" + self.inputNodes[conn.fromId].label + "'") }
+      }
 
     });
 
-    // Reset node to resting value
-    outputNode.value = 0;
+    // Reset node to resting activation
+    outputNode.activation = 0;
   }
 
 }

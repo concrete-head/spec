@@ -294,14 +294,14 @@
 
       // Draw peak activation bars in red
       ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Semi transparent red
-      ctx.fillRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].peakValue * scaleFactor);
+      ctx.fillRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].peakActivation * scaleFactor);
 
       // Draw threshold bars in blue
       ctx.strokeStyle = "blue";
       ctx.strokeRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].threshold * scaleFactor);
     }
 
-    // Draw peak value
+    // Draw peak activation
     ctx.fillStyle = "white";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
@@ -619,8 +619,8 @@
 
         randomGenerator = new PseudoRandomGenerator();
         snn = new Network({
-          numInputs: CHAR_MAP.length*12,
-          numOutputs: 700,
+          numInputs: CHAR_MAP.length*2,
+          numOutputs: 20,
           blockSize: CHAR_MAP.length,
           LTPRate: 1,
           LTDRate: 1,
@@ -638,8 +638,7 @@
         resizeCanvases();
 
         console.log("Initialisation Complete!");
-        setInterval(loop, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate (here it's set to roughly 24 frames per second)
-
+        setInterval(loop, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate
 
       }
     });
