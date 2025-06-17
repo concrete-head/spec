@@ -39,7 +39,8 @@
   #reconstruction_container, #input_container {
     line-height: 1.5;
     overflow-wrap: anywhere;
-    min-height: 250px;
+    min-height: 350px;
+    width: 85vw;
   }
 
   #reconstruction_container span {
@@ -95,8 +96,8 @@
   <div id="controls">
     <h3>Controls</h3>
     <div class="controls-buttons">
-      <img id="play_pause_button" class="control_button play" onclick="playPause()" src="play.svg">
-      <img class="control_button skip" onclick="nextFrame()" aria-label="Next frame" src="next_frame.svg">
+      <img id="play_pause_button" class="control_button play" title="Start/stop continuous processing. Ctrl + Enter" onclick="playPause()" src="play.svg">
+      <img class="control_button skip" onclick="loop()" title="Process one frame. Ctrl + Right" src="next_frame.svg">
     </div>
 
     <p>
@@ -104,22 +105,19 @@
         <legend>Network Settings</legend>
 
         <input type="checkbox" id="AnimationButton" onclick="ANIMATE = this.checked" checked>
-        <label for="AnimationButton">Enable Animation (a)</label><br>
+        <label for="AnimationButton">Enable Animation</label><br>
 
         <input type="checkbox" id="LoggingButton" onclick="LOGGING = this.checked">
-        <label for="LoggingButton">Console Logging ON/OFF (L)</label><br>
+        <label for="LoggingButton">Console Logging ON/OFF</label><br>
 
         <input type="checkbox" id="InhibitionButton" onclick="snn.inhibition = !snn.inhibition" checked>
-        <label for="InhibitionButton">Local Inhibition ON/OFF (i)</label><br>
+        <label for="InhibitionButton">Local Inhibition ON/OFF</label><br>
 
-        <input type="checkbox" id="PreSynapticResetButton" onclick="snn.preSynapticReset = !snn.preSynapticReset" checked>
-        <label for="PreSynapticResetButton">Pre-Synaptic Reset ON/OFF</label><br>
-
-        <input type="checkbox" id="ThresholdIncreaseButton" onclick="snn.thresholdIncrease = !snn.thresholdIncrease" checked>
-        <label for="ThresholdIncreaseButton">Threshold Increase ON/OFF</label><br>
+        <input type="checkbox" id="SpikeDissppationButton" onclick="snn.spikeDissipation = !snn.spikeDissipation" checked>
+        <label for="SpikeDissppationButton" title="When enabled, when a input node participates in LTP its lastFired time is set to a negative number so it cant participate in LTP this timestep">Spike dissipation ON/OFF</label><br>
 
         <input type="checkbox" id="ResetAfterFrame" onclick="RESET = this.checked" checked>
-        <label for="ResetAfterFrame">Reset neurons after each frame</label><br>
+        <label for="ResetAfterFrame" title="When enabled, all nodes are reset at the beginning of each epoch">Reset neurons after each frame</label><br>
 
         <label for="DecayRateSlider">Decay rate</label>
         <input type="number" min="0" max="1" value="0" step="0.01" id="DecayRateSlider" onchange="snn.decayRate = this.value"><br>
@@ -140,16 +138,13 @@
       <h3>Input</h3>
       <div id="input_count"></div>
 
+      <input type="radio" id="TEXT_INPUT" name="INPUT_TYPE" value="Text input" checked>
+      <label for="TEXT_INPUT">Text input - see text box below</label><br>
+
       <input type="radio" id="RANDOM_INPUT" name="INPUT_TYPE" value="Pseudo random input">
       <label for="RANDOM_INPUT">Pseudo random noise input (includes a repeating pattern every 2 seconds)</label><br>
 
-      <input type="radio" id="TEXT_INPUT" name="INPUT_TYPE" value="Text input" checked>
-      <label for="TEXT_INPUT">Text input (wikipedia article on the telephone)</label><br>
-
-      <input type="checkbox" id="DRAW_SPIKE_TRAIN" checked>
-      <label for="DRAW_SPIKE_TRAIN">Draw spike train: </label><br>
-      <canvas id="spike_train_canvas" width="256" height="100"></canvas><br>
-      <div>Input Post Activations</div>
+      <div>Time series input Vector</div>
       <canvas id="input_activations_history_canvas" width="256" height="100"></canvas><br>
     </div>
 
@@ -157,7 +152,7 @@
       <h3>Weights</h3>
       <div>
         Total Connections: <span id="total_connections"></span><br>
-        <button onclick="snn.pruneNetwork(0.05)">Prune Connections<img src="cut.svg"></button><br>
+        <button onclick="snn.pruneNetwork(0.6)">Prune Connections<img src="cut.svg"></button><br>
         <button onclick="snn.addOutputNode(); resizeCanvases()">New node (n)<img src="add.svg"></button><br>
       </div>
       <div id="weights">
@@ -182,8 +177,8 @@
   </div>
 
   <div>
-    <h3>Input</h3>
-    <div style="background: antiquewhite" id="input_container"></div>
+    <h3>Input Text - <i>Enter your text here</i></h3>
+    <textarea style="background: antiquewhite" id="input_container"></textarea>
     <h3>Character Set</h3>
     <div id="character_set"></div>
     <h3>Reconstruction</h3>
@@ -198,16 +193,15 @@
   <script>
 
   var ANIMATION_INTERVAL = 10;  // ms delay between steps
+  var ANIMATION_INTERVAL_ID = 0;
   var ANIMATE = document.getElementById("AnimationButton").checked;
-  var PLAYING = false;
+  var PLAYING = true;
   var RESET = document.getElementById("ResetAfterFrame").checked;
-  var PAUSE_AFTER_NEXT_FRAME = false;
   var LOGGING = document.getElementById("LoggingButton").checked;
   var RANDOM_INPUT = false;   // Use random (noise) input data
   var TEXT_INPUT = true;
   var randomGenerator;
   var snn;                    // The global spiking neural network
-  var trainingText = "";
 
   // Get the canvas elements
   const WEIGHT_CANVAS = document.getElementById("weight_canvas");
@@ -218,58 +212,42 @@
   var CHAR_MAP = "";
 
 
-  function drawPostActivationHistory(canvas, network) {
+  function drawPostActivationHistory(canvas, layer) {
     var ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     var even = false;
-    for (var x = 0; x < network.postActivationHistory.length; x++) {
+    for (var x = 0; x < layer.postActivationHistory.length; x++) {
       if (even) {
         ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
       } else {
         ctx.fillStyle = "rgba(255, 0, 0, 1)";
       }
       even = !even;
-      network.postActivationHistory[x].forEach(function(id) {
+      layer.postActivationHistory[x].forEach(function(id) {
         ctx.fillRect(x, id, 1, 1)
       });
     }
 
   }
 
-  // Draw the input spike train
-  function drawInputSpikeTrain(canvas, network) {
-
-    var yScale = 1;
-    var xScale = canvas.width / network.spikeTrain.length;
-    var ctx = canvas.getContext("2d", { willReadFrequently: true });
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-
-    for (var bin = 0; bin < network.spikeTrain.length; bin++) {
-      for (var i = 0; i < network.spikeTrain[bin].length; i++) {
-        ctx.fillRect(bin*xScale, canvas.height - (yScale * network.spikeTrain[bin][i]), xScale, 1);
-      }
-    }
-
-  }
 
   // Draw stats
-  function printStats(network) {
-    document.getElementById("timestep").innerText = network.timestep.toLocaleString();
-    document.getElementById("total_connections").innerText = network.connections.length;
-    document.getElementById("output_count").innerText = "Total outputs: " + network.outputNodes.length;
-    document.getElementById("input_count").innerText = "Block size: " + network.blockSize + "\nTotal blocks: " + network.inputNodes.length/network.blockSize + "\nTotal inputs: " + network.inputNodes.length;
+  function printStats(layer) {
+    document.getElementById("timestep").innerText = layer.timestep.toLocaleString();
+    document.getElementById("total_connections").innerText = layer.connections.length;
+    document.getElementById("output_count").innerText = "Total outputs: " + layer.outputNodes.length;
+    document.getElementById("input_count").innerText = "Input block size: " + layer.inputBlockSize + "\nNumber of input blocks: " + layer.inputNodes.length/layer.inputBlockSize + "\nTotal inputs: " + layer.inputNodes.length;
   }
 
   // Draw output firing history graph
-  function drawOutputHistory(canvas, network) {
+  function drawOutputHistory(canvas, layer) {
 
     var ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    for (var x = 0; x < network.outputHistory.length; x++) {
-      for (var i = 0; i < network.outputHistory[x].length; i++) {
-        let y = canvas.height - network.outputHistory[x][i];
+    for (var x = 0; x < layer.outputHistory.length; x++) {
+      for (var i = 0; i < layer.outputHistory[x].length; i++) {
+        let y = canvas.height - layer.outputHistory[x][i];
         ctx.fillStyle = "#FFFFFF";
         ctx.fillRect(x, y, 1, -1);
       }
@@ -278,27 +256,27 @@
   }
 
   // Draw bar graph showing total weights of an output node
-  function drawThresholds(network, canvas) {
+  function drawThresholds(layer, canvas) {
 
     var ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Find node with highest activation to set the graph scale
-    let max = network.outputNodes[0].threshold;
-    for (let i = 1; i < network.outputNodes.length; i++) if (network.outputNodes[i].threshold > max) { max = network.outputNodes[i].threshold };
-    if (network.defaultThreshold > max) { max = network.defaultThreshold };
+    let max = layer.outputNodes[0].threshold;
+    for (let i = 1; i < layer.outputNodes.length; i++) if (layer.outputNodes[i].threshold > max) { max = layer.outputNodes[i].threshold };
+    if (layer.defaultThreshold > max) { max = layer.defaultThreshold };
     let scaleFactor = canvas.height / (max * 1.5);
-    let xScale = canvas.width / network.outputNodes.length;
+    let xScale = canvas.width / layer.outputNodes.length;
 
-    for (var s = 0; s < network.outputNodes.length; s++) {
+    for (var s = 0; s < layer.outputNodes.length; s++) {
 
       // Draw peak activation bars in red
       ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; // Semi transparent red
-      ctx.fillRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].peakActivation * scaleFactor);
+      ctx.fillRect(s*xScale, canvas.height, xScale, -layer.outputNodes[s].peakActivation * scaleFactor);
 
       // Draw threshold bars in blue
       ctx.strokeStyle = "blue";
-      ctx.strokeRect(s*xScale, canvas.height, xScale, -network.outputNodes[s].threshold * scaleFactor);
+      ctx.strokeRect(s*xScale, canvas.height, xScale, -layer.outputNodes[s].threshold * scaleFactor);
     }
 
     // Draw peak activation
@@ -309,42 +287,14 @@
 
   }
 
-  // Hide/show the input canvas
-  function showInput(state) {
-    if (!state) {
-      document.getElementById("input_container").classList.add("none")
-    } else {
-      document.getElementById("input_container").classList.remove("none")
-    }
-  }
-
 
   // Show the character groupings that each output neuron is selective to
-  function reconstructText(network, element, threshold) {
+  function reconstructText(layer, element, threshold) {
     element.innerHTML = "";
-    network.outputNodes.forEach(function(outputNode, nodeId) {
+    layer.outputNodes.forEach(function(outputNode, nodeId) {
       var el = document.createElement("span");
-
-      // Gather list of connection ids with strong weights
-      var ids = [];
-      outputNode.connectionIds.forEach(function(connectionId) {
-        let connection = network.connections[connectionId];
-        if (connection.weight >= threshold) {
-          ids.push(connection.fromId)
-        }
-      })
-
-      // Convert connection ids to string
-      var str = "";
-      var blockSize = network.blockSize;
-      ids.forEach(function(id) {
-        let charMapIndex = id%blockSize;
-        let position = parseInt(id / blockSize);
-        str = CHAR_MAP[charMapIndex] + str;
-      })
-
+      var str = nodeId + ": " + layer.respondsTo(nodeId, threshold)
       el.innerText = str;
-
       let max = Math.max(...snn.outputStats);
       el.style.backgroundColor = intToColor(snn.outputStats[nodeId]*255/max)
       element.appendChild(el)
@@ -353,17 +303,17 @@
 
 
   // Draw the weights grid
-  function drawWeightMatrix(network, canvas) {
+  function drawWeightMatrix(layer, canvas) {
 
     var ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     var yScale = 1
 
     // For each connection
-    //network.weightSums = new Array(network.outputNodes.length).fill(0);
-    for (var c = 0; c < network.connections.length; c++) {
+    //layer.weightSums = new Array(layer.outputNodes.length).fill(0);
+    for (var c = 0; c < layer.connections.length; c++) {
 
-      var conn = network.connections[c];
+      var conn = layer.connections[c];
       var x = conn.toId;
       var y = conn.fromId;
       y = y * yScale;
@@ -374,7 +324,7 @@
         colour =  `rgb(255, ${weight}, ${weight})`;
       }
 
-      //network.weightSums[conn.toId] = network.weightSums[conn.toId] + conn.weight;
+      //layer.weightSums[conn.toId] = layer.weightSums[conn.toId] + conn.weight;
       ctx.fillStyle = colour;
       ctx.fillRect(x, y, 1, 1);
 
@@ -386,16 +336,13 @@
   // Animation loop
   function loop() {
 
-    if (!PLAYING) { return }
-    if (PAUSE_AFTER_NEXT_FRAME) { PLAYING = false };
-
     var spikeTrain = [];
 
     if (TEXT_INPUT) {
-      spikeTrain = textToSpikeTrain(trainingText)
+      spikeTrain = textToSpikeTrain(document.getElementById("input_container").value)
     }
 
-    snn.feedForward(spikeTrain, RESET);
+    snn.feedForward(spikeTrain, RESET, false);
 
     if (ANIMATE) {
       reconstructText(snn, document.getElementById("reconstruction_container"), parseFloat(document.getElementById("reconstruction_threshold").value))
@@ -405,14 +352,40 @@
       }
       drawThresholds(snn, WEIGHT_SUMS_CANVAS);
       drawOutputHistory(OUTPUT_HISTORY_CANVAS, snn);
-      if (document.getElementById("DRAW_SPIKE_TRAIN").checked) {
-        drawInputSpikeTrain(SPIKE_TRAIN_CANVAS, snn);
-      }
       drawPostActivationHistory(input_activations_history_canvas, snn);
       printStats(snn);
     }
 
+  }
 
+  // Print the current state of the layer
+  function printInputVector() {
+
+    for (var i = 0; i < snn.inputVector.length; i++) {
+      let id = snn.inputVector[i]
+      let char = CHAR_MAP[id%snn.inputBlockSize]
+      console.log(char)
+    }
+
+  }
+
+  // Predict next token and layer state
+  function predict(text) {
+
+    if (text) {
+      // Feed in text
+      snn.feedForward(textToSpikeTrain(text), false, true)
+    }
+
+    // Predict next node to fire
+    var mostActive = snn.step(null, true);
+    // Get the stimulus from 1st input group
+    var stimulus = snn.getStimulus(mostActive, 0.5);
+    console.log("Stimulus: " + stimulus + " Character: " + CHAR_MAP[stimulus])
+
+    // Update state to include next character
+    snn.inputVector = snn.inputVector.concat(stimulus);
+    printInputVector()
   }
 
 
@@ -422,14 +395,11 @@
   function textToSpikeTrain(text) {
     return Array.from(text).map(char => {
       const index = CHAR_MAP.indexOf(char);
-      let result
       if (index == -1) {
-        result = 0;
         console.log(char + " not found in CHAR_MAP")
-      } else {
-        result = index
+        return 0;
       }
-      return [result];
+      return index;
     });
   }
 
@@ -480,30 +450,26 @@
   }
 
 
-  function nextFrame() {
-    if (PAUSE_AFTER_NEXT_FRAME) { PLAYING = true }
-    PAUSE_AFTER_NEXT_FRAME = true;
-  }
-
   function playPause() {
     PLAYING = !PLAYING;
     if (PLAYING) {
       document.getElementById("play_pause_button").src = "pause.svg";         // pause
+      ANIMATION_INTERVAL_ID = setInterval(loop, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate
     }
     else {
+      clearInterval(ANIMATION_INTERVAL_ID);
       document.getElementById("play_pause_button").src = "play.svg";          // play
     }
   }
 
-  // Resize the canvas's based on network sizew
+  // Resize the canvas's based on layer sizee
   function resizeCanvases() {
-    SPIKE_TRAIN_CANVAS.height = snn.blockSize;
     WEIGHT_CANVAS.height = snn.inputNodes.length + 1;
     WEIGHT_CANVAS.width = snn.outputNodes.length;
     OUTPUT_HISTORY_CANVAS.height = snn.outputNodes.length;
-    OUTPUT_HISTORY_CANVAS.width = trainingText.length;
+    OUTPUT_HISTORY_CANVAS.width = document.getElementById("input_container").value.length;
     document.getElementById("input_activations_history_canvas").height = snn.inputNodes.length;
-    document.getElementById("input_activations_history_canvas").width = trainingText.length;
+    document.getElementById("input_activations_history_canvas").width = document.getElementById("input_container").value.length;
   }
 
   // Convert a number between 0-255 to a CSS colour
@@ -550,28 +516,12 @@
   function initialiseKeyEvents() {
 
     document.addEventListener('keydown', function(event) {
-      if (event.key === "ArrowRight") {
-        nextFrame();
+      if (event.ctrlKey && event.key === "ArrowRight") {
+        loop();
       }
-      if (event.key === " " || event.key === "Space") {
+      if (event.ctrlKey && event.key === 'Enter') {
         event.preventDefault();
         playPause();
-        PAUSE_AFTER_NEXT_FRAME = false;
-      }
-      if (event.key === "L" || event.key === "l") {
-        document.getElementById("LoggingButton").click();
-      }
-      if (event.key === "A" || event.key === "a") {
-        document.getElementById("AnimationButton").click();
-      }
-
-      if (event.key === "N" || event.key === "n") {
-        snn.addOutputNode();
-        resizeCanvases();
-      }
-
-      if (event.key === "I" || event.key === "i") {
-        document.getElementById("InhibitionButton").click();
       }
 
     });
@@ -612,16 +562,15 @@
       if (content !== null) {
         // Do something with `content`
 
-        CHAR_MAP = getUniqueCharacters(content);
+        CHAR_MAP = "~" + getUniqueCharacters(content);
         document.getElementById("character_set").innerText = CHAR_MAP;
-        document.getElementById("input_container").innerText = content;
-        trainingText = content;
+        document.getElementById("input_container").value = content;
 
         randomGenerator = new PseudoRandomGenerator();
-        snn = new Network({
-          numInputs: CHAR_MAP.length*2,
-          numOutputs: 20,
-          blockSize: CHAR_MAP.length,
+        snn = new Layer({
+          numInputs: CHAR_MAP.length*5,
+          numOutputs: 800,
+          inputBlockSize: CHAR_MAP.length,
           LTPRate: 1,
           LTDRate: 1,
           startingThreshold: 1,
@@ -630,21 +579,20 @@
           decayRate: document.getElementById("DecayRateSlider").value,
           inhibition: document.getElementById("InhibitionButton").checked,
           numWinners: document.getElementById("NumWinnersSlider").value,
-          preSynapticReset: document.getElementById("PreSynapticResetButton").checked,
-          thresholdIncrease: document.getElementById("ThresholdIncreaseButton").checked
+          spikeDissipation: document.getElementById("SpikeDissppationButton").checked
         });
 
         printStats(snn);
         resizeCanvases();
 
         console.log("Initialisation Complete!");
-        setInterval(loop, ANIMATION_INTERVAL); // Adjust the interval to control the frame rate
+
+        playPause()
 
       }
     });
 
   };
-
 
   </script>
 </body>

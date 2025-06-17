@@ -18,7 +18,7 @@ class Connection {
   constructor(fromId, toId) {
     this.fromId = fromId;
     this.toId = toId;
-    this.weight = 0.5;
+    this.weight = 1//0.5;
   }
 
   // Set a connection weight to range [0 - 1]
@@ -29,14 +29,14 @@ class Connection {
   }
 }
 
-// Network class
-class Network {
-  constructor({numInputs, numOutputs, blockSize, LTPRate, LTDRate, startingThreshold, learningWindow, refractoryTime, decayRate, inhibition, numWinners, preSynapticReset, thresholdIncrease}) {
-
+// Layer class
+class Layer {
+  constructor({numInputs, numOutputs, inputBlockSize, LTPRate, LTDRate, startingThreshold, learningWindow, refractoryTime, decayRate, inhibition, numWinners, spikeDissipation}) {
+    this.inputVector = []     // Represents the current input state of the layer
     this.inputNodes = [];
     this.outputNodes = [];
-    this.blockSize = blockSize; // Number of nodes in an input block
     this.connections = [];
+    this.inputBlockSize = inputBlockSize; // Number of nodes in an input block
     this.numWinners = numWinners; // number of winners allowed in winner-takes-all
     this.timestep = 0;          // Timestep, counts to infinity
     this.epoch = 0;            // Count the total number of feed forward steps
@@ -47,8 +47,7 @@ class Network {
     this.decayRate = decayRate;
     this.refractoryTime = refractoryTime;
     this.startingThreshold = startingThreshold;
-    this.preSynapticReset = preSynapticReset;       // When enabled, if an output node fires, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from participating in LTP.
-    this.thresholdIncrease = thresholdIncrease;     // When enabled, nodes that fire with strong intensity have their thresholds increased
+    this.spikeDissipation = spikeDissipation;       // When enabled, if an output node fires, the presynaptic nodes have their lastFired value set to a highly negative number preventing them from participating in LTP.
     this.spikeTrain = [];
     this.postActivationHistory = [];
     this.outputHistory = [];
@@ -57,7 +56,7 @@ class Network {
     // Create input and output nodes
     for (var i = 0; i < numInputs; i++) {
       this.inputNodes.push(new Node(startingThreshold, this.learningWindow));
-      this.inputNodes[this.inputNodes.length-1].label = CHAR_MAP[i%this.blockSize]
+      this.inputNodes[this.inputNodes.length-1].label = CHAR_MAP[i%this.inputBlockSize]
     };
     for (i = 0; i < numOutputs; i++) {
       this.outputNodes.push(new Node(startingThreshold, this.learningWindow));
@@ -164,59 +163,60 @@ class Network {
     this.connections = newConnections;
   }
 
-  // Run a feed forward pass on the network (aka process one complete frame)
-  feedForward(spikeTrain, reset) {
+  // Run a feed forward pass on the layer (aka process one complete epoch)
+  feedForward(spikeTrain, reset, predict) {
 
     this.spikeTrain = spikeTrain;
-    this.outputHistory = [];
-    this.postActivationHistory = [];
-    this.outputStats = new Array(this.outputNodes.length).fill(0);
 
-    // Set previous activations to zero
+    // Reset the layer state
     if (reset) {
       for (var j = 0; j < this.outputNodes.length; j++) {
+        this.outputHistory = [];
+        this.postActivationHistory = [];
+        this.outputStats = new Array(this.outputNodes.length).fill(0);
         this.outputNodes[j].activation = 0;
         this.outputNodes[j].peakActivation = 0;
         this.outputNodes[j].lastFired = -1000;
         this.outputNodes[j].isFiring = false;
+        this.inputVector = [];
       }
     }
 
-    // Process each time step within spikeTrain
-    var postActivations = []
-    var blockSize = this.blockSize;
+    // Process each token within spikeTrain
+    var inputBlockSize = this.inputBlockSize;
     for (var i = 0; i < this.spikeTrain.length; i++) {
 
-      // Time shift post activations
-      postActivations = postActivations.map(function(x) { return x + blockSize })
-
-      // Filter out values that overflow number of inputs
-      postActivations = postActivations.filter(function(x) { return x < snn.inputNodes.length });
-
-      // Concatenate current activations
-      postActivations = postActivations.concat(this.spikeTrain[i]);
-
-      this.postActivationHistory.push(postActivations);
-
       // Run single step
-      var winnerIds = this.step(postActivations);
-
-      //if (winnerIds.length > 0) {
-        this.outputHistory.push(winnerIds);
-        //if (this.outputHistory.length > 256) { this.outputHistory.shift() };
-      //};
+      var winnerIds = this.step(this.spikeTrain[i], predict);
+      this.outputHistory.push(winnerIds);
       this.timestep = this.timestep + 1;
     }
     this.epoch = this.epoch + 1;
 
   }
 
-  // Run a single forward step
-  step(inputData) {
+  // Run a single forward step, one token at a time
+  step(token, predict) {
+
+    // Process each time step within spikeTrain
+    var inputBlockSize = this.inputBlockSize;
+
+    // Time shift post activations
+    this.inputVector = this.inputVector.map(function(x) { return x + inputBlockSize })
+
+    // Filter out values that overflow number of inputs
+    var totalInputNodes = this.inputNodes.length;
+    this.inputVector = this.inputVector.filter(function(x) { return x < totalInputNodes });
+
+    // Concatenate current activations
+    if (token !== null) { this.inputVector = this.inputVector.concat(token) }
+
+    this.postActivationHistory.push(this.inputVector);
 
     // Process inputs
-    for (var i = 0; i < inputData.length; i++) {
-      let fireId = inputData[i];
+    for (var i = 0; i < this.inputVector.length; i++) {
+
+      let fireId = this.inputVector[i];
       var inputNode = this.inputNodes[fireId];
       inputNode.lastFired = this.timestep;
 
@@ -258,6 +258,8 @@ class Network {
       return 0;                       // Return 0 if they are equal
     });
 
+
+
     // Compile list of winners and losers
     for (var j = 0; j < activations.length; j++) {
       if ((activations[j][1] >= activations[j][2]) && (winnerIds.length < this.numWinners)) {
@@ -274,7 +276,10 @@ class Network {
       var outputNode = this.outputNodes[nodeId];
 
       var spikeIntensity = outputNode.activation / outputNode.threshold;
-      if (LOGGING) { console.log("Node fired: " + nodeId + " at t=" + this.timestep + " with spikeIntensity: " + spikeIntensity.toFixed(2)) }
+      if (LOGGING) {
+        let token = this.respondsTo(winnerIds[w], 0.5)
+        console.log("Node fired: " + nodeId + " at t=" + this.timestep + " with activation " + outputNode.activation + " intensity " + spikeIntensity.toFixed(2) + ":" + token)
+      }
 
       // Spike the winner
       outputNode.isFiring = true;
@@ -308,6 +313,14 @@ class Network {
       }
 
     }
+
+    // Return the highest activated node regardless if it fired or not
+    if (predict) {
+      var highestId = activations[0][0];
+      return highestId
+    }
+
+
     return winnerIds;
   }
 
@@ -315,19 +328,10 @@ class Network {
   // Perform learning step (make output node more receptive to recently fired inputs)
   learn(outputNode) {
 
-    var spikeIntensity = outputNode.activation / outputNode.threshold;
-
     // Apply adaptive threshold
     if (outputNode.activation > outputNode.threshold) {
       outputNode.threshold = outputNode.threshold+1;
-      console.log("Threshold increased")
     }
-
-    // Alternate adaptive threshold method
-    // if (this.thresholdIncrease && (spikeIntensity > 1.3)) {
-    //   outputNode.threshold = outputNode.activation*0.75;
-    //   outputNode.threshold = outputNode.activation+1;
-    // }
 
     const self = this;
 
@@ -346,12 +350,13 @@ class Network {
         // Reinforce this connection
         conn.setWeight(conn.weight + self.LTPRate);
         // if (LOGGING) { console.log("Reinforcing\t\t" + conn.fromId + "-->" + conn.toId + " '" + self.inputNodes[conn.fromId].label + "'") }
-        if (self.preSynapticReset) {
-          fromNode.lastFired = -5;
+        if (self.spikeDissipation) {
+          // Spike dissipation
+          fromNode.lastFired = -1;
         }
       } else {
         // Discourage this connection
-        var stillActive = conn.setWeight(conn.weight - self.LTDRate);
+        conn.setWeight(conn.weight - self.LTDRate);
         // if (LOGGING) { console.log("Discouraging\t" + conn.fromId + "-->" + conn.toId + " '" + self.inputNodes[conn.fromId].label + "'") }
       }
 
@@ -361,4 +366,60 @@ class Network {
     outputNode.activation = 0;
   }
 
+
+  // Get the stimulus from first input group
+  getStimulus(nodeId, threshold) {
+    var outputNode = this.outputNodes[nodeId];
+
+    var stimulus = null;
+
+    for (var connectionId of outputNode.connectionIds) {
+
+      let connection = this.connections[connectionId];
+      if ((connection.weight >= threshold) && (connection.fromId < this.inputBlockSize)) {
+        stimulus = connection.fromId;
+        break;
+      }
+    }
+
+    return stimulus
+  }
+
+  // Print string represengint what a node is receptive to
+  respondsTo(nodeId, threshold) {
+
+    var outputNode = this.outputNodes[nodeId];
+
+    // Gather list of connection ids with strong weights
+    var ids = [];
+    var self = this;
+    outputNode.connectionIds.forEach(function(connectionId) {
+      let connection = self.connections[connectionId];
+      if (connection.weight >= threshold) {
+        ids.push(connection.fromId)
+      }
+    })
+
+    // Convert connection ids to string
+    var str = "";
+    var inputBlockSize = this.inputBlockSize;
+    ids.forEach(function(id) {
+      let charMapIndex = id%inputBlockSize;
+      let position = parseInt(id / inputBlockSize);
+      str = CHAR_MAP[charMapIndex] + str;
+    })
+
+    return str
+  }
+
+}
+
+
+
+// Network class
+// Represents a collection of individual layers
+class Network {
+  constructor() {
+    this.layers = []
+  }
 }
